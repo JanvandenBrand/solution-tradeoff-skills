@@ -1,0 +1,43 @@
+# Default settings for the solution-tradeoff scripts.
+# Every script accepts --config <path> to use a copy with other values.
+
+spreadsheet:
+  requirements_sheet: "Requirements"
+  principles_sheet: "Principles"
+
+  # Logical name -> column header in the requirements sheet.
+  columns:
+    req_id: "Ref"
+    description: "Requirement"
+    domain: "Category"
+    moscow: "MoSCoW"
+    plateau: "Plateau"
+    status: "Status"
+    apr_ref: "APR Link"
+    ad_ref: "AD Ref"
+
+  # Columns that may be absent; they load as null with a warning.
+  optional_columns: ["plateau", "apr_ref", "ad_ref"]
+
+  # Logical name -> column header in the principles sheet.
+  principles_columns:
+    principle_id: "Ref"
+    description: "Architecture Principle"
+    domain: "Category"
+
+filter:
+  # Requirements with these statuses never enter the analysis (case-insensitive).
+  excluded_statuses: ["deprecated", "rejected"]
+  # MoSCoW levels kept when the decision does not say otherwise.
+  default_moscow: ["must", "should"]
+
+budget:
+  # Points per perspective = requirement count x multiplier, rounded to round_to,
+  # never below minimum.
+  multiplier: 2.5
+  round_to: 5
+  minimum: 15
+
+elimination:
+  # A candidate that scores below this on any Must requirement is eliminated.
+  must_score_threshold: 6
