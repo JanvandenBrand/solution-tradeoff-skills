@@ -1,28 +1,13 @@
 {
   "$schema": "https://code.claude.com/schemas/marketplace.json",
   "name": "solution-tradeoff-skills",
-  "description": "Skills for structured, multi-stakeholder solution trade-off analysis.",
-  "metadata": {
-    "description": "Skills for structured, multi-stakeholder solution trade-off analysis."
-  },
   "owner": {
     "name": "Jan van den Brand"
   },
   "plugins": [
     {
       "name": "solution-tradeoff",
-      "source": "./",
-      "description": "Run a multi-stakeholder trade-off analysis that compares candidate solutions for an architecture decision, through conversation.",
-      "author": {
-        "name": "Jan van den Brand"
-      },
-      "repository": "https://github.com/JanvandenBrand/solution-tradeoff-skills",
-      "license": "MIT",
-      "keywords": [
-        "architecture",
-        "decision",
-        "trade-off"
-      ]
+      "source": "./"
     }
   ]
 }

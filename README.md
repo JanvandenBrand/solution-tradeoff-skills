@@ -10,13 +10,12 @@ This skill replaces the command-line tool `solution-tradeoff-tool`.
 
 | Host | How to install | Status |
 |------|----------------|--------|
-| Claude Code (plugin) | `/plugin marketplace add JanvandenBrand/solution-tradeoff-skills`, then `/plugin install solution-tradeoff@solution-tradeoff-skills` | Supported |
+| Claude Code | Copy `skills/solution-tradeoff/` to `~/.claude/skills/` | Supported |
+| Claude Code (plugin marketplace) | `/plugin marketplace add JanvandenBrand/solution-tradeoff-skills`, then `/plugin install solution-tradeoff@solution-tradeoff-skills` | Stub: untested until the repository is published |
 | Claude (claude.ai) | Zip the `skills/solution-tradeoff/` folder, then upload the zip under **Settings > Capabilities > Skills**. Code execution must be enabled for the scripts. | Supported |
 | OpenAI Codex | | Planned |
 | GitHub Copilot | | Planned |
 | Mistral | | Planned |
-
-To install by hand in Claude Code, copy `skills/solution-tradeoff/` to `~/.claude/skills/`.
 
 ## Skills
 
