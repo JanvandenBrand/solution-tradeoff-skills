@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Editors
+.vscode/
+.idea/
+
+# Decision material (confidential, never commit)
+/outputs/
+/decision.yaml
+/decisions/
+background_knowledge.md
+
+# Requirements spreadsheets; only the synthetic test sample is allowed
+*.xlsx
+!/tests/fixtures/requirements_sample.xlsx
+
+# Local task notes
+tasks/
