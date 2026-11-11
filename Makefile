@@ -1,4 +1,4 @@
-.PHONY: check lint test
+.PHONY: check lint test package
 
 POETRY ?= poetry
 SCRIPTS := skills/solution-tradeoff/scripts
@@ -13,3 +13,8 @@ lint:
 
 test:
 	$(POETRY) run pytest --cov=$(SCRIPTS) --cov-report=term-missing --cov-fail-under=90 -q
+
+package:
+	rm -rf dist && mkdir -p dist
+	cd skills && zip -rq ../dist/solution-tradeoff.zip solution-tradeoff \
+		-x '*/__pycache__/*' '*.pyc'
