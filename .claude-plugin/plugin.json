@@ -1,0 +1,18 @@
+{
+  "name": "solution-tradeoff",
+  "description": "Run a multi-stakeholder trade-off analysis that compares candidate solutions for an architecture decision, through conversation.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Jan van den Brand"
+  },
+  "repository": "https://github.com/JanvandenBrand/solution-tradeoff-skills",
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "decision",
+    "trade-off",
+    "stakeholders",
+    "requirements",
+    "moscow"
+  ]
+}
