@@ -1,6 +1,6 @@
 ---
 name: solution-tradeoff
-description: Run a structured, multi-stakeholder trade-off analysis that compares two or more candidate solutions against prioritized requirements and architecture principles. Use when the user wants to compare candidate solutions, weigh options against each other, or prepare a trade-off analysis for an architecture decision.
+description: Compare candidate solutions in a multi-stakeholder trade-off analysis against prioritized requirements. Use when weighing options or preparing a trade-off for an architecture decision.
 ---
 
 # Solution trade-off analysis
