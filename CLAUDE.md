@@ -20,6 +20,13 @@ Real decision material is confidential.
 - Before every commit, check `git status` for staged decision material, and unstage it.
 - The old repository `solution-tradeoff-tool` is frozen: read only its git-tracked files, never modify it ([decision 1](docs/adr/0001-new-repository-command-line-tool-frozen.md)).
 
+## Secrets and credentials (never violate)
+
+- Workflows use no secrets: no `secrets.*`, no `GITHUB_TOKEN` or `github.token`. If a job ever seems to need one, stop and ask.
+- Never put credentials (tokens, keys, passwords, connection strings) in any file or commit, including tests, fixtures, examples and commit messages.
+- Workflows keep `permissions: contents: read` at the top level and `persist-credentials: false` on checkout.
+- Every action is pinned to a full commit SHA with its version as a comment; Dependabot proposes updates as pull requests. `tests/test_workflows.py` enforces these rules.
+
 ## Test first
 
 1. Write or port the test.
