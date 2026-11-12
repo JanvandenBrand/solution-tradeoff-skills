@@ -42,6 +42,11 @@ budget:
   round_to: 5
   minimum: 15
 
+rating:
+  # Ratings are whole numbers on this scale (inclusive).
+  minimum: 0
+  maximum: 10
+
 elimination:
   # A candidate that scores below this on any Must requirement is eliminated.
   must_score_threshold: 6

@@ -1,0 +1,10 @@
+{
+  "must": [
+    {"req_id": "REQ001", "description": "Data is encrypted at rest", "moscow": "Must", "status": "Active"},
+    {"req_id": "REQ002", "description": "Users authenticate with multi-factor sign-in", "moscow": "Must", "status": "Active"}
+  ],
+  "should": [
+    {"req_id": "REQ005", "description": "Infrastructure is deployable from code", "moscow": "Should", "status": "Draft"}
+  ],
+  "excluded_drafts": {"count": 0, "req_ids": []}
+}

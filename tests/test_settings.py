@@ -48,3 +48,7 @@ def test_default_excluded_statuses_are_the_spreadsheet_values():
 
 def test_default_draft_statuses():
     assert load_settings()["filter"]["draft_statuses"] == ["draft"]
+
+
+def test_default_rating_scale_is_zero_to_ten():
+    assert load_settings()["rating"] == {"minimum": 0, "maximum": 10}

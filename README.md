@@ -35,6 +35,7 @@ skills/solution-tradeoff/
 ├── scripts/                  # deterministic steps, run by the host
 └── assets/
     ├── config.yaml           # thresholds, budget and spreadsheet column names
+    ├── rating.schema.json
     └── tradeoff-output.schema.json
 ```
 
@@ -48,6 +49,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | `moscow_filter.py <rows.json> --decision <reference>` | Keep Must and Should requirements, filtered by status, domain and plateau; keep only drafts tagged with the current decision and report the rest |
 | `budget.py --count <n>` | Point budget each perspective distributes |
 | `elimination.py <scores.json>` | Candidates that score below the threshold on any Must requirement |
+| `validate_rating.py <ratings.yaml> --requirements <filtered.json>` | Check that every candidate is rated once on every in-scope requirement, on the configured scale |
 | `validate_response.py <file or directory>` | Check perspective responses against the output schema |
 | `validate_perspective.py <file or directory>` | Check perspective files against the perspective format |
 
