@@ -47,6 +47,7 @@ To use settings other than the defaults, copy `config.yaml`, change it, and pass
 skills/solution-tradeoff/
 ├── SKILL.md                  # the steps the assistant follows
 ├── references/
+│   ├── frame.md              # step 1: frame the decision and validate the problem
 │   ├── perspective-format.md # format of a perspective file
 │   ├── perspectives/         # shipped default perspectives (unverified)
 │   └── skill-feedback.md     # how to report a problem with the skill

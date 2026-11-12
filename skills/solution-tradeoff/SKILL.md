@@ -9,7 +9,7 @@ Nothing is scored until a person has verified every selected perspective.
 
 ## 1. Frame
 
-TODO: establish the decision, the problem statement, the planning horizon and the candidates. See [references/frame.md](references/frame.md).
+Establish the decision and validate the problem, one question at a time, then ask the user to confirm the frame summary. Nothing else starts before that confirmation. Follow [references/frame.md](references/frame.md); its output is the `frame` section of the run record. Any later step that finds the problem, the outcome or the criteria wrong returns here as a question for the user.
 
 ## 2. Gather
 
