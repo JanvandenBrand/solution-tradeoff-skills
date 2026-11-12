@@ -57,3 +57,11 @@ def test_checkout_does_not_persist_credentials(path: Path) -> None:
 def test_workflow_references_no_secrets(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     assert not re.search(r"\bsecrets\.|GITHUB_TOKEN|github\.token", text)
+
+
+def test_dependabot_updates_github_actions() -> None:
+    config = yaml.safe_load((ROOT / ".github" / "dependabot.yml").read_text(encoding="utf-8"))
+    assert config["version"] == 2
+    ecosystems = {u["package-ecosystem"]: u for u in config["updates"]}
+    assert ecosystems["github-actions"]["directory"] == "/"
+    assert ecosystems["github-actions"]["schedule"]["interval"]
