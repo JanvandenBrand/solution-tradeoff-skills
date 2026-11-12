@@ -3,6 +3,7 @@
 import json
 
 import pytest
+import yaml
 
 from elimination import eliminate, main
 
@@ -58,24 +59,39 @@ def test_eliminate_raises_value_error_when_score_is_boolean():
         eliminate({"A": {"REQ001": True, "REQ002": 7}}, _MUSTS, threshold=6)
 
 
-def test_main_uses_threshold_from_config(tmp_path, capsys):
-    path = tmp_path / "scores.json"
-    path.write_text(json.dumps({"must_ids": _MUSTS, "scores": {"A": {"REQ001": 5, "REQ002": 9}}}))
-    assert main([str(path)]) == 0
+def _args(fixtures, *extra):
+    return [
+        str(fixtures / "ratings_valid.yaml"),
+        "--requirements",
+        str(fixtures / "requirements_filtered.json"),
+        *extra,
+    ]
+
+
+def test_main_eliminates_on_must_ratings_with_configured_threshold(fixtures, capsys):
+    assert main(_args(fixtures)) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out == {"threshold": 6, "eliminated": {"A": ["REQ001"]}, "remaining": []}
+    # B rates 5 on Must REQ001; its 4 on Should REQ005 does not count.
+    assert out == {"threshold": 6, "eliminated": {"B": ["REQ001"]}, "remaining": ["A"]}
 
 
-def test_main_threshold_option_overrides_config(tmp_path, capsys):
-    path = tmp_path / "scores.json"
-    path.write_text(json.dumps({"must_ids": _MUSTS, "scores": {"A": {"REQ001": 5, "REQ002": 9}}}))
-    assert main([str(path), "--threshold", "4"]) == 0
+def test_main_threshold_option_overrides_config(fixtures, capsys):
+    assert main(_args(fixtures, "--threshold", "4")) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out == {"threshold": 4, "eliminated": {}, "remaining": ["A"]}
+    assert out == {"threshold": 4, "eliminated": {}, "remaining": ["A", "B"]}
 
 
-def test_main_returns_1_when_score_missing(tmp_path, capsys):
-    path = tmp_path / "scores.json"
-    path.write_text(json.dumps({"must_ids": _MUSTS, "scores": {"A": {"REQ001": 5}}}))
-    assert main([str(path)]) == 1
-    assert "REQ002" in capsys.readouterr().err
+def test_main_returns_1_when_rating_file_invalid(tmp_path, fixtures, capsys):
+    data = yaml.safe_load((fixtures / "ratings_valid.yaml").read_text())
+    data["ratings"] = data["ratings"][:-1]
+    path = tmp_path / "ratings.yaml"
+    path.write_text(yaml.dump(data))
+    args = [str(path), "--requirements", str(fixtures / "requirements_filtered.json")]
+    assert main(args) == 1
+    assert "REQ005" in capsys.readouterr().err
+
+
+def test_main_returns_1_when_requirements_file_missing(tmp_path, fixtures, capsys):
+    args = [str(fixtures / "ratings_valid.yaml"), "--requirements", str(tmp_path / "none.json")]
+    assert main(args) == 1
+    assert "none.json" in capsys.readouterr().err

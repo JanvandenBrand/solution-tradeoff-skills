@@ -1,25 +1,28 @@
-"""Apply the Must elimination threshold to candidate scores.
+"""Apply the Must elimination threshold to the Must ratings.
 
-A candidate that scores below the threshold on any Must requirement is
-eliminated. The score scale is not fixed here; the threshold must use the
-same scale as the scores.
+A candidate that rates below the threshold on any Must requirement is
+eliminated. Ratings come from the separate rating pass and are validated
+first; the threshold uses the same scale.
 
 Usage:
-    python elimination.py <scores.json> [--threshold <n>] [--config <settings file>]
+    python elimination.py <ratings.yaml> --requirements <filtered.json>
+        [--threshold <n>] [--config <settings file>]
 
-``scores.json`` holds ``{"must_ids": [...], "scores": {candidate: {req_id: score}}}``.
-Prints ``{"threshold": n, "eliminated": {candidate: [req_ids]}, "remaining": [...]}``.
+``filtered.json`` is the output of ``moscow_filter.py``; its Must requirements
+are the ones that can eliminate a candidate. Prints
+``{"threshold": n, "eliminated": {candidate: [req_ids]}, "remaining": [...]}``.
 """
 
 import argparse
 import json
 import sys
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 from settings import load_settings
+from validate_rating import load_ratings, read_scope
 
-Scores = dict[str, dict[str, float]]
+Scores = Mapping[str, Mapping[str, float]]
 
 
 def eliminate(scores: Scores, must_ids: Iterable[str], threshold: float) -> dict[str, list[str]]:
@@ -65,18 +68,27 @@ def eliminate(scores: Scores, must_ids: Iterable[str], threshold: float) -> dict
 def main(argv: list[str] | None = None) -> int:
     """Command-line entry point. Returns the process exit code."""
     parser = argparse.ArgumentParser(description="Apply the Must elimination threshold.")
-    parser.add_argument("scores", type=Path, help="JSON file with must_ids and scores.")
+    parser.add_argument("ratings", type=Path, help="Rating file (YAML).")
+    parser.add_argument(
+        "--requirements", type=Path, required=True, help="Output of moscow_filter.py."
+    )
     parser.add_argument("--threshold", type=float, help="Override the configured threshold.")
     parser.add_argument("--config", type=Path, help="Settings file (default: assets/config.yaml).")
     args = parser.parse_args(argv)
     try:
+        settings = load_settings(args.config)
         threshold = args.threshold
         if threshold is None:
-            threshold = load_settings(args.config)["elimination"]["must_score_threshold"]
-        data = json.loads(args.scores.read_text(encoding="utf-8"))
-        result = eliminate(data["scores"], data["must_ids"], threshold)
+            threshold = settings["elimination"]["must_score_threshold"]
+        must_ids, should_ids = read_scope(args.requirements)
+        scale = settings["rating"]
+        scores = load_ratings(
+            args.ratings, must_ids, should_ids, scale["minimum"], scale["maximum"]
+        )
+        result = eliminate(scores, must_ids, threshold)
     except (OSError, ValueError, KeyError, TypeError) as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        for line in str(exc).splitlines():
+            print(f"error: {line}", file=sys.stderr)
         return 1
     if isinstance(threshold, float) and threshold.is_integer():
         threshold = int(threshold)
