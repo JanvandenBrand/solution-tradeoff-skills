@@ -10,8 +10,10 @@ The format is ``assets/run-record.schema.json``. Beyond the format, this
 script checks the rules the steps depend on: at least two candidates with
 unique identifiers, the status quo question asked, a problem without evidence
 labeled a hypothesis, a problem that names no solution and names its outcome,
-and the user's confirmation. With ``--requirements``, the gather counts and
-budget must match the script outputs, so no number comes from prose.
+and the user's confirmation. Dates are parsed by ``dates.parse_date``,
+exactly as by ``verification_gate.py``, so a quoted date fails both. With
+``--requirements``, the gather counts and budget must match the script
+outputs, so no number comes from prose.
 
 Usage:
     python validate_run_record.py <run.yaml> --section frame|gather
@@ -32,6 +34,7 @@ import jsonschema
 import yaml
 
 from budget import point_budget
+from dates import parse_date
 from settings import load_settings
 
 DEFAULT_SCHEMA = Path(__file__).resolve().parent.parent / "assets" / "run-record.schema.json"
@@ -47,6 +50,27 @@ def _plain(value: Any) -> Any:
     if isinstance(value, list):
         return [_plain(v) for v in value]
     return value
+
+
+def _date_errors(data: Any) -> list[str]:
+    """Parse every date field with the parser the verification gate uses."""
+    if not isinstance(data, dict):
+        return []
+    fields: list[tuple[str, Any]] = []
+    for section in SECTIONS:
+        if isinstance(data.get(section), dict) and "confirmed_at" in data[section]:
+            fields.append((f"{section}.confirmed_at", data[section]["confirmed_at"]))
+    confirmations = data.get("perspective_confirmations")
+    for i, entry in enumerate(confirmations if isinstance(confirmations, list) else []):
+        if isinstance(entry, dict) and "confirmed_at" in entry:
+            fields.append((f"perspective_confirmations.{i}.confirmed_at", entry["confirmed_at"]))
+    errors: list[str] = []
+    for where, value in fields:
+        try:
+            parse_date(value, "confirmed_at")
+        except ValueError as exc:
+            errors.append(f"{where}: {exc}")
+    return errors
 
 
 def _schema_errors(data: Any, schema_path: Path) -> list[str]:
@@ -140,7 +164,7 @@ def run_record_errors(
             ``config.yaml``.
         schema_path: JSON Schema for the run record.
     """
-    errors = _schema_errors(data, schema_path)
+    errors = _date_errors(data) + _schema_errors(data, schema_path)
     if errors or section is None:
         return errors
     if section == "gather" and "frame" not in data:

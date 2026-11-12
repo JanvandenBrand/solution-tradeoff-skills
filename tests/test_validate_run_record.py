@@ -2,6 +2,7 @@
 
 import copy
 import json
+from datetime import date
 
 import pytest
 import yaml
@@ -181,7 +182,7 @@ def test_gate_accepts_the_full_record(tmp_path, fixtures):
 def test_minimal_gate_record_is_valid(tmp_path):
     data = {
         "perspective_confirmations": [
-            {"id": "security", "confirmed_by": "Test User", "confirmed_at": "2026-11-12"}
+            {"id": "security", "confirmed_by": "Test User", "confirmed_at": date(2026, 11, 12)}
         ]
     }
     assert run_record_errors(data, None) == []
@@ -217,3 +218,20 @@ def test_main_returns_1_when_yaml_invalid(tmp_path, capsys):
     path.write_text("frame: [\n")
     assert main([str(path), "--section", "frame"]) == 1
     assert "not valid YAML" in capsys.readouterr().err
+
+
+# Dates are parsed the same way as by the verification gate
+
+_QUOTED = "must be a date written as YYYY-MM-DD without quotes, got '2026-11-12'"
+
+
+@pytest.mark.parametrize("section", ["frame", "gather"])
+def test_quoted_confirmation_date_is_rejected(record, section):
+    record[section]["confirmed_at"] = "2026-11-12"
+    assert f"{section}.confirmed_at: confirmed_at {_QUOTED}" in _errors(record, section)
+
+
+def test_quoted_perspective_confirmation_date_is_rejected(record):
+    record["perspective_confirmations"][0]["confirmed_at"] = "2026-11-12"
+    expected = f"perspective_confirmations.0.confirmed_at: confirmed_at {_QUOTED}"
+    assert expected in run_record_errors(record, None)

@@ -3,6 +3,7 @@
 A person fully verifies a perspective once (``verified``, ``verified_by`` and
 ``verified_at`` in its header). In each run the user confirms it is still
 correct, and that confirmation goes into the run record. Both are required.
+Dates are parsed by ``dates.parse_date``, as in ``validate_run_record.py``.
 
 Perspectives are looked up in the user's library folders, in the order given,
 then in the shipped defaults; the user's copy wins on a matching id.
@@ -27,12 +28,12 @@ import argparse
 import json
 import sys
 from collections.abc import Sequence
-from datetime import date
 from pathlib import Path
 from typing import Any
 
 import yaml
 
+from dates import parse_date
 from validate_perspective import read_header, validate_perspective
 
 SHIPPED_PERSPECTIVES = Path(__file__).resolve().parent.parent / "references" / "perspectives"
@@ -116,8 +117,10 @@ def _confirmation_errors(pid: str, entry: dict[str, Any] | None) -> list[str]:
     by, at = entry.get("confirmed_by"), entry.get("confirmed_at")
     if not isinstance(by, str) or not by.strip():
         errors.append(f"Confirmation of '{pid}': confirmed_by must name a person")
-    if not isinstance(at, date):
-        errors.append(f"Confirmation of '{pid}': confirmed_at must be a date, got {at!r}")
+    try:
+        parse_date(at, "confirmed_at")
+    except ValueError as exc:
+        errors.append(f"Confirmation of '{pid}': {exc}")
     return errors
 
 

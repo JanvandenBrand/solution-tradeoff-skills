@@ -178,3 +178,17 @@ def test_main_returns_1_and_lists_every_failure(tmp_path, capsys):
     captured = capsys.readouterr()
     assert json.loads(captured.out)["passed"] is False
     assert "clinical" in captured.err and "security" in captured.err
+
+
+def test_gate_rejects_a_quoted_confirmation_date(tmp_path):
+    library = _library(tmp_path, "security")
+    record = tmp_path / "run.yaml"
+    record.write_text(
+        "perspective_confirmations:\n"
+        "  - id: security\n    confirmed_by: Test User\n    confirmed_at: '2026-11-12'\n"
+    )
+    _, errors = gate(["security"], [library], record)
+    assert errors == [
+        "Confirmation of 'security': confirmed_at must be a date written as YYYY-MM-DD "
+        "without quotes, got '2026-11-12'"
+    ]
