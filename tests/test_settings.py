@@ -52,3 +52,7 @@ def test_default_draft_statuses():
 
 def test_default_rating_scale_is_zero_to_ten():
     assert load_settings()["rating"] == {"minimum": 0, "maximum": 10}
+
+
+def test_default_scope_cap_is_sixty_requirements():
+    assert load_settings()["scope"] == {"max_requirements": 60}

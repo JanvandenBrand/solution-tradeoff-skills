@@ -35,6 +35,11 @@ filter:
   # MoSCoW levels kept when the decision does not say otherwise.
   default_moscow: ["must", "should"]
 
+scope:
+  # Above this many in-scope requirements, moscow_filter.py warns and the
+  # skill proposes a narrower scope.
+  max_requirements: 60
+
 budget:
   # Points per perspective = requirement count x multiplier, rounded to round_to,
   # never below minimum.

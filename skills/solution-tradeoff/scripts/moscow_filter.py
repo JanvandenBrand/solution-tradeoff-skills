@@ -8,7 +8,11 @@ Usage:
 ``rows.json`` is either a list of requirement rows or the output of
 ``load_requirements.py`` (an object with a ``requirements`` list). Prints
 ``{"must": [...], "should": [...], "included_drafts": [...],
-"excluded_drafts": {"count": n, "req_ids": [...]}}`` as JSON.
+"excluded_drafts": {"count": n, "req_ids": [...]}, "scope": {...}}`` as JSON.
+
+``scope`` gives the in-scope counts and compares them with
+``scope.max_requirements`` in the settings. Above that cap, a warning goes to
+standard error so the user can narrow the scope; the exit code stays 0.
 
 Draft requirements are kept only when their ``ad_ref`` cell names the current
 decision (``--decision``). Drafts that would otherwise be in scope but are not
@@ -151,6 +155,18 @@ def filter_requirements(
     return FilterResult(must, should, sorted(excluded_drafts), sorted(included_drafts))
 
 
+def scope_summary(result: FilterResult, max_requirements: int) -> dict[str, Any]:
+    """Return the in-scope counts and whether they exceed ``max_requirements``."""
+    count = len(result.must) + len(result.should)
+    return {
+        "count": count,
+        "must": len(result.must),
+        "should": len(result.should),
+        "max_requirements": max_requirements,
+        "exceeds": count > max_requirements,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     """Command-line entry point. Returns the process exit code."""
     parser = argparse.ArgumentParser(description="Filter requirements by MoSCoW level.")
@@ -170,7 +186,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--config", type=Path, help="Settings file (default: assets/config.yaml).")
     args = parser.parse_args(argv)
     try:
-        cfg = load_settings(args.config)["filter"]
+        settings = load_settings(args.config)
+        cfg = settings["filter"]
+        max_requirements = int(settings["scope"]["max_requirements"])
         data = json.loads(args.rows.read_text(encoding="utf-8"))
         rows = data["requirements"] if isinstance(data, dict) else data
         result = filter_requirements(
@@ -195,7 +213,14 @@ def main(argv: list[str] | None = None) -> int:
             "req_ids": result.excluded_drafts,
         },
     }
+    output["scope"] = scope = scope_summary(result, max_requirements)
     print(json.dumps(output, default=str))
+    if scope["exceeds"]:
+        print(
+            f"warning: {scope['count']} requirements in scope, more than the "
+            f"{max_requirements} allowed by scope.max_requirements; narrow the scope.",
+            file=sys.stderr,
+        )
     return 0
 
 

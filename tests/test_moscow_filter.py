@@ -3,8 +3,9 @@
 import json
 
 import pytest
+import yaml
 
-from moscow_filter import filter_requirements, main
+from moscow_filter import filter_requirements, main, scope_summary
 
 _ROWS = [
     {"req_id": "R001", "domain": "Security", "moscow": "Must", "plateau": 1, "status": "Active"},
@@ -329,3 +330,55 @@ def test_main_returns_1_when_chosen_id_is_not_a_draft(tmp_path, capsys):
     path.write_text(json.dumps(_DRAFTS))
     assert main([str(path), "--include-draft", "A1"]) == 1
     assert "A1" in capsys.readouterr().err
+
+
+# Scope size (scope.max_requirements)
+
+
+def test_scope_summary_under_the_cap():
+    result = filter_requirements(_ROWS, moscow=["must", "should"], excluded_statuses=["removed"])
+    assert scope_summary(result, 60) == {
+        "count": 5,
+        "must": 3,
+        "should": 2,
+        "max_requirements": 60,
+        "exceeds": False,
+    }
+
+
+def test_scope_summary_at_the_cap_does_not_exceed():
+    result = filter_requirements(_ROWS, moscow=["must", "should"], excluded_statuses=["removed"])
+    assert scope_summary(result, 5)["exceeds"] is False
+
+
+def test_scope_summary_above_the_cap_exceeds():
+    result = filter_requirements(_ROWS, moscow=["must", "should"], excluded_statuses=["removed"])
+    assert scope_summary(result, 4)["exceeds"] is True
+
+
+def _config_with_cap(tmp_path, cap):
+    from settings import load_settings
+
+    settings = load_settings()
+    settings["scope"]["max_requirements"] = cap
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(settings))
+    return path
+
+
+def test_main_reports_scope_without_warning_under_the_cap(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_ROWS))
+    assert main([str(path)]) == 0
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)["scope"]["count"] == 5
+    assert "warning" not in captured.err
+
+
+def test_main_warns_when_scope_exceeds_the_cap(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_ROWS))
+    assert main([str(path), "--config", str(_config_with_cap(tmp_path, 4))]) == 0
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)["scope"]["exceeds"] is True
+    assert "warning: 5 requirements in scope, more than the 4 allowed" in captured.err
