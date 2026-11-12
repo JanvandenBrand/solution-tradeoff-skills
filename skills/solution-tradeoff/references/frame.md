@@ -30,7 +30,7 @@ If the host has a problem-validation skill, hand it the problem statement and us
 
 Otherwise, apply these checks and record the method as `built-in-checks`:
 
-1. **Is the problem stated without naming a solution?** "We have no data platform" names a solution; "Monthly reports arrive four days late" does not. If the statement names a solution, help the user restate it, then check again.
+1. **Is the problem stated without naming a solution?** "We have no data platform" names a solution; "Monthly reports arrive four days late" does not. This is a judgment in the conversation, not a rule a script can apply: read the statement with the user and ask whether it already presupposes one of the candidates. If it does, help the user restate it, then check again. Record the outcome in `validation.solution_free`. If the user keeps a statement that names a solution, record `false` and the reason in `validation.notes`. The run-record script cannot judge the text; it only warns when the recorded answer is `false`, as a reminder to raise it with the user.
 2. **Is the outcome named?** If not, ask which outcome the problem affects.
 3. **Is there evidence?** If there is none, label the problem a **hypothesis** and let the user choose:
    - proceed with the problem labeled a hypothesis, so every later step and the final record carry the label; or

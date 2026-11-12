@@ -175,3 +175,10 @@ def test_shared_context_template_has_no_place_for_preferences_or_points():
 def _template_sections() -> list[str]:
     text = (SKILL_DIR / "assets" / "shared-context-template.md").read_text(encoding="utf-8")
     return [line[3:] for line in text.splitlines() if line.startswith("## ")]
+
+
+def test_frame_reference_says_the_solution_check_is_a_judgment():
+    text = (SKILL_DIR / "references" / "frame.md").read_text(encoding="utf-8")
+    check = text.split("## Problem validation", 1)[1].split("\n## ", 1)[0]
+    assert "judgment in the conversation" in check
+    assert "only warns" in check

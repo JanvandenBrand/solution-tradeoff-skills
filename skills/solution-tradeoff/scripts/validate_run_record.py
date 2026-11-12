@@ -9,8 +9,10 @@ The run record (YAML) holds what one run established, step by step:
 The format is ``assets/run-record.schema.json``. Beyond the format, this
 script checks the rules the steps depend on: at least two candidates with
 unique identifiers, the status quo question asked, a problem without evidence
-labeled a hypothesis, a problem that names no solution and names its outcome,
-and the user's confirmation. Dates are parsed by ``dates.parse_date``,
+labeled a hypothesis, a problem that names its outcome, and the user's
+confirmation. Whether the problem statement names a solution is a judgment
+made with the user; the script cannot judge the text, so a recorded
+``solution_free: false`` gives a warning, not an error. Dates are parsed by ``dates.parse_date``,
 exactly as by ``verification_gate.py``, so a quoted date fails both. With
 ``--requirements``, the gather counts and budget must match the script
 outputs, so no number comes from prose.
@@ -20,7 +22,8 @@ Usage:
         [--requirements <filtered.json>] [--schema <schema file>]
         [--config <settings file>]
 
-Exit code 0 when valid, 1 otherwise; every error is listed on standard error.
+Exit code 0 when valid, 1 otherwise; every error and warning is listed on
+standard error. Warnings alone do not change the exit code.
 """
 
 import argparse
@@ -104,8 +107,6 @@ def _frame_errors(frame: dict[str, Any]) -> list[str]:
         errors.append("frame: the problem has evidence, so it must be labeled evidenced")
     if validation["evidence_present"] is not has_evidence:
         errors.append("frame: validation.evidence_present does not match the evidence listed")
-    if validation["solution_free"] is not True:
-        errors.append("frame: the problem statement names a solution; restate it without one")
     if validation["outcome_named"] is not True:
         errors.append("frame: the problem statement does not name the outcome it affects")
     return errors
@@ -177,6 +178,25 @@ def run_record_errors(
     return [*errors, *_gather_errors(data["gather"], filtered, settings)]
 
 
+def run_record_warnings(data: Any, section: str | None) -> list[str]:
+    """Return the warnings for a run record section: points to raise with the user.
+
+    Warnings never fail the record. Today there is one: a frame whose problem
+    statement was judged to name a solution.
+    """
+    frame = data.get("frame") if isinstance(data, dict) else None
+    if section not in ("frame", "gather") or not isinstance(frame, dict):
+        return []
+    validation = frame.get("validation")
+    if section == "frame" and isinstance(validation, dict):
+        if validation.get("solution_free") is False:
+            return [
+                "frame: the problem statement was judged to name a solution; "
+                "confirm with the user that this is intended"
+            ]
+    return []
+
+
 def main(argv: list[str] | None = None) -> int:
     """Command-line entry point. Returns the process exit code."""
     parser = argparse.ArgumentParser(description="Validate a run record section.")
@@ -198,9 +218,12 @@ def main(argv: list[str] | None = None) -> int:
             filtered = json.loads(args.requirements.read_text(encoding="utf-8"))
         budget_settings = load_settings(args.config)["budget"]
         errors = run_record_errors(data, args.section, filtered, budget_settings, args.schema)
+        warnings = run_record_warnings(data, args.section)
     except (OSError, ValueError, KeyError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
+    for warning in warnings:
+        print(f"warning: {warning}", file=sys.stderr)
     for err in errors:
         print(f"error: {err}", file=sys.stderr)
     if errors:

@@ -7,7 +7,7 @@ from datetime import date
 import pytest
 import yaml
 
-from validate_run_record import DEFAULT_SCHEMA, main, run_record_errors
+from validate_run_record import DEFAULT_SCHEMA, main, run_record_errors, run_record_warnings
 from verification_gate import gate
 
 
@@ -84,9 +84,34 @@ def test_frame_evidence_present_must_match_the_evidence(record):
     assert any("evidence_present" in e for e in _errors(record, "frame"))
 
 
-def test_frame_problem_must_not_name_a_solution(record):
+def test_frame_solution_in_statement_is_a_warning_not_an_error(record):
     record["frame"]["validation"]["solution_free"] = False
-    assert any("names a solution" in e for e in _errors(record, "frame"))
+    assert _errors(record, "frame") == []
+    assert run_record_warnings(record, "frame") == [
+        "frame: the problem statement was judged to name a solution; "
+        "confirm with the user that this is intended"
+    ]
+
+
+def test_valid_frame_has_no_warnings(record):
+    assert run_record_warnings(record, "frame") == []
+
+
+def test_warnings_need_a_frame_section(record):
+    del record["frame"]
+    assert run_record_warnings(record, "frame") == []
+    assert run_record_warnings(record, "gather") == []
+
+
+def test_main_warns_and_returns_0_when_statement_names_a_solution(tmp_path, record, capsys):
+    record["frame"]["validation"]["solution_free"] = False
+    path = tmp_path / "run.yaml"
+    path.write_text(yaml.safe_dump(record))
+    assert main([str(path), "--section", "frame"]) == 0
+    captured = capsys.readouterr()
+    assert "warning: frame: the problem statement was judged to name a solution" in captured.err
+    assert "error:" not in captured.err
+    assert "valid" in captured.out
 
 
 def test_frame_outcome_must_be_named(record):
@@ -113,7 +138,7 @@ def test_errors_are_collected_together(record):
     record["frame"]["status_quo_asked"] = False
     record["frame"]["validation"]["solution_free"] = False
     record["frame"]["candidates"][1]["id"] = "A"
-    assert len(_errors(record, "frame")) == 3
+    assert len(_errors(record, "frame")) == 2
 
 
 # Gather
@@ -202,6 +227,7 @@ def test_main_returns_1_and_lists_every_error(tmp_path, record, capsys):
     broken = copy.deepcopy(record)
     broken["frame"]["status_quo_asked"] = False
     broken["frame"]["validation"]["outcome_named"] = False
+    broken["frame"]["validation"]["solution_free"] = False
     path = tmp_path / "run.yaml"
     path.write_text(yaml.safe_dump(broken))
     assert main([str(path), "--section", "frame"]) == 1
