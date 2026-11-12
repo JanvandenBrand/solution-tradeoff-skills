@@ -48,6 +48,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | `load_requirements.py <file.xlsx>` | Read requirements and principles from the requirements spreadsheet |
 | `moscow_filter.py <rows.json> --decision <reference>` | Keep Must and Should requirements, filtered by status, domain and plateau; keep only drafts tagged with the current decision and report the rest |
 | `budget.py --count <n>` | Point budget each perspective distributes |
+| `check_budget.py <file or directory> --requirements <filtered.json>` | Check that every perspective response spends exactly the point budget |
 | `elimination.py <ratings.yaml> --requirements <filtered.json>` | Candidates that rate below the threshold on any Must requirement |
 | `validate_rating.py <ratings.yaml> --requirements <filtered.json>` | Check that every candidate is rated once on every in-scope requirement, on the configured scale |
 | `validate_response.py <file or directory>` | Check perspective responses against the output schema |
