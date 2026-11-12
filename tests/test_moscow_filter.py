@@ -5,7 +5,7 @@ import json
 import pytest
 import yaml
 
-from moscow_filter import filter_requirements, main, scope_summary
+from moscow_filter import filter_requirements, linked_principles, main, scope_summary
 
 _ROWS = [
     {"req_id": "R001", "domain": "Security", "moscow": "Must", "plateau": 1, "status": "Active"},
@@ -382,3 +382,57 @@ def test_main_warns_when_scope_exceeds_the_cap(tmp_path, capsys):
     captured = capsys.readouterr()
     assert json.loads(captured.out)["scope"]["exceeds"] is True
     assert "warning: 5 requirements in scope, more than the 4 allowed" in captured.err
+
+
+# Principles linked from in-scope requirements (apr_ref)
+
+_PRINCIPLES = [
+    {"principle_id": "P01", "description": "Reuse before buy"},
+    {"principle_id": "P02", "description": "Data stays in the region"},
+    {"principle_id": "P03", "description": "Open standards"},
+]
+
+
+def test_linked_principles_collects_each_reference_once_in_order():
+    rows = [
+        {"req_id": "R1", "apr_ref": "P02, p01"},
+        {"req_id": "R2", "apr_ref": "P02"},
+        {"req_id": "R3", "apr_ref": None},
+    ]
+    assert linked_principles(rows, _PRINCIPLES) == {
+        "linked": [
+            {"principle_id": "P01", "description": "Reuse before buy"},
+            {"principle_id": "P02", "description": "Data stays in the region"},
+        ],
+        "unknown": [],
+    }
+
+
+def test_linked_principles_reports_references_missing_from_the_principles_sheet():
+    rows = [{"req_id": "R1", "apr_ref": "P03; P09"}]
+    result = linked_principles(rows, _PRINCIPLES)
+    assert [p["principle_id"] for p in result["linked"]] == ["P03"]
+    assert result["unknown"] == ["P09"]
+
+
+def test_linked_principles_without_a_principles_sheet_lists_ids_only():
+    rows = [{"req_id": "R1", "apr_ref": "P03"}]
+    assert linked_principles(rows, None) == {
+        "linked": [{"principle_id": "P03", "description": None}],
+        "unknown": [],
+    }
+
+
+def test_main_lists_principles_linked_from_kept_requirements(tmp_path, capsys):
+    rows = [
+        {"req_id": "R1", "domain": "D", "moscow": "Must", "status": "Active", "apr_ref": "P01"},
+        {"req_id": "R2", "domain": "D", "moscow": "Could", "status": "Active", "apr_ref": "P02"},
+    ]
+    path = tmp_path / "loaded.json"
+    path.write_text(json.dumps({"requirements": rows, "principles": _PRINCIPLES}))
+    assert main([str(path)]) == 0
+    principles = json.loads(capsys.readouterr().out)["principles"]
+    assert principles == {
+        "linked": [{"principle_id": "P01", "description": "Reuse before buy"}],
+        "unknown": [],
+    }

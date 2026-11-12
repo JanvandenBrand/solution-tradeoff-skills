@@ -10,6 +10,11 @@ Usage:
 ``{"must": [...], "should": [...], "included_drafts": [...],
 "excluded_drafts": {"count": n, "req_ids": [...]}, "scope": {...}}`` as JSON.
 
+``principles`` lists the principles linked from the kept requirements through
+their ``apr_ref`` cells. When the input is ``load_requirements.py`` output,
+each one carries its description from the principles sheet, and references not
+found there are listed under ``unknown``.
+
 ``scope`` gives the in-scope counts and compares them with
 ``scope.max_requirements`` in the settings. Above that cap, a warning goes to
 standard error so the user can narrow the scope; the exit code stays 0.
@@ -64,11 +69,15 @@ def _above_plateau(row: Row, plateau: int | None) -> bool:
         return False
 
 
+def _references(cell: Any) -> list[str]:
+    return [ref for ref in _REF_SEPARATORS.split(str(cell or "").strip()) if ref]
+
+
 def is_tagged(row: Row, decision_ref: str | None) -> bool:
     """Return whether the row's ``ad_ref`` cell names ``decision_ref``."""
     if not decision_ref:
         return False
-    refs = {normalize(r) for r in _REF_SEPARATORS.split(str(row.get("ad_ref") or "")) if r}
+    refs = {normalize(r) for r in _references(row.get("ad_ref"))}
     return normalize(decision_ref) in refs
 
 
@@ -155,6 +164,39 @@ def filter_requirements(
     return FilterResult(must, should, sorted(excluded_drafts), sorted(included_drafts))
 
 
+def linked_principles(rows: Iterable[Row], principles: list[Row] | None) -> dict[str, Any]:
+    """Return the principles the ``apr_ref`` cells of ``rows`` link to.
+
+    Args:
+        rows: The in-scope requirement rows.
+        principles: The rows of the principles sheet, or None when the input
+            has no principles sheet.
+
+    Returns:
+        ``{"linked": [{"principle_id", "description"}], "unknown": [ids]}``,
+        each sorted by identifier. Matching ignores case. Without a principles
+        sheet, every reference is linked with a null description.
+    """
+    references: dict[str, str] = {}
+    for row in rows:
+        for ref in _references(row.get("apr_ref")):
+            references.setdefault(normalize(ref), ref)
+    sheet = {normalize(p.get("principle_id")): p for p in principles or []}
+    linked: list[dict[str, Any]] = []
+    unknown: list[str] = []
+    for key in sorted(references):
+        if principles is None:
+            linked.append({"principle_id": references[key], "description": None})
+        elif key in sheet:
+            found = sheet[key]
+            linked.append(
+                {"principle_id": found.get("principle_id"), "description": found.get("description")}
+            )
+        else:
+            unknown.append(references[key])
+    return {"linked": linked, "unknown": unknown}
+
+
 def scope_summary(result: FilterResult, max_requirements: int) -> dict[str, Any]:
     """Return the in-scope counts and whether they exceed ``max_requirements``."""
     count = len(result.must) + len(result.should)
@@ -191,6 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         max_requirements = int(settings["scope"]["max_requirements"])
         data = json.loads(args.rows.read_text(encoding="utf-8"))
         rows = data["requirements"] if isinstance(data, dict) else data
+        principles = data.get("principles") if isinstance(data, dict) else None
         result = filter_requirements(
             rows,
             moscow=args.moscow or cfg["default_moscow"],
@@ -213,6 +256,7 @@ def main(argv: list[str] | None = None) -> int:
             "req_ids": result.excluded_drafts,
         },
     }
+    output["principles"] = linked_principles(result.must + result.should, principles)
     output["scope"] = scope = scope_summary(result, max_requirements)
     print(json.dumps(output, default=str))
     if scope["exceeds"]:
