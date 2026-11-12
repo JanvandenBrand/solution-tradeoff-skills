@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "run-record",
+  "title": "Solution Trade-Off Run Record",
+  "description": "What one run of the analysis established, step by step. Every section is optional so a record can be checked as it grows; validate_run_record.py checks the section a step has just written.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "frame": {"$ref": "#/$defs/frame"},
+    "gather": {"$ref": "#/$defs/gather"},
+    "perspective_confirmations": {
+      "type": "array",
+      "description": "Read by verification_gate.py: one confirmation per selected perspective for this run.",
+      "items": {
+        "type": "object",
+        "required": ["id", "confirmed_by", "confirmed_at"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "confirmed_by": {"type": "string", "minLength": 1},
+          "confirmed_at": {"$ref": "#/$defs/date"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "text": {"type": "string", "minLength": 1},
+    "texts": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "frame": {
+      "type": "object",
+      "description": "Step 1: the decision, the validated problem and the candidates, as confirmed by the user.",
+      "additionalProperties": false,
+      "required": [
+        "decision_id", "decision_question", "problem", "candidates", "status_quo_asked",
+        "planning_horizon", "plateau", "governing_decisions", "constraints", "validation",
+        "confirmed_by", "confirmed_at"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/text", "description": "For example AD-012. The Gather step scopes drafts by it."},
+        "decision_question": {"$ref": "#/$defs/text"},
+        "problem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["statement", "outcome", "causal_claim", "evidence", "label"],
+          "properties": {
+            "statement": {"$ref": "#/$defs/text"},
+            "outcome": {"$ref": "#/$defs/text", "description": "The outcome the problem affects."},
+            "causal_claim": {"$ref": "#/$defs/text", "description": "How the problem leads to the outcome."},
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind", "source", "summary"],
+                "properties": {
+                  "kind": {"enum": ["observed", "measured", "stated"]},
+                  "source": {"$ref": "#/$defs/text"},
+                  "summary": {"$ref": "#/$defs/text"}
+                }
+              }
+            },
+            "label": {"enum": ["evidenced", "hypothesis"]}
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "description", "status_quo"],
+            "properties": {
+              "id": {"$ref": "#/$defs/text", "description": "A, B, C and so on."},
+              "name": {"$ref": "#/$defs/text"},
+              "description": {"$ref": "#/$defs/text", "description": "One line."},
+              "status_quo": {"type": "boolean"}
+            }
+          }
+        },
+        "status_quo_asked": {"type": "boolean", "description": "The user was asked whether the status quo is a candidate."},
+        "planning_horizon": {"$ref": "#/$defs/text"},
+        "plateau": {"type": "integer", "minimum": 0},
+        "governing_decisions": {"$ref": "#/$defs/texts"},
+        "constraints": {"$ref": "#/$defs/texts"},
+        "validation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "solution_free", "outcome_named", "evidence_present"],
+          "properties": {
+            "method": {"enum": ["host-skill", "built-in-checks"]},
+            "solution_free": {"type": "boolean"},
+            "outcome_named": {"type": "boolean"},
+            "evidence_present": {"type": "boolean"},
+            "notes": {"type": "string"}
+          }
+        },
+        "confirmed_by": {"$ref": "#/$defs/text"},
+        "confirmed_at": {"$ref": "#/$defs/date"}
+      }
+    },
+    "gather": {
+      "type": "object",
+      "description": "Step 2: what the candidates are judged against. Counts and the budget come from the scripts.",
+      "additionalProperties": false,
+      "required": [
+        "spreadsheet", "included_drafts", "scope", "outputs", "counts", "budget",
+        "principles", "background", "confirmed_by", "confirmed_at"
+      ],
+      "properties": {
+        "spreadsheet": {"$ref": "#/$defs/text", "description": "File name only, never a path."},
+        "included_drafts": {"$ref": "#/$defs/texts"},
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["domains", "plateau", "moscow"],
+          "properties": {
+            "domains": {"$ref": "#/$defs/texts", "description": "Empty means every domain."},
+            "plateau": {"type": ["integer", "null"], "minimum": 0},
+            "moscow": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}}
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requirements", "filtered", "budget"],
+          "description": "Script output files in the run's working folder.",
+          "properties": {
+            "requirements": {"$ref": "#/$defs/text"},
+            "filtered": {"$ref": "#/$defs/text"},
+            "budget": {"$ref": "#/$defs/text"}
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["must", "should", "excluded_drafts"],
+          "properties": {
+            "must": {"type": "integer", "minimum": 0},
+            "should": {"type": "integer", "minimum": 0},
+            "excluded_drafts": {"type": "integer", "minimum": 0}
+          }
+        },
+        "budget": {"type": "integer", "minimum": 0},
+        "principles": {"$ref": "#/$defs/texts"},
+        "background": {
+          "type": "array",
+          "description": "Summaries of the governing documents and context, never copies.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "summary"],
+            "properties": {
+              "title": {"$ref": "#/$defs/text"},
+              "summary": {"$ref": "#/$defs/text"}
+            }
+          }
+        },
+        "confirmed_by": {"$ref": "#/$defs/text"},
+        "confirmed_at": {"$ref": "#/$defs/date"}
+      }
+    }
+  }
+}

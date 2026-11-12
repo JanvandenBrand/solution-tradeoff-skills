@@ -1,0 +1,61 @@
+# Synthetic run record: every section the format defines so far.
+frame:
+  decision_id: AD-000
+  decision_question: Which platform hosts the sample data service?
+  problem:
+    statement: Monthly reports arrive late because the current data service cannot keep up.
+    outcome: Reports are available on the first working day of each month.
+    causal_claim: The service processes extracts one at a time, so peak volume delays the reports.
+    evidence:
+      - kind: measured
+        source: Sample service log
+        summary: Report runs finished on day 4 on average over the last six months.
+    label: evidenced
+  candidates:
+    - id: A
+      name: Status quo
+      description: Keep the current data service and tune it.
+      status_quo: true
+    - id: B
+      name: Managed platform
+      description: Move the service to a managed data platform.
+      status_quo: false
+  status_quo_asked: true
+  planning_horizon: Three years
+  plateau: 1
+  governing_decisions: [AD-001]
+  constraints:
+    - Data stays in the region.
+  validation:
+    method: built-in-checks
+    solution_free: true
+    outcome_named: true
+    evidence_present: true
+  confirmed_by: Test User
+  confirmed_at: 2026-11-12
+gather:
+  spreadsheet: requirements_sample.xlsx
+  included_drafts: []
+  scope:
+    domains: []
+    plateau: 1
+    moscow: [Must, Should]
+  outputs:
+    requirements: requirements.json
+    filtered: filtered.json
+    budget: budget.json
+  counts:
+    must: 2
+    should: 1
+    excluded_drafts: 0
+  budget: 15
+  principles: [P01]
+  background:
+    - title: Sample hosting guideline
+      summary: Hosting must stay within the region.
+  confirmed_by: Test User
+  confirmed_at: 2026-11-12
+perspective_confirmations:
+  - id: security
+    confirmed_by: Test User
+    confirmed_at: 2026-11-12

@@ -55,6 +55,7 @@ skills/solution-tradeoff/
     ├── config.yaml           # thresholds, budget and spreadsheet column names
     ├── decision-record-template.md
     ├── rating.schema.json
+    ├── run-record.schema.json
     └── tradeoff-output.schema.json
 ```
 
@@ -73,6 +74,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | `validate_rating.py <ratings.yaml> --requirements <filtered.json>` | Check that every candidate is rated once on every in-scope requirement, on the configured scale |
 | `validate_response.py <file or directory>` | Check perspective responses against the output schema |
 | `validate_perspective.py <file or directory>` | Check perspective files against the perspective format |
+| `validate_run_record.py <run.yaml> --section frame\|gather [--requirements <filtered.json>]` | Check a section of the run record: the frame rules, and gather counts and budget against the script outputs |
 | `verification_gate.py --perspective <id> --library <folder> --run-record <run.yaml>` | Block prioritization unless every selected perspective is verified and confirmed for this run |
 
 ### Dependencies

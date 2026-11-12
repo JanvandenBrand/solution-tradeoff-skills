@@ -11,7 +11,8 @@ Usage:
     python verification_gate.py --perspective <id> [--perspective <id> ...]
         [--library <folder> ...] --run-record <run.yaml>
 
-The run record holds::
+The gate reads only this section of the run record (the full format is
+``assets/run-record.schema.json``)::
 
     perspective_confirmations:
       - id: security
