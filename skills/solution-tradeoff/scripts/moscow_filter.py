@@ -87,9 +87,20 @@ def filter_requirements(
         The Must and Should rows, each sorted by ``req_id``, and the sorted
         identifiers of drafts that passed every other filter but were not
         tagged with ``decision_ref``.
+
+    Raises:
+        ValueError: If a requested domain does not occur in ``rows``. The
+            message lists the domains present.
     """
     keep_moscow = {_norm(m) for m in moscow}
     keep_domains = {_norm(d) for d in domains}
+    present = sorted({str(r.get("domain")).strip() for r in rows if _norm(r.get("domain"))})
+    unknown = [d for d in domains if _norm(d) not in {_norm(p) for p in present}]
+    if unknown:
+        raise ValueError(
+            f"Unknown domain(s): {', '.join(unknown)}. "
+            f"Domains present in the requirements: {', '.join(present) or 'none'}."
+        )
     excluded = {_norm(s) for s in excluded_statuses}
     drafts = {_norm(s) for s in draft_statuses}
 

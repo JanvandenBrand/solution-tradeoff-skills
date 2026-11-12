@@ -2,6 +2,8 @@
 
 import json
 
+import pytest
+
 from moscow_filter import filter_requirements, main
 
 _ROWS = [
@@ -242,3 +244,25 @@ def test_main_reports_drafts_for_the_given_decision(tmp_path, capsys):
     out = json.loads(capsys.readouterr().out)
     assert [r["req_id"] for r in out["must"]] == ["A1", "D1", "D4"]
     assert out["excluded_drafts"] == {"count": 2, "req_ids": ["D2", "D3"]}
+
+
+# Unknown domains
+
+
+def test_filter_requirements_raises_value_error_when_domain_unknown():
+    with pytest.raises(ValueError) as exc:
+        _run(domains=["Security", "Finances"])
+    message = str(exc.value)
+    assert "Finances" in message
+    assert "Clinical, Security" in message
+
+
+def test_filter_requirements_domain_check_ignores_case():
+    assert _run(domains=["security"])[0]
+
+
+def test_main_returns_1_when_domain_unknown(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_ROWS))
+    assert main([str(path), "--domain", "Finances"]) == 1
+    assert "Clinical, Security" in capsys.readouterr().err
