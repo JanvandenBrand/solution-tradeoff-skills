@@ -116,6 +116,21 @@ def _check_body(body: str) -> list[str]:
     return errors
 
 
+def read_header(path: Path) -> dict[str, Any] | None:
+    """Return the parsed YAML header of a perspective file, or None if it has none.
+
+    Use ``validate_perspective`` first; this does not report problems.
+    """
+    parts = _split(path.read_text(encoding="utf-8"))
+    if parts is None:
+        return None
+    try:
+        header = yaml.safe_load(parts[0])
+    except yaml.YAMLError:
+        return None
+    return header if isinstance(header, dict) else None
+
+
 def validate_perspective(path: Path) -> list[str]:
     """Check one perspective file and return every problem found.
 
