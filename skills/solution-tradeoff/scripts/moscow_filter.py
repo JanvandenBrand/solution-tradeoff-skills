@@ -37,7 +37,8 @@ class FilterResult(NamedTuple):
     excluded_drafts: list[str]
 
 
-def _norm(value: Any) -> str:
+def normalize(value: Any) -> str:
+    """Return ``value`` as a trimmed, lowercase string (empty for None)."""
     return str(value or "").strip().lower()
 
 
@@ -53,11 +54,12 @@ def _above_plateau(row: Row, plateau: int | None) -> bool:
         return False
 
 
-def _tagged(row: Row, decision_ref: str | None) -> bool:
+def is_tagged(row: Row, decision_ref: str | None) -> bool:
+    """Return whether the row's ``ad_ref`` cell names ``decision_ref``."""
     if not decision_ref:
         return False
-    refs = {_norm(r) for r in _REF_SEPARATORS.split(str(row.get("ad_ref") or "")) if r}
-    return _norm(decision_ref) in refs
+    refs = {normalize(r) for r in _REF_SEPARATORS.split(str(row.get("ad_ref") or "")) if r}
+    return normalize(decision_ref) in refs
 
 
 def filter_requirements(
@@ -92,36 +94,36 @@ def filter_requirements(
         ValueError: If a requested domain does not occur in ``rows``. The
             message lists the domains present.
     """
-    keep_moscow = {_norm(m) for m in moscow}
-    keep_domains = {_norm(d) for d in domains}
-    present = sorted({str(r.get("domain")).strip() for r in rows if _norm(r.get("domain"))})
-    unknown = [d for d in domains if _norm(d) not in {_norm(p) for p in present}]
+    keep_moscow = {normalize(m) for m in moscow}
+    keep_domains = {normalize(d) for d in domains}
+    present = sorted({str(r.get("domain")).strip() for r in rows if normalize(r.get("domain"))})
+    unknown = [d for d in domains if normalize(d) not in {normalize(p) for p in present}]
     if unknown:
         raise ValueError(
             f"Unknown domain(s): {', '.join(unknown)}. "
             f"Domains present in the requirements: {', '.join(present) or 'none'}."
         )
-    excluded = {_norm(s) for s in excluded_statuses}
-    drafts = {_norm(s) for s in draft_statuses}
+    excluded = {normalize(s) for s in excluded_statuses}
+    drafts = {normalize(s) for s in draft_statuses}
 
     in_scope = [
         row
         for row in rows
-        if _norm(row.get("status")) not in excluded
-        and (not keep_domains or _norm(row.get("domain")) in keep_domains)
-        and _norm(row.get("moscow")) in keep_moscow
+        if normalize(row.get("status")) not in excluded
+        and (not keep_domains or normalize(row.get("domain")) in keep_domains)
+        and normalize(row.get("moscow")) in keep_moscow
         and not _above_plateau(row, plateau)
     ]
     kept: list[Row] = []
     excluded_drafts: list[str] = []
     for row in in_scope:
-        if _norm(row.get("status")) in drafts and not _tagged(row, decision_ref):
+        if normalize(row.get("status")) in drafts and not is_tagged(row, decision_ref):
             excluded_drafts.append(str(row.get("req_id") or ""))
         else:
             kept.append(row)
     kept.sort(key=lambda r: str(r.get("req_id") or ""))
-    must = [r for r in kept if _norm(r.get("moscow")) == "must"]
-    should = [r for r in kept if _norm(r.get("moscow")) == "should"]
+    must = [r for r in kept if normalize(r.get("moscow")) == "must"]
+    should = [r for r in kept if normalize(r.get("moscow")) == "should"]
     return FilterResult(must, should, sorted(excluded_drafts))
 
 

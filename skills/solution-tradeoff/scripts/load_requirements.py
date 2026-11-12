@@ -72,6 +72,33 @@ def _read_rows(
     return rows
 
 
+def _open(path: Path) -> Any:
+    if not path.exists():
+        raise FileNotFoundError(f"Requirements file not found: {path}")
+    try:
+        return load_workbook(path, read_only=True, data_only=True)
+    except (InvalidFileException, KeyError, OSError) as exc:
+        raise ValueError(f"Cannot read '{path}' as an .xlsx workbook: {exc}") from exc
+
+
+def requirement_headers(path: Path, cfg: dict[str, Any]) -> list[str]:
+    """Return the column headers of the requirements sheet, in sheet order.
+
+    Args:
+        path: The .xlsx file.
+        cfg: The ``spreadsheet`` section of the settings file.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the file is not a readable workbook or the sheet is missing.
+    """
+    workbook = _open(path)
+    try:
+        return list(_headers(_sheet(workbook, cfg["requirements_sheet"], "requirements_sheet")))
+    finally:
+        workbook.close()
+
+
 def load_requirements(path: Path, cfg: dict[str, Any]) -> tuple[list[Row], list[Row]]:
     """Read requirement and principle rows from a spreadsheet.
 
@@ -88,12 +115,7 @@ def load_requirements(path: Path, cfg: dict[str, Any]) -> tuple[list[Row], list[
         ValueError: If the file is not a readable workbook, or a sheet or
             required column is missing.
     """
-    if not path.exists():
-        raise FileNotFoundError(f"Requirements file not found: {path}")
-    try:
-        workbook = load_workbook(path, read_only=True, data_only=True)
-    except (InvalidFileException, KeyError, OSError) as exc:
-        raise ValueError(f"Cannot read '{path}' as an .xlsx workbook: {exc}") from exc
+    workbook = _open(path)
     try:
         optional = set(cfg.get("optional_columns") or [])
         requirements = _read_rows(

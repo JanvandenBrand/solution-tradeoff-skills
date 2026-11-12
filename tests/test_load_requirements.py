@@ -182,3 +182,12 @@ def test_main_prints_rows_as_json(fixtures, capsys):
 def test_main_returns_1_when_file_missing(tmp_path, capsys):
     assert main([str(tmp_path / "missing.xlsx")]) == 1
     assert "missing.xlsx" in capsys.readouterr().err
+
+
+# Headers
+
+
+def test_requirement_headers_lists_the_requirements_sheet_headers(fixtures):
+    from load_requirements import requirement_headers
+
+    assert requirement_headers(fixtures / "requirements_sample.xlsx", _CFG) == _HEADERS

@@ -23,6 +23,22 @@ This skill replaces the command-line tool `solution-tradeoff-tool`.
 |-------|------------|
 | solution-tradeoff | Comparing candidate solutions and preparing a trade-off analysis for an architecture decision |
 
+## Before your first analysis
+
+The skill reads your requirements from a spreadsheet and your verified perspectives from your own library. Prepare both once:
+
+1. **Requirements spreadsheet (.xlsx)** with a requirements sheet and a principles sheet. The sheet names and column headers are set under `spreadsheet` in `skills/solution-tradeoff/assets/config.yaml`; the defaults match `tests/fixtures/requirements_sample.xlsx`.
+2. **Status values.** Set `filter.excluded_statuses` and `filter.draft_statuses` to the values your spreadsheet uses. The defaults exclude "Removed" and treat "Draft" as a draft.
+3. **Decision-reference column.** Draft requirements count only when tagged with the current decision in the `AD Ref` column (several references may be separated by commas or semicolons). Without that column the skill cannot scope drafts; it reports this and offers to list the drafts for you to choose from. Check with:
+
+   ```bash
+   python skills/solution-tradeoff/scripts/check_prerequisites.py requirements.xlsx --decision AD-012
+   ```
+
+4. **Perspective library.** The shipped perspectives are unverified defaults. Keep your own verified copies outside the skill: as claude.ai project files, or in a folder of your Claude Code workspace. Your copy wins over a shipped default with the same `id`. Each file follows `references/perspective-format.md`.
+
+To use settings other than the defaults, copy `config.yaml`, change it, and pass `--config <file>` to the scripts.
+
 ## What is in the skill
 
 ```
@@ -45,6 +61,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 
 | Script | Purpose |
 |--------|---------|
+| `check_prerequisites.py <file.xlsx> --decision <reference>` | Check that the spreadsheet has the decision-reference column; list the drafts when it does not |
 | `load_requirements.py <file.xlsx>` | Read requirements and principles from the requirements spreadsheet |
 | `moscow_filter.py <rows.json> --decision <reference>` | Keep Must and Should requirements, filtered by status, domain and plateau; keep only drafts tagged with the current decision and report the rest |
 | `budget.py --count <n>` | Point budget each perspective distributes |
