@@ -7,7 +7,7 @@ from pathlib import Path
 import openpyxl
 import pytest
 
-from load_requirements import load_requirements, main
+from load_requirements import count_requirements, load_requirements, main
 from settings import load_settings
 
 _CFG = load_settings()["spreadsheet"]
@@ -191,3 +191,41 @@ def test_requirement_headers_lists_the_requirements_sheet_headers(fixtures):
     from load_requirements import requirement_headers
 
     assert requirement_headers(fixtures / "requirements_sample.xlsx", _CFG) == _HEADERS
+
+
+# Counts
+
+
+def test_count_requirements_per_domain_moscow_plateau_and_status():
+    rows = [
+        {"domain": "Security", "moscow": "Must", "plateau": 1, "status": "Active"},
+        {"domain": "Security", "moscow": "Should", "plateau": 2, "status": "Draft"},
+        {"domain": "Clinical", "moscow": "Must", "plateau": None, "status": ""},
+    ]
+    assert count_requirements(rows) == {
+        "total": 3,
+        "domain": {"Clinical": 1, "Security": 2},
+        "moscow": {"Must": 2, "Should": 1},
+        "plateau": {"(none)": 1, "1": 1, "2": 1},
+        "status": {"(none)": 1, "Active": 1, "Draft": 1},
+    }
+
+
+def test_count_requirements_of_no_rows():
+    assert count_requirements([]) == {
+        "total": 0,
+        "domain": {},
+        "moscow": {},
+        "plateau": {},
+        "status": {},
+    }
+
+
+def test_main_prints_counts(fixtures, capsys):
+    assert main([str(fixtures / "requirements_sample.xlsx")]) == 0
+    counts = json.loads(capsys.readouterr().out)["counts"]
+    assert counts["total"] == 12
+    assert counts["moscow"] == {"Could": 1, "Must": 6, "Should": 5}
+    assert counts["plateau"] == {"1": 10, "2": 2}
+    assert counts["status"] == {"Active": 11, "Deprecated": 1}
+    assert counts["domain"]["Technology"] == 6

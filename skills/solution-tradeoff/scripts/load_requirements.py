@@ -6,14 +6,17 @@ from the ``spreadsheet`` section of the settings file, never from code.
 Usage:
     python load_requirements.py <requirements.xlsx> [--config <settings file>]
 
-Prints ``{"requirements": [...], "principles": [...]}`` as JSON, each row keyed
-by the logical column names from the settings file.
+Prints ``{"requirements": [...], "principles": [...], "counts": {...}}`` as JSON,
+each row keyed by the logical column names from the settings file. ``counts``
+holds the number of requirements in total and per domain, MoSCoW level,
+plateau and status, so no count has to be worked out by hand.
 """
 
 import argparse
 import json
 import sys
 import warnings
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -135,6 +138,28 @@ def load_requirements(path: Path, cfg: dict[str, Any]) -> tuple[list[Row], list[
     return requirements, principles
 
 
+_COUNTED = ("domain", "moscow", "plateau", "status")
+_EMPTY = "(none)"
+
+
+def count_requirements(rows: list[Row]) -> dict[str, Any]:
+    """Count requirement rows in total and per domain, MoSCoW level, plateau and status.
+
+    Empty cells are counted under ``"(none)"``. Values are kept as written
+    (no case folding) and sorted, so the counts match the spreadsheet.
+    """
+    counts: dict[str, Any] = {"total": len(rows)}
+    for column in _COUNTED:
+        tally = Counter(_label(r.get(column)) for r in rows)
+        counts[column] = dict(sorted(tally.items()))
+    return counts
+
+
+def _label(value: Any) -> str:
+    text = "" if value is None else str(value).strip()
+    return text or _EMPTY
+
+
 def main(argv: list[str] | None = None) -> int:
     """Command-line entry point. Returns the process exit code."""
     parser = argparse.ArgumentParser(description="Load requirements from a spreadsheet.")
@@ -147,7 +172,12 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError, KeyError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-    print(json.dumps({"requirements": requirements, "principles": principles}, default=str))
+    output = {
+        "requirements": requirements,
+        "principles": principles,
+        "counts": count_requirements(requirements),
+    }
+    print(json.dumps(output, default=str))
     return 0
 
 

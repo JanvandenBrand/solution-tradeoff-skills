@@ -65,7 +65,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | Script | Purpose |
 |--------|---------|
 | `check_prerequisites.py <file.xlsx> --decision <reference>` | Check that the spreadsheet has the decision-reference column; list the drafts when it does not |
-| `load_requirements.py <file.xlsx>` | Read requirements and principles from the requirements spreadsheet |
+| `load_requirements.py <file.xlsx>` | Read requirements and principles from the requirements spreadsheet, with counts per domain, MoSCoW level, plateau and status |
 | `moscow_filter.py <rows.json> --decision <reference> [--include-draft <id> ...]` | Keep Must and Should requirements, filtered by status, domain and plateau; keep drafts tagged with the current decision or chosen by the user, and report the rest |
 | `budget.py --count <n>` | Point budget each perspective distributes |
 | `check_budget.py <file or directory> --requirements <filtered.json>` | Check that every perspective response spends exactly the point budget |
