@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    # GitHub runs an explicit bash as "bash --noprofile --norc -eo pipefail".
+    shell: bash
+
 jobs:
   check:
     runs-on: ubuntu-latest

@@ -65,3 +65,10 @@ def test_dependabot_updates_github_actions() -> None:
     ecosystems = {u["package-ecosystem"]: u for u in config["updates"]}
     assert ecosystems["github-actions"]["directory"] == "/"
     assert ecosystems["github-actions"]["schedule"]["interval"]
+
+
+@pytest.mark.parametrize("path", WORKFLOWS, ids=lambda p: p.name)
+def test_run_steps_use_bash_with_pipefail(path: Path) -> None:
+    # On GitHub, an explicit "shell: bash" runs "bash --noprofile --norc -eo pipefail".
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert data["defaults"]["run"]["shell"] == "bash"

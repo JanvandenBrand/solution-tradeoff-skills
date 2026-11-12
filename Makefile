@@ -1,5 +1,8 @@
 .PHONY: check lint test package
 
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
+
 POETRY ?= poetry
 SCRIPTS := skills/solution-tradeoff/scripts
 
