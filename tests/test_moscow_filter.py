@@ -143,7 +143,8 @@ def test_main_filters_json_file(tmp_path, capsys):
     assert main([str(rows), "--domain", "Security"]) == 0
     out = json.loads(capsys.readouterr().out)
     assert [r["req_id"] for r in out["must"]] == ["R001", "R002"]
-    assert out["should"] == []
+    # Default settings exclude only "removed", so the deprecated R005 stays.
+    assert [r["req_id"] for r in out["should"]] == ["R005"]
 
 
 def test_main_applies_moscow_and_plateau_options(tmp_path, capsys):
@@ -164,3 +165,17 @@ def test_main_accepts_loader_output_shape(tmp_path, capsys):
 def test_main_returns_1_when_file_missing(tmp_path, capsys):
     assert main([str(tmp_path / "missing.json")]) == 1
     assert "missing.json" in capsys.readouterr().err
+
+
+# Default status settings (decision 8)
+
+
+def test_main_excludes_removed_requirements_by_default(tmp_path, capsys):
+    rows = [
+        {"req_id": "R1", "domain": "D", "moscow": "Must", "plateau": 1, "status": "Removed"},
+        {"req_id": "R2", "domain": "D", "moscow": "Must", "plateau": 1, "status": "Deprecated"},
+    ]
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(rows))
+    assert main([str(path)]) == 0
+    assert [r["req_id"] for r in json.loads(capsys.readouterr().out)["must"]] == ["R2"]

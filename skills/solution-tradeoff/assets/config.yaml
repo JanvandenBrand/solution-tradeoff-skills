@@ -27,7 +27,8 @@ spreadsheet:
 
 filter:
   # Requirements with these statuses never enter the analysis (case-insensitive).
-  excluded_statuses: ["deprecated", "rejected"]
+  # Use the status values of your own spreadsheet.
+  excluded_statuses: ["removed"]
   # MoSCoW levels kept when the decision does not say otherwise.
   default_moscow: ["must", "should"]
 
