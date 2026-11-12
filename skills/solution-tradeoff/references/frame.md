@@ -48,7 +48,7 @@ Any later step that finds the problem, the outcome or the criteria wrong returns
 
 ## Output
 
-The `frame` section of the run record (`run.yaml` in the run's working folder), in the format of `assets/run-record.schema.json`:
+The `frame` section of the run record (`run/run.yaml`, where `run/` stands for the run's working folder), in the format of `assets/run-record.schema.json`:
 
 ```yaml
 frame:
@@ -91,7 +91,7 @@ frame:
 If the host can run scripts, check the section before moving on and fix every error it reports:
 
 ```bash
-python scripts/validate_run_record.py run.yaml --section frame
+python scripts/validate_run_record.py run/run.yaml --section frame
 ```
 
 If the host cannot run scripts, check the same rules by hand and tell the user the check was not run by the script.

@@ -13,7 +13,7 @@ Establish the decision and validate the problem, one question at a time, then as
 
 ## 2. Gather
 
-TODO: load and filter the requirements and principles, and collect background knowledge. See [references/gather.md](references/gather.md).
+Establish what the candidates are judged against: check the spreadsheet prerequisites, load and filter the requirements, agree the scope, calculate the point budget, and confirm the principles and background. Every count, filter and budget comes from the scripts, never from prose. Follow [references/gather.md](references/gather.md); its outputs are the `gather` section of the run record and the shared context block, the only input to the Prioritize and Rate steps.
 
 ## 3. Propose perspectives
 

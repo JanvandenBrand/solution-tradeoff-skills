@@ -59,7 +59,10 @@ def test_record_step_points_at_the_template():
 
 # Steps whose instructions are written
 
-WRITTEN_STEPS = {1: ("Frame", "references/frame.md")}
+WRITTEN_STEPS = {
+    1: ("Frame", "references/frame.md"),
+    2: ("Gather", "references/gather.md"),
+}
 HOST_TOOL_NAMES = [
     "AskUserQuestion",
     "TodoWrite",
@@ -117,3 +120,58 @@ def test_skill_text_names_no_host_tools():
         text = path.read_text(encoding="utf-8")
         for name in HOST_TOOL_NAMES:
             assert name not in text, f"{path.name} names the host tool '{name}'"
+
+
+def test_gather_reference_has_its_sections():
+    assert _reference_sections("references/gather.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_gather_reference_names_the_script_for_every_count():
+    text = (SKILL_DIR / "references" / "gather.md").read_text(encoding="utf-8")
+    for command in [
+        "check_prerequisites.py",
+        "load_requirements.py",
+        "moscow_filter.py",
+        "--decision",
+        "--include-draft",
+        "budget.py",
+        "validate_run_record.py",
+        "--section gather",
+        "scope.max_requirements",
+        "assets/shared-context-template.md",
+    ]:
+        assert command in text, command
+
+
+def test_gather_sequence_has_ten_steps():
+    text = (SKILL_DIR / "references" / "gather.md").read_text(encoding="utf-8")
+    sequence = text.split("## Sequence", 1)[1].split("\n## ", 1)[0]
+    numbered = [line.split(".", 1)[0] for line in sequence.splitlines() if line[:1].isdigit()]
+    assert numbered == [str(i) for i in range(1, 11)]
+
+
+SHARED_CONTEXT_SECTIONS = [
+    "Decision",
+    "Problem",
+    "Candidates",
+    "Planning horizon and plateau",
+    "Constraints",
+    "In-scope requirements",
+    "Principles",
+    "Background",
+]
+
+
+def test_shared_context_template_has_its_sections_in_order():
+    assert _template_sections() == SHARED_CONTEXT_SECTIONS
+
+
+def test_shared_context_template_has_no_place_for_preferences_or_points():
+    for section in _template_sections():
+        for word in ("perspective", "preference", "point", "priorit", "weight", "rating"):
+            assert word not in section.lower(), section
+
+
+def _template_sections() -> list[str]:
+    text = (SKILL_DIR / "assets" / "shared-context-template.md").read_text(encoding="utf-8")
+    return [line[3:] for line in text.splitlines() if line.startswith("## ")]

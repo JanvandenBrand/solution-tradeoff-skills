@@ -48,6 +48,7 @@ skills/solution-tradeoff/
 ├── SKILL.md                  # the steps the assistant follows
 ├── references/
 │   ├── frame.md              # step 1: frame the decision and validate the problem
+│   ├── gather.md             # step 2: what the candidates are judged against
 │   ├── perspective-format.md # format of a perspective file
 │   ├── perspectives/         # shipped default perspectives (unverified)
 │   └── skill-feedback.md     # how to report a problem with the skill
@@ -57,6 +58,7 @@ skills/solution-tradeoff/
     ├── decision-record-template.md
     ├── rating.schema.json
     ├── run-record.schema.json
+    ├── shared-context-template.md # the only input to the Prioritize and Rate steps
     └── tradeoff-output.schema.json
 ```
 
