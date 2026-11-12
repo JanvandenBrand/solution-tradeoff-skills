@@ -47,6 +47,13 @@ def test_default_token_is_read_only(path: Path) -> None:
 
 
 @pytest.mark.parametrize("path", WORKFLOWS, ids=lambda p: p.name)
+def test_checkout_does_not_persist_credentials(path: Path) -> None:
+    checkouts = [s for s in _steps(path) if str(s.get("uses", "")).startswith("actions/checkout@")]
+    for step in checkouts:
+        assert step.get("with", {}).get("persist-credentials") is False  # type: ignore[union-attr]
+
+
+@pytest.mark.parametrize("path", WORKFLOWS, ids=lambda p: p.name)
 def test_workflow_references_no_secrets(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     assert not re.search(r"\bsecrets\.|GITHUB_TOKEN|github\.token", text)
