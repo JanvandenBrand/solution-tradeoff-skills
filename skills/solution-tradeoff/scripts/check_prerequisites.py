@@ -3,7 +3,8 @@
 Draft requirements are scoped by the decision-reference column (``ad_ref`` in
 the settings, "AD Ref" by default). Without that column, drafts cannot be
 scoped: the check fails and lists the drafts so the user can choose which ones
-belong to the current decision.
+belong to the current decision. Pass each chosen draft to ``moscow_filter.py``
+with ``--include-draft``.
 
 Usage:
     python check_prerequisites.py <requirements.xlsx> [--decision <reference>]

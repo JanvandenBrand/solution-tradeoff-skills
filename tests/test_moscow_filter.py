@@ -266,3 +266,66 @@ def test_main_returns_1_when_domain_unknown(tmp_path, capsys):
     path.write_text(json.dumps(_ROWS))
     assert main([str(path), "--domain", "Finances"]) == 1
     assert "Clinical, Security" in capsys.readouterr().err
+
+
+# Drafts chosen by the user when the decision-reference column is missing (decision 7)
+
+
+def _chosen(include, decision_ref=None):
+    return filter_requirements(
+        _DRAFTS,
+        moscow=["must", "should"],
+        excluded_statuses=["removed"],
+        draft_statuses=["draft"],
+        decision_ref=decision_ref,
+        include_drafts=include,
+    )
+
+
+def test_filter_requirements_keeps_drafts_the_user_chose():
+    result = _chosen(["D3", "d2"])
+    assert [r["req_id"] for r in result.must] == ["A1", "D3"]
+    assert [r["req_id"] for r in result.should] == ["D2"]
+    assert result.included_drafts == ["D2", "D3"]
+    assert result.excluded_drafts == ["D1", "D4"]
+
+
+def test_filter_requirements_combines_chosen_and_tagged_drafts():
+    result = _chosen(["D3"], decision_ref="AD-012")
+    assert [r["req_id"] for r in result.must] == ["A1", "D1", "D3", "D4"]
+    assert result.included_drafts == ["D3"]
+    assert result.excluded_drafts == ["D2"]
+
+
+def test_filter_requirements_chosen_draft_out_of_scope_stays_out():
+    result = _chosen(["D5"])
+    assert "D5" not in {r["req_id"] for r in result.must + result.should}
+    assert result.included_drafts == []
+
+
+def test_filter_requirements_rejects_chosen_ids_that_are_not_drafts():
+    with pytest.raises(ValueError) as exc:
+        _chosen(["A1", "NOPE"])
+    message = str(exc.value)
+    assert "A1" in message and "NOPE" in message
+
+
+def test_filter_requirements_included_drafts_defaults_to_empty():
+    assert _drafts("AD-012").included_drafts == []
+
+
+def test_main_includes_chosen_drafts(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_DRAFTS))
+    assert main([str(path), "--include-draft", "D3", "--include-draft", "D2"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert [r["req_id"] for r in out["must"]] == ["A1", "D3"]
+    assert out["included_drafts"] == ["D2", "D3"]
+    assert out["excluded_drafts"] == {"count": 2, "req_ids": ["D1", "D4"]}
+
+
+def test_main_returns_1_when_chosen_id_is_not_a_draft(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_DRAFTS))
+    assert main([str(path), "--include-draft", "A1"]) == 1
+    assert "A1" in capsys.readouterr().err

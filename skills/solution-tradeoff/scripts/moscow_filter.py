@@ -3,16 +3,21 @@
 Usage:
     python moscow_filter.py <rows.json> [--moscow Must --moscow Should]
         [--domain <name> ...] [--plateau <n>] [--decision <reference>]
-        [--config <settings file>]
+        [--include-draft <req_id> ...] [--config <settings file>]
 
 ``rows.json`` is either a list of requirement rows or the output of
 ``load_requirements.py`` (an object with a ``requirements`` list). Prints
-``{"must": [...], "should": [...], "excluded_drafts": {"count": n, "req_ids": [...]}}``
-as JSON.
+``{"must": [...], "should": [...], "included_drafts": [...],
+"excluded_drafts": {"count": n, "req_ids": [...]}}`` as JSON.
 
 Draft requirements are kept only when their ``ad_ref`` cell names the current
 decision (``--decision``). Drafts that would otherwise be in scope but are not
 tagged with the decision are reported as excluded drafts.
+
+When the spreadsheet has no decision-reference column (``check_prerequisites.py``
+reports this), the user chooses the drafts for the current decision and each
+one is passed with ``--include-draft``. Chosen drafts are kept whatever their
+``ad_ref`` cell says and are listed under ``included_drafts``.
 """
 
 import argparse
@@ -30,11 +35,12 @@ _REF_SEPARATORS = re.compile(r"[,;\s]+")
 
 
 class FilterResult(NamedTuple):
-    """Rows kept by the filter, and the drafts left out for lack of a decision tag."""
+    """Rows kept by the filter, the drafts the user chose, and the drafts left out."""
 
     must: list[Row]
     should: list[Row]
     excluded_drafts: list[str]
+    included_drafts: list[str]
 
 
 def normalize(value: Any) -> str:
@@ -70,6 +76,7 @@ def filter_requirements(
     plateau: int | None = None,
     draft_statuses: Iterable[str] = (),
     decision_ref: str | None = None,
+    include_drafts: Iterable[str] = (),
 ) -> FilterResult:
     """Split requirement rows into Must and Should lists.
 
@@ -84,15 +91,19 @@ def filter_requirements(
         decision_ref: The current decision reference. A draft is kept only
             when its ``ad_ref`` cell contains this reference; without it, every
             draft is excluded.
+        include_drafts: Identifiers of drafts the user chose for this
+            decision (case-insensitive); they are kept whether tagged or not.
 
     Returns:
-        The Must and Should rows, each sorted by ``req_id``, and the sorted
-        identifiers of drafts that passed every other filter but were not
-        tagged with ``decision_ref``.
+        The Must and Should rows, each sorted by ``req_id``; the sorted
+        identifiers of drafts that passed every other filter but were neither
+        tagged with ``decision_ref`` nor chosen; and the sorted identifiers of
+        chosen drafts that were kept.
 
     Raises:
-        ValueError: If a requested domain does not occur in ``rows``. The
-            message lists the domains present.
+        ValueError: If a requested domain does not occur in ``rows``, or a
+            chosen identifier is not a draft in ``rows``. The message lists
+            the domains present or the identifiers that are not drafts.
     """
     keep_moscow = {normalize(m) for m in moscow}
     keep_domains = {normalize(d) for d in domains}
@@ -105,6 +116,14 @@ def filter_requirements(
         )
     excluded = {normalize(s) for s in excluded_statuses}
     drafts = {normalize(s) for s in draft_statuses}
+    chosen = {normalize(i) for i in include_drafts}
+    draft_ids = {normalize(r.get("req_id")) for r in rows if normalize(r.get("status")) in drafts}
+    not_drafts = [i for i in include_drafts if normalize(i) not in draft_ids]
+    if not_drafts:
+        raise ValueError(
+            f"Not a draft requirement: {', '.join(not_drafts)}. "
+            "Only draft requirements can be passed with --include-draft."
+        )
 
     in_scope = [
         row
@@ -116,15 +135,20 @@ def filter_requirements(
     ]
     kept: list[Row] = []
     excluded_drafts: list[str] = []
+    included_drafts: list[str] = []
     for row in in_scope:
-        if normalize(row.get("status")) in drafts and not is_tagged(row, decision_ref):
-            excluded_drafts.append(str(row.get("req_id") or ""))
-        else:
+        req_id = str(row.get("req_id") or "")
+        if normalize(row.get("status")) not in drafts or is_tagged(row, decision_ref):
             kept.append(row)
+        elif normalize(req_id) in chosen:
+            kept.append(row)
+            included_drafts.append(req_id)
+        else:
+            excluded_drafts.append(req_id)
     kept.sort(key=lambda r: str(r.get("req_id") or ""))
     must = [r for r in kept if normalize(r.get("moscow")) == "must"]
     should = [r for r in kept if normalize(r.get("moscow")) == "should"]
-    return FilterResult(must, should, sorted(excluded_drafts))
+    return FilterResult(must, should, sorted(excluded_drafts), sorted(included_drafts))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -136,6 +160,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--plateau", type=int, help="Highest plateau to keep.")
     parser.add_argument(
         "--decision", help="Current decision reference; keeps drafts tagged with it."
+    )
+    parser.add_argument(
+        "--include-draft",
+        action="append",
+        default=[],
+        help="Draft the user chose for this decision (repeatable).",
     )
     parser.add_argument("--config", type=Path, help="Settings file (default: assets/config.yaml).")
     args = parser.parse_args(argv)
@@ -151,6 +181,7 @@ def main(argv: list[str] | None = None) -> int:
             plateau=args.plateau,
             draft_statuses=cfg.get("draft_statuses") or [],
             decision_ref=args.decision,
+            include_drafts=args.include_draft,
         )
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -158,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
     output = {
         "must": result.must,
         "should": result.should,
+        "included_drafts": result.included_drafts,
         "excluded_drafts": {
             "count": len(result.excluded_drafts),
             "req_ids": result.excluded_drafts,

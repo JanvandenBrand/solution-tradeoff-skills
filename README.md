@@ -31,7 +31,7 @@ The skill reads your requirements from a spreadsheet and your verified perspecti
 
 1. **Requirements spreadsheet (.xlsx)** with a requirements sheet and a principles sheet. The sheet names and column headers are set under `spreadsheet` in `skills/solution-tradeoff/assets/config.yaml`; the defaults match `tests/fixtures/requirements_sample.xlsx`.
 2. **Status values.** Set `filter.excluded_statuses` and `filter.draft_statuses` to the values your spreadsheet uses. The defaults exclude "Removed" and treat "Draft" as a draft.
-3. **Decision-reference column.** Draft requirements count only when tagged with the current decision in the `AD Ref` column (several references may be separated by commas or semicolons). Without that column the skill cannot scope drafts; it reports this and offers to list the drafts for you to choose from. Check with:
+3. **Decision-reference column.** Draft requirements count only when tagged with the current decision in the `AD Ref` column (several references may be separated by commas or semicolons). Without that column the skill cannot scope drafts; it reports this and offers to list the drafts for you to choose from; your choices are passed to `moscow_filter.py` with `--include-draft`. Check with:
 
    ```bash
    python skills/solution-tradeoff/scripts/check_prerequisites.py requirements.xlsx --decision AD-012
@@ -66,7 +66,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 |--------|---------|
 | `check_prerequisites.py <file.xlsx> --decision <reference>` | Check that the spreadsheet has the decision-reference column; list the drafts when it does not |
 | `load_requirements.py <file.xlsx>` | Read requirements and principles from the requirements spreadsheet |
-| `moscow_filter.py <rows.json> --decision <reference>` | Keep Must and Should requirements, filtered by status, domain and plateau; keep only drafts tagged with the current decision and report the rest |
+| `moscow_filter.py <rows.json> --decision <reference> [--include-draft <id> ...]` | Keep Must and Should requirements, filtered by status, domain and plateau; keep drafts tagged with the current decision or chosen by the user, and report the rest |
 | `budget.py --count <n>` | Point budget each perspective distributes |
 | `check_budget.py <file or directory> --requirements <filtered.json>` | Check that every perspective response spends exactly the point budget |
 | `elimination.py <ratings.yaml> --requirements <filtered.json>` | Candidates that rate below the threshold on any Must requirement |
