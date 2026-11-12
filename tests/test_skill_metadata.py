@@ -40,3 +40,17 @@ def test_skill_steps_are_the_ten_in_order():
     headings = [line[3:] for line in text.splitlines() if line.startswith("## ")]
     numbered = [h for h in headings if h[0].isdigit()]
     assert numbered == [f"{i}. {step}" for i, step in enumerate(STEPS, start=1)]
+
+
+def test_decision_record_template_has_the_cognitect_sections():
+    text = (SKILL_DIR / "assets" / "decision-record-template.md").read_text(encoding="utf-8")
+    lines = text.splitlines()
+    assert lines[0].startswith("# ")
+    sections = [line[3:] for line in lines if line.startswith("## ")]
+    assert sections == ["Context", "Decision", "Status", "Consequences"]
+
+
+def test_record_step_points_at_the_template():
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    record = text.split("## 10. Record", 1)[1].split("\n## ", 1)[0]
+    assert "assets/decision-record-template.md" in record

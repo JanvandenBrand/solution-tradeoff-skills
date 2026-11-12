@@ -4,6 +4,8 @@ An [Agent Skill](https://www.anthropic.com/engineering/equipping-agents-for-the-
 
 This skill replaces the command-line tool `solution-tradeoff-tool`.
 
+**Goal:** a comparable analysis, from problem definition to a published architecture decision record, takes under 1.5 hours of hands-on time, against 3 to 4 hours with the old tool ([decision 9](docs/adr/0009-success-target-under-ninety-minutes-hands-on.md)).
+
 > **Status:** early. The skill instructions are a skeleton; the scripts and the shipped perspectives are ready.
 
 ## Installing
@@ -51,6 +53,7 @@ skills/solution-tradeoff/
 ├── scripts/                  # deterministic steps, run by the host
 └── assets/
     ├── config.yaml           # thresholds, budget and spreadsheet column names
+    ├── decision-record-template.md
     ├── rating.schema.json
     └── tradeoff-output.schema.json
 ```

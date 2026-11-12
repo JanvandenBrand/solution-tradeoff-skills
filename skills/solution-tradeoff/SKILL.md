@@ -45,7 +45,7 @@ TODO: test the compiled analysis for blind spots, divergence and weak conclusion
 
 ## 10. Record
 
-TODO: record the outcome so the decision can be traced later. See [references/record.md](references/record.md).
+TODO: if the host has a decision-record skill, hand it the compiled and challenged analysis; otherwise produce a decision record from `assets/decision-record-template.md`. See [references/record.md](references/record.md).
 
 ## Feedback
 
