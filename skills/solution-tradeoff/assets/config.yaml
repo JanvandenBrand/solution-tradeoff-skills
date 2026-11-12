@@ -29,6 +29,9 @@ filter:
   # Requirements with these statuses never enter the analysis (case-insensitive).
   # Use the status values of your own spreadsheet.
   excluded_statuses: ["removed"]
+  # Draft requirements are kept only when their decision-reference column (ad_ref)
+  # names the current decision. Excluded drafts are counted and reported.
+  draft_statuses: ["draft"]
   # MoSCoW levels kept when the decision does not say otherwise.
   default_moscow: ["must", "should"]
 

@@ -44,3 +44,7 @@ def test_load_settings_raises_value_error_when_invalid_yaml(tmp_path):
 
 def test_default_excluded_statuses_are_the_spreadsheet_values():
     assert load_settings()["filter"]["excluded_statuses"] == ["removed"]
+
+
+def test_default_draft_statuses():
+    assert load_settings()["filter"]["draft_statuses"] == ["draft"]

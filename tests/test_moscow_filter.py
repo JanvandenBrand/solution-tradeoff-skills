@@ -23,9 +23,10 @@ _EXCLUDED = ["deprecated", "rejected"]
 
 
 def _run(rows=_ROWS, moscow=("Must", "Should"), domains=(), plateau=None):
-    return filter_requirements(
+    result = filter_requirements(
         rows, moscow=moscow, domains=domains, plateau=plateau, excluded_statuses=_EXCLUDED
     )
+    return result.must, result.should
 
 
 def _ids(must, should):
@@ -62,10 +63,8 @@ def test_filter_requirements_excludes_could():
 
 
 def test_filter_requirements_excluded_statuses_are_configurable():
-    must, should = filter_requirements(
-        _ROWS, moscow=["Must", "Should"], excluded_statuses=["active"]
-    )
-    assert _ids(must, should) == {"R005"}
+    result = filter_requirements(_ROWS, moscow=["Must", "Should"], excluded_statuses=["active"])
+    assert _ids(result.must, result.should) == {"R005"}
 
 
 # Domain filter
@@ -179,3 +178,67 @@ def test_main_excludes_removed_requirements_by_default(tmp_path, capsys):
     path.write_text(json.dumps(rows))
     assert main([str(path)]) == 0
     assert [r["req_id"] for r in json.loads(capsys.readouterr().out)["must"]] == ["R2"]
+
+
+# Drafts scoped by decision reference (decision 7)
+
+_DRAFTS = [
+    {"req_id": "D1", "domain": "D", "moscow": "Must", "status": "Draft", "ad_ref": "AD-012"},
+    {"req_id": "D2", "domain": "D", "moscow": "Should", "status": "draft", "ad_ref": "AD-011"},
+    {"req_id": "D3", "domain": "D", "moscow": "Must", "status": "Draft", "ad_ref": None},
+    {"req_id": "D4", "domain": "D", "moscow": "Must", "status": "Draft", "ad_ref": "AD-3; ad-012"},
+    {"req_id": "D5", "domain": "D", "moscow": "Could", "status": "Draft", "ad_ref": "AD-011"},
+    {"req_id": "A1", "domain": "D", "moscow": "Must", "status": "Active", "ad_ref": "AD-011"},
+]
+
+
+def _drafts(decision_ref):
+    return filter_requirements(
+        _DRAFTS,
+        moscow=["must", "should"],
+        excluded_statuses=["removed"],
+        draft_statuses=["draft"],
+        decision_ref=decision_ref,
+    )
+
+
+def test_filter_requirements_keeps_drafts_tagged_with_the_decision():
+    result = _drafts("AD-012")
+    assert [r["req_id"] for r in result.must] == ["A1", "D1", "D4"]
+    assert result.should == []
+
+
+def test_filter_requirements_matches_one_of_several_references_ignoring_case():
+    assert "D4" in {r["req_id"] for r in _drafts("ad-012").must}
+
+
+def test_filter_requirements_does_not_match_partial_references():
+    assert "D4" not in {r["req_id"] for r in _drafts("AD-01").must}
+
+
+def test_filter_requirements_keeps_non_drafts_whatever_their_reference():
+    assert [r["req_id"] for r in _drafts("AD-012").must][0] == "A1"
+
+
+def test_filter_requirements_reports_excluded_drafts_that_were_otherwise_in_scope():
+    # D5 is a Could, so it is out of scope anyway and not reported.
+    assert _drafts("AD-012").excluded_drafts == ["D2", "D3"]
+
+
+def test_filter_requirements_excludes_every_draft_without_decision_ref():
+    result = _drafts(None)
+    assert [r["req_id"] for r in result.must] == ["A1"]
+    assert result.excluded_drafts == ["D1", "D2", "D3", "D4"]
+
+
+def test_filter_requirements_keeps_draft_status_on_kept_rows():
+    assert {r["status"] for r in _drafts("AD-012").must} == {"Active", "Draft"}
+
+
+def test_main_reports_drafts_for_the_given_decision(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_DRAFTS))
+    assert main([str(path), "--decision", "AD-012"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert [r["req_id"] for r in out["must"]] == ["A1", "D1", "D4"]
+    assert out["excluded_drafts"] == {"count": 2, "req_ids": ["D2", "D3"]}
