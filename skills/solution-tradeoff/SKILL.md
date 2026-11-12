@@ -21,25 +21,29 @@ TODO: propose the stakeholder perspectives that fit the decision. See [reference
 
 ## 4. Verify perspectives
 
-TODO: have a person review and verify every selected perspective before any scoring. See [references/verify-perspectives.md](references/verify-perspectives.md).
+TODO: make sure every selected perspective was fully verified once by a person and is confirmed for this run, then pass the verification gate. See [references/verify-perspectives.md](references/verify-perspectives.md).
 
-## 5. Score
+## 5. Prioritize
 
-TODO: produce one response per verified perspective within the point budget. See [references/score.md](references/score.md).
+TODO: produce one point distribution per verified perspective, spending exactly the point budget. See [references/prioritize.md](references/prioritize.md).
 
-## 6. Validate
+## 6. Rate
 
-TODO: check every response against the output schema and the elimination threshold. See [references/validate.md](references/validate.md).
+TODO: rate every candidate on every in-scope requirement in a separate pass that sees only the candidates and the requirements, never the perspectives' preferences or points. See [references/rate.md](references/rate.md).
 
-## 7. Compile
+## 7. Validate
 
-TODO: combine the responses into one trade-off analysis. See [references/compile.md](references/compile.md).
+TODO: check the responses, the budget totals and the ratings, then apply the elimination threshold to the Must ratings. See [references/validate.md](references/validate.md).
 
-## 8. Challenge
+## 8. Compile
+
+TODO: combine priorities and ratings into one trade-off analysis, flagging conclusions that rest mainly on draft requirements. See [references/compile.md](references/compile.md).
+
+## 9. Challenge
 
 TODO: test the compiled analysis for blind spots, divergence and weak conclusions. See [references/challenge.md](references/challenge.md).
 
-## 9. Record
+## 10. Record
 
 TODO: record the outcome so the decision can be traced later. See [references/record.md](references/record.md).
 

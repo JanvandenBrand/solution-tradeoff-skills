@@ -19,3 +19,24 @@ def test_skill_description_is_at_most_200_characters():
 
 def test_skill_name_matches_folder_name():
     assert _frontmatter()["name"] == SKILL_DIR.name
+
+
+STEPS = [
+    "Frame",
+    "Gather",
+    "Propose perspectives",
+    "Verify perspectives",
+    "Prioritize",
+    "Rate",
+    "Validate",
+    "Compile",
+    "Challenge",
+    "Record",
+]
+
+
+def test_skill_steps_are_the_ten_in_order():
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    headings = [line[3:] for line in text.splitlines() if line.startswith("## ")]
+    numbered = [h for h in headings if h[0].isdigit()]
+    assert numbered == [f"{i}. {step}" for i, step in enumerate(STEPS, start=1)]
