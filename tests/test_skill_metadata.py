@@ -64,6 +64,9 @@ WRITTEN_STEPS = {
     2: ("Gather", "references/gather.md"),
     3: ("Propose perspectives", "references/propose-perspectives.md"),
     4: ("Verify perspectives", "references/verify-perspectives.md"),
+    5: ("Prioritize", "references/prioritize.md"),
+    6: ("Rate", "references/rate.md"),
+    7: ("Validate", "references/validate.md"),
 }
 HOST_TOOL_NAMES = [
     "AskUserQuestion",

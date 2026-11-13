@@ -25,15 +25,15 @@ Confirm the already-verified perspectives together with one question, and review
 
 ## 5. Prioritize
 
-TODO: produce one point distribution per verified perspective, spending exactly the point budget. See [references/prioritize.md](references/prioritize.md).
+Each verified perspective spends exactly the point budget over the in-scope requirements, working only from the shared context, its own perspective file, the budget and the response schema. Use independent subagents if the host can start them; otherwise run the perspectives in turn and record limited independence. Ask nothing during the step; summarize at the end, and return to Gather if the user accepts a Must challenge. Follow [references/prioritize.md](references/prioritize.md); its output is one response file per perspective in `run/responses/`.
 
 ## 6. Rate
 
-TODO: rate every candidate on every in-scope requirement in a separate pass that sees only the candidates and the requirements, never the perspectives' preferences or points. See [references/rate.md](references/rate.md).
+Rate every candidate on every in-scope requirement in a separate pass that sees only the shared context, never the perspectives' responses, preferred options or points. Every rationale names its basis; end with one question about disputed ratings. Follow [references/rate.md](references/rate.md); its output is `run/ratings.yaml`.
 
 ## 7. Validate
 
-TODO: check the responses, the budget totals and the ratings, then apply the elimination threshold to the Must ratings. See [references/validate.md](references/validate.md).
+Run the response, budget and rating checks, then elimination on the Must ratings. A failed check sends the file back to the step that produced it; never fix numbers by hand. Report the eliminated candidates and the Must requirements that eliminated them. Follow [references/validate.md](references/validate.md); its output is `run/elimination.json`.
 
 ## 8. Compile
 
