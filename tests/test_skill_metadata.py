@@ -109,9 +109,13 @@ def test_frame_reference_has_its_sections():
     ]
 
 
-def test_frame_reference_checks_its_output_with_the_script():
+def test_frame_reference_checks_its_output_by_instruction_not_script():
+    # Decision 3: the assistant writes the frame, so its checks are instructions.
     text = (SKILL_DIR / "references" / "frame.md").read_text(encoding="utf-8")
-    assert "validate_run_record.py" in text and "--section frame" in text
+    assert "validate_run_record.py" not in text
+    output = text.split("## Output", 1)[1]
+    for rule in ["two candidates", "status quo", "hypothesis", "outcome", "confirmed_at"]:
+        assert rule in output, rule
 
 
 def test_skill_text_names_no_host_tools():
@@ -183,4 +187,3 @@ def test_frame_reference_says_the_solution_check_is_a_judgment():
     text = (SKILL_DIR / "references" / "frame.md").read_text(encoding="utf-8")
     check = text.split("## Problem validation", 1)[1].split("\n## ", 1)[0]
     assert "judgment in the conversation" in check
-    assert "only warns" in check

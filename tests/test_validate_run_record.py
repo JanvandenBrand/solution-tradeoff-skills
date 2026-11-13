@@ -7,7 +7,7 @@ from datetime import date
 import pytest
 import yaml
 
-from validate_run_record import DEFAULT_SCHEMA, main, run_record_errors, run_record_warnings
+from validate_run_record import DEFAULT_SCHEMA, main, run_record_errors
 from verification_gate import gate
 
 
@@ -29,116 +29,30 @@ def test_default_schema_is_shipped_asset(skill_dir):
     assert DEFAULT_SCHEMA == skill_dir / "assets" / "run-record.schema.json"
 
 
-# Frame
+# Frame: the rules are instructions in references/frame.md (decision 3);
+# the script only checks the format.
 
 
-def test_full_record_frame_is_valid(record):
-    assert _errors(record, "frame") == []
+def test_full_record_format_is_valid(record):
+    assert run_record_errors(record, None) == []
 
 
-def test_frame_section_missing(record):
-    del record["frame"]
-    assert any("no frame section" in e for e in _errors(record, "frame"))
-
-
-def test_frame_needs_a_decision_id(record):
-    record["frame"]["decision_id"] = ""
-    assert any("decision_id" in e for e in _errors(record, "frame"))
-
-
-def test_frame_needs_at_least_two_candidates(record):
-    record["frame"]["candidates"] = record["frame"]["candidates"][:1]
-    assert any("candidates" in e for e in _errors(record, "frame"))
-
-
-def test_frame_candidate_ids_are_unique(record):
-    record["frame"]["candidates"][1]["id"] = "a"
-    assert any("candidate id 'a' is used more than once" in e for e in _errors(record, "frame"))
-
-
-def test_frame_candidate_description_is_one_line(record):
-    record["frame"]["candidates"][0]["description"] = "First line.\nSecond line."
-    assert any("one line" in e for e in _errors(record, "frame"))
-
-
-def test_frame_status_quo_question_must_be_asked(record):
-    record["frame"]["status_quo_asked"] = False
-    assert any("status quo" in e for e in _errors(record, "frame"))
-
-
-def test_frame_without_evidence_must_be_labeled_hypothesis(record):
-    record["frame"]["problem"]["evidence"] = []
-    record["frame"]["validation"]["evidence_present"] = False
-    assert any("hypothesis" in e for e in _errors(record, "frame"))
-    record["frame"]["problem"]["label"] = "hypothesis"
-    assert _errors(record, "frame") == []
-
-
-def test_frame_with_evidence_cannot_be_labeled_hypothesis(record):
-    record["frame"]["problem"]["label"] = "hypothesis"
-    assert any("evidenced" in e for e in _errors(record, "frame"))
-
-
-def test_frame_evidence_present_must_match_the_evidence(record):
-    record["frame"]["validation"]["evidence_present"] = False
-    assert any("evidence_present" in e for e in _errors(record, "frame"))
-
-
-def test_frame_solution_in_statement_is_a_warning_not_an_error(record):
-    record["frame"]["validation"]["solution_free"] = False
-    assert _errors(record, "frame") == []
-    assert run_record_warnings(record, "frame") == [
-        "frame: the problem statement was judged to name a solution; "
-        "confirm with the user that this is intended"
-    ]
-
-
-def test_valid_frame_has_no_warnings(record):
-    assert run_record_warnings(record, "frame") == []
-
-
-def test_warnings_need_a_frame_section(record):
-    del record["frame"]
-    assert run_record_warnings(record, "frame") == []
-    assert run_record_warnings(record, "gather") == []
-
-
-def test_main_warns_and_returns_0_when_statement_names_a_solution(tmp_path, record, capsys):
-    record["frame"]["validation"]["solution_free"] = False
-    path = tmp_path / "run.yaml"
-    path.write_text(yaml.safe_dump(record))
-    assert main([str(path), "--section", "frame"]) == 0
-    captured = capsys.readouterr()
-    assert "warning: frame: the problem statement was judged to name a solution" in captured.err
-    assert "error:" not in captured.err
-    assert "valid" in captured.out
-
-
-def test_frame_outcome_must_be_named(record):
-    record["frame"]["validation"]["outcome_named"] = False
-    assert any("outcome" in e for e in _errors(record, "frame"))
-
-
-def test_frame_needs_a_confirmation(record):
-    del record["frame"]["confirmed_by"]
-    assert any("confirmed_by" in e for e in _errors(record, "frame"))
-
-
-def test_frame_confirmed_at_must_be_a_date(record):
-    record["frame"]["confirmed_at"] = "soon"
-    assert any("confirmed_at" in e for e in _errors(record, "frame"))
-
-
-def test_frame_rejects_unknown_evidence_kind(record):
+def test_frame_format_is_still_checked(record):
     record["frame"]["problem"]["evidence"][0]["kind"] = "rumored"
-    assert any("rumored" in e for e in _errors(record, "frame"))
+    assert any("rumored" in e for e in run_record_errors(record, None))
 
 
-def test_errors_are_collected_together(record):
+def test_frame_rules_are_not_checked_by_the_script(record):
     record["frame"]["status_quo_asked"] = False
-    record["frame"]["validation"]["solution_free"] = False
+    record["frame"]["validation"]["outcome_named"] = False
     record["frame"]["candidates"][1]["id"] = "A"
-    assert len(_errors(record, "frame")) == 2
+    assert run_record_errors(record, "gather") == []
+
+
+def test_main_has_no_frame_section(fixtures):
+    with pytest.raises(SystemExit) as exc:
+        main([str(fixtures / "run_record_full.yaml"), "--section", "frame"])
+    assert exc.value.code == 2
 
 
 # Gather
@@ -146,11 +60,6 @@ def test_errors_are_collected_together(record):
 
 def test_full_record_gather_is_valid(record, filtered):
     assert _errors(record, "gather", filtered) == []
-
-
-def test_gather_needs_a_frame(record):
-    del record["frame"]
-    assert any("frame" in e for e in _errors(record, "gather"))
 
 
 def test_gather_spreadsheet_is_a_file_name_only(record):
@@ -189,7 +98,7 @@ def test_gather_section_missing(record):
 
 def test_unknown_top_level_section_is_rejected(record):
     record["notes"] = "free text"
-    assert any("notes" in e for e in _errors(record, "frame"))
+    assert any("notes" in e for e in run_record_errors(record, None))
 
 
 # The verification gate still reads the same confirmations
@@ -223,26 +132,26 @@ def test_main_returns_0_for_a_valid_gather(fixtures, capsys):
     assert "valid" in capsys.readouterr().out
 
 
-def test_main_returns_1_and_lists_every_error(tmp_path, record, capsys):
+def test_main_returns_1_and_lists_every_error(tmp_path, record, fixtures, capsys):
     broken = copy.deepcopy(record)
-    broken["frame"]["status_quo_asked"] = False
-    broken["frame"]["validation"]["outcome_named"] = False
-    broken["frame"]["validation"]["solution_free"] = False
+    broken["gather"]["counts"]["must"] = 9
+    broken["gather"]["budget"] = 99
     path = tmp_path / "run.yaml"
     path.write_text(yaml.safe_dump(broken))
-    assert main([str(path), "--section", "frame"]) == 1
+    filtered = str(fixtures / "requirements_filtered.json")
+    assert main([str(path), "--section", "gather", "--requirements", filtered]) == 1
     assert capsys.readouterr().err.count("error:") == 2
 
 
 def test_main_returns_1_when_file_missing(tmp_path, capsys):
-    assert main([str(tmp_path / "missing.yaml"), "--section", "frame"]) == 1
+    assert main([str(tmp_path / "missing.yaml"), "--section", "gather"]) == 1
     assert "missing.yaml" in capsys.readouterr().err
 
 
 def test_main_returns_1_when_yaml_invalid(tmp_path, capsys):
     path = tmp_path / "run.yaml"
     path.write_text("frame: [\n")
-    assert main([str(path), "--section", "frame"]) == 1
+    assert main([str(path), "--section", "gather"]) == 1
     assert "not valid YAML" in capsys.readouterr().err
 
 
@@ -254,7 +163,7 @@ _QUOTED = "must be a date written as YYYY-MM-DD without quotes, got '2026-11-12'
 @pytest.mark.parametrize("section", ["frame", "gather"])
 def test_quoted_confirmation_date_is_rejected(record, section):
     record[section]["confirmed_at"] = "2026-11-12"
-    assert f"{section}.confirmed_at: confirmed_at {_QUOTED}" in _errors(record, section)
+    assert f"{section}.confirmed_at: confirmed_at {_QUOTED}" in run_record_errors(record, None)
 
 
 def test_quoted_perspective_confirmation_date_is_rejected(record):

@@ -6,24 +6,22 @@ The run record (YAML) holds what one run established, step by step:
 - ``gather``: the scope, counts, budget, principles and background (step 2);
 - ``perspective_confirmations``: read by ``verification_gate.py`` (step 4).
 
-The format is ``assets/run-record.schema.json``. Beyond the format, this
-script checks the rules the steps depend on: at least two candidates with
-unique identifiers, the status quo question asked, a problem without evidence
-labeled a hypothesis, a problem that names its outcome, and the user's
-confirmation. Whether the problem statement names a solution is a judgment
-made with the user; the script cannot judge the text, so a recorded
-``solution_free: false`` gives a warning, not an error. Dates are parsed by ``dates.parse_date``,
-exactly as by ``verification_gate.py``, so a quoted date fails both. With
-``--requirements``, the gather counts and budget must match the script
-outputs, so no number comes from prose.
+The format is ``assets/run-record.schema.json``; every section present is
+checked against it. Dates are parsed by ``dates.parse_date``, exactly as by
+``verification_gate.py``, so a quoted date fails both.
+
+Beyond the format, a script checks only what the assistant did not write
+itself (decision 3). For the gather section, with ``--requirements``, the
+counts, the chosen drafts and the budget must match the script outputs. The
+frame is written by the assistant, so its rules are instructions in
+``references/frame.md``, not checks here.
 
 Usage:
-    python validate_run_record.py <run.yaml> --section frame|gather
+    python validate_run_record.py <run.yaml> --section gather
         [--requirements <filtered.json>] [--schema <schema file>]
         [--config <settings file>]
 
-Exit code 0 when valid, 1 otherwise; every error and warning is listed on
-standard error. Warnings alone do not change the exit code.
+Exit code 0 when valid, 1 otherwise; every error is listed on standard error.
 """
 
 import argparse
@@ -42,6 +40,9 @@ from settings import load_settings
 
 DEFAULT_SCHEMA = Path(__file__).resolve().parent.parent / "assets" / "run-record.schema.json"
 SECTIONS = ("frame", "gather")
+# Sections with rules beyond the format. The frame is written by the assistant,
+# so its rules are instructions in references/frame.md, not checks (decision 3).
+CHECKED = ("gather",)
 
 
 def _plain(value: Any) -> Any:
@@ -83,33 +84,6 @@ def _schema_errors(data: Any, schema_path: Path) -> list[str]:
         f"{'.'.join(str(p) for p in e.absolute_path) or '<root>'}: {e.message}"
         for e in sorted(validator.iter_errors(_plain(data)), key=lambda e: str(e.path))
     ]
-
-
-def _frame_errors(frame: dict[str, Any]) -> list[str]:
-    errors: list[str] = []
-    seen: set[str] = set()
-    for candidate in frame["candidates"]:
-        cid = str(candidate["id"])
-        key = cid.strip().lower()
-        if key in seen:
-            errors.append(f"frame: candidate id '{cid}' is used more than once")
-        seen.add(key)
-        if "\n" in str(candidate["description"]).strip():
-            errors.append(f"frame: the description of candidate '{cid}' must be one line")
-    if frame["status_quo_asked"] is not True:
-        errors.append("frame: ask the user whether the status quo should be a candidate")
-
-    problem, validation = frame["problem"], frame["validation"]
-    has_evidence = bool(problem["evidence"])
-    if not has_evidence and problem["label"] != "hypothesis":
-        errors.append("frame: the problem has no evidence, so it must be labeled a hypothesis")
-    if has_evidence and problem["label"] != "evidenced":
-        errors.append("frame: the problem has evidence, so it must be labeled evidenced")
-    if validation["evidence_present"] is not has_evidence:
-        errors.append("frame: validation.evidence_present does not match the evidence listed")
-    if validation["outcome_named"] is not True:
-        errors.append("frame: the problem statement does not name the outcome it affects")
-    return errors
 
 
 def _gather_errors(
@@ -157,8 +131,8 @@ def run_record_errors(
 
     Args:
         data: The parsed run record.
-        section: The section to check against its rules (``frame`` or
-            ``gather``), or None to check the format only.
+        section: ``gather`` to also check the gather section against the
+            script outputs, or None to check the format only.
         filtered: The ``moscow_filter.py`` output, to check the gather
             counts and budget against.
         budget_settings: The ``budget`` settings; defaults to the shipped
@@ -168,40 +142,17 @@ def run_record_errors(
     errors = _date_errors(data) + _schema_errors(data, schema_path)
     if errors or section is None:
         return errors
-    if section == "gather" and "frame" not in data:
-        errors.append("no frame section: the Gather step starts only after the frame is confirmed")
     if section not in data:
         return [*errors, f"no {section} section"]
-    if section == "frame":
-        return [*errors, *_frame_errors(data["frame"])]
     settings = budget_settings or load_settings()["budget"]
     return [*errors, *_gather_errors(data["gather"], filtered, settings)]
-
-
-def run_record_warnings(data: Any, section: str | None) -> list[str]:
-    """Return the warnings for a run record section: points to raise with the user.
-
-    Warnings never fail the record. Today there is one: a frame whose problem
-    statement was judged to name a solution.
-    """
-    frame = data.get("frame") if isinstance(data, dict) else None
-    if section not in ("frame", "gather") or not isinstance(frame, dict):
-        return []
-    validation = frame.get("validation")
-    if section == "frame" and isinstance(validation, dict):
-        if validation.get("solution_free") is False:
-            return [
-                "frame: the problem statement was judged to name a solution; "
-                "confirm with the user that this is intended"
-            ]
-    return []
 
 
 def main(argv: list[str] | None = None) -> int:
     """Command-line entry point. Returns the process exit code."""
     parser = argparse.ArgumentParser(description="Validate a run record section.")
     parser.add_argument("run_record", type=Path, help="Run record (YAML).")
-    parser.add_argument("--section", choices=SECTIONS, required=True, help="Section to check.")
+    parser.add_argument("--section", choices=CHECKED, required=True, help="Section to check.")
     parser.add_argument("--requirements", type=Path, help="Output of moscow_filter.py.")
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA, help="JSON Schema file.")
     parser.add_argument("--config", type=Path, help="Settings file (default: assets/config.yaml).")
@@ -218,12 +169,9 @@ def main(argv: list[str] | None = None) -> int:
             filtered = json.loads(args.requirements.read_text(encoding="utf-8"))
         budget_settings = load_settings(args.config)["budget"]
         errors = run_record_errors(data, args.section, filtered, budget_settings, args.schema)
-        warnings = run_record_warnings(data, args.section)
     except (OSError, ValueError, KeyError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-    for warning in warnings:
-        print(f"warning: {warning}", file=sys.stderr)
     for err in errors:
         print(f"error: {err}", file=sys.stderr)
     if errors:

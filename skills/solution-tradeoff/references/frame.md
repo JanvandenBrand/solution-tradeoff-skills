@@ -32,7 +32,7 @@ If the host has a problem-validation skill, hand it the problem statement and us
 
 Otherwise, apply these checks and record the method as `built-in-checks`:
 
-1. **Is the problem stated without naming a solution?** "We have no data platform" names a solution; "Monthly reports arrive four days late" does not. This is a judgment in the conversation, not a rule a script can apply: read the statement with the user and ask whether it already presupposes one of the candidates. If it does, help the user restate it, then check again. Record the outcome in `validation.solution_free`. If the user keeps a statement that names a solution, record `false` and the reason in `validation.notes`. The run-record script cannot judge the text; it only warns when the recorded answer is `false`, as a reminder to raise it with the user.
+1. **Is the problem stated without naming a solution?** "We have no data platform" names a solution; "Monthly reports arrive four days late" does not. This is a judgment in the conversation, not a rule a script can apply: read the statement with the user and ask whether it already presupposes one of the candidates. If it does, help the user restate it, then check again. Record the outcome in `validation.solution_free`. If the user keeps a statement that names a solution, record `false` and the reason in `validation.notes`.
 2. **Is the outcome named?** If not, ask which outcome the problem affects.
 3. **Is there evidence?** If there is none, label the problem a **hypothesis** and let the user choose:
    - proceed with the problem labeled a hypothesis, so every later step and the final record carry the label; or
@@ -90,10 +90,12 @@ frame:
   confirmed_at: 2026-11-12
 ```
 
-If the host can run scripts, check the section before moving on and fix every error it reports:
+Before you show the frame summary, check the section yourself. No script does this: you wrote the section, so the check is yours (decision 3). Fix anything that fails, asking the user where the answer is theirs to give.
 
-```bash
-python scripts/validate_run_record.py run/run.yaml --section frame
-```
-
-If the host cannot run scripts, check the same rules by hand and tell the user the check was not run by the script.
+- `decision_id` is filled in.
+- There are at least two candidates, with different identifiers, each with a one-line description.
+- `status_quo_asked` is true: you asked whether the status quo should be a candidate.
+- The problem is labeled `hypothesis` when `evidence` is empty, and `evidenced` otherwise; `validation.evidence_present` matches.
+- The outcome is named, and `validation.outcome_named` is true.
+- If `validation.solution_free` is false, the reason is in `validation.notes` and the user chose to keep the statement.
+- After the user confirms, `confirmed_by` names them and `confirmed_at` is the date, written as YYYY-MM-DD without quotes.
