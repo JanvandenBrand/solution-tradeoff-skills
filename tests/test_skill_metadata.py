@@ -187,3 +187,58 @@ def test_frame_reference_says_the_solution_check_is_a_judgment():
     text = (SKILL_DIR / "references" / "frame.md").read_text(encoding="utf-8")
     check = text.split("## Problem validation", 1)[1].split("\n## ", 1)[0]
     assert "judgment in the conversation" in check
+
+
+# Propose perspectives (step 3)
+
+
+def _reference(name: str) -> str:
+    return (SKILL_DIR / "references" / name).read_text(encoding="utf-8")
+
+
+def test_propose_perspectives_reference_has_its_sections():
+    assert _reference_sections("references/propose-perspectives.md") == [
+        "Rule",
+        "Sequence",
+        "Output",
+    ]
+
+
+def test_propose_perspectives_reads_the_user_library_before_the_defaults():
+    text = _reference("propose-perspectives.md")
+    assert text.index("user's perspective folder") < text.index("references/perspectives/")
+    assert "the user's copy wins" in text
+
+
+def test_propose_perspectives_proposes_one_block_and_lists_what_is_left_out():
+    text = _reference("propose-perspectives.md")
+    for phrase in ["4 to 7", "one block", "left out", "one-line reason"]:
+        assert phrase in text, phrase
+
+
+def test_propose_perspectives_drafts_a_missing_stakeholder_unverified():
+    text = _reference("propose-perspectives.md")
+    assert "perspective-format.md" in text
+    assert "verified: false" in text
+
+
+# Decision 12: perspective steps add no scripts
+
+
+def test_scripts_folder_has_no_new_scripts():
+    scripts = sorted(p.name for p in (SKILL_DIR / "scripts").glob("*.py"))
+    assert scripts == [
+        "budget.py",
+        "check_budget.py",
+        "check_prerequisites.py",
+        "dates.py",
+        "elimination.py",
+        "load_requirements.py",
+        "moscow_filter.py",
+        "settings.py",
+        "validate_perspective.py",
+        "validate_rating.py",
+        "validate_response.py",
+        "validate_run_record.py",
+        "verification_gate.py",
+    ]
