@@ -11,6 +11,7 @@ Establish the decision and validate the problem. Nothing else starts until the d
 - Offer multiple choice where you can: propose likely answers, plus an option to answer in their own words.
 - Do not record an answer the user has not given or confirmed. If something is unknown, record it as unknown and say so in the summary.
 - When every field is collected, summarize the frame back to the user and ask for confirmation.
+- Never state a count, total or budget before the script that produces it has run. The Frame step runs none, so it states none: no requirement counts, no budget, no estimate of either.
 
 ## What to collect
 

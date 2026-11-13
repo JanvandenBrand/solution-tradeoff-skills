@@ -4,7 +4,7 @@ Establish what the candidates are judged against. Start only after the user has 
 
 ## Rule
 
-Every count, filter and budget comes from running the scripts, never from calculating in prose. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step. Here the judgment calls, asked one at a time, are the scope (step 4) and each drafted requirement. The inferable facts, the principles (step 8) and the background summaries (step 9), are shown as one block for the user to confirm or edit.
+Every count, filter and budget comes from running the scripts, never from calculating in prose. Never state a count, total or budget before the script that produces it has run, not even as an estimate. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step. Here the judgment calls, asked one at a time, are the scope (step 4) and each drafted requirement. The inferable facts, the principles (step 8) and the background summaries (step 9), are shown as one block for the user to confirm or edit.
 
 If the host cannot run scripts, say so and stop: this step cannot be done reliably by hand.
 
