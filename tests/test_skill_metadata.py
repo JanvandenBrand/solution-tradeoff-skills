@@ -346,3 +346,30 @@ def test_rate_names_the_basis_and_asks_one_dispute_question():
     assert "rating.minimum" in text and "rating.maximum" in text
     assert '"Do you dispute any rating?"' in text
     assert "run/ratings.yaml" in text
+
+
+# Validate (step 7)
+
+VALIDATE_COMMANDS = [
+    "python scripts/validate_response.py run/responses",
+    "python scripts/check_budget.py run/responses --requirements run/filtered.json",
+    "python scripts/validate_rating.py run/ratings.yaml --requirements run/filtered.json",
+    "python scripts/elimination.py run/ratings.yaml --requirements run/filtered.json",
+]
+
+
+def test_validate_reference_has_its_sections():
+    assert _reference_sections("references/validate.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_validate_runs_the_four_checks_in_order():
+    text = _reference("validate.md")
+    positions = [text.index(command) for command in VALIDATE_COMMANDS]
+    assert positions == sorted(positions)
+
+
+def test_validate_sends_failures_back_and_never_fixes_numbers():
+    text = _reference("validate.md")
+    assert "Never fix numbers by hand" in text
+    assert "step 5" in text and "step 6" in text
+    assert "eliminated" in text
