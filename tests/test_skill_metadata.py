@@ -281,3 +281,37 @@ def test_verify_perspectives_runs_the_gate_and_stops_when_blocked():
     assert "python scripts/verification_gate.py --perspective" in text
     assert "--run-record run/run.yaml" in text
     assert "stop" in text.split("verification_gate.py --perspective", 1)[1]
+
+
+# Prioritize (step 5)
+
+
+def test_prioritize_reference_has_its_sections():
+    assert _reference_sections("references/prioritize.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_prioritize_names_the_four_inputs_and_nothing_else():
+    text = _reference("prioritize.md")
+    for item in [
+        "run/shared-context.md",
+        "run/gate.json",
+        "run/budget.json",
+        "assets/tradeoff-output.schema.json",
+    ]:
+        assert item in text, item
+    assert "never sees another perspective's response" in text
+
+
+def test_prioritize_records_limited_independence_without_subagents():
+    text = _reference("prioritize.md")
+    assert "independent subagents" in text
+    assert "prioritize: limited" in text
+    assert "run/responses/" in text
+
+
+def test_prioritize_asks_nothing_and_summarizes_at_the_end():
+    text = _reference("prioritize.md")
+    assert "Ask the user nothing" in text
+    assert "Must challenge" in text
+    assert "return to Gather" in text
+    assert "Never change the scope" in text
