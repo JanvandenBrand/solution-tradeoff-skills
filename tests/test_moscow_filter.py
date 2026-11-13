@@ -487,3 +487,35 @@ def test_main_returns_1_on_unknown_requirement(tmp_path, capsys):
     path.write_text(json.dumps(_ROWS))
     assert main([str(path), "--requirement", "R999"]) == 1
     assert "R999" in capsys.readouterr().err
+
+
+# Principle identifiers in free-text APR Link cells
+
+_APR_PRINCIPLES = [
+    {"principle_id": "APR02", "description": "Ease of use"},
+    {"principle_id": "APR15", "description": "Open standards"},
+]
+
+
+def test_linked_principles_extracts_identifiers_from_free_text():
+    rows = [{"req_id": "R1", "apr_ref": "APR02: promotes ease-of-use, APR15: …"}]
+    assert linked_principles(rows, _APR_PRINCIPLES) == {
+        "linked": [
+            {"principle_id": "APR02", "description": "Ease of use"},
+            {"principle_id": "APR15", "description": "Open standards"},
+        ],
+        "unknown": [],
+    }
+
+
+def test_linked_principles_free_text_without_a_principles_sheet():
+    rows = [{"req_id": "R1", "apr_ref": "APR02: promotes ease-of-use, APR15: …"}]
+    linked = linked_principles(rows, None)["linked"]
+    assert [p["principle_id"] for p in linked] == ["APR02", "APR15"]
+
+
+def test_linked_principles_lists_other_identifier_like_words_as_unknown():
+    rows = [{"req_id": "R1", "apr_ref": "APR02: supports the NIS2 Directive"}]
+    result = linked_principles(rows, _APR_PRINCIPLES)
+    assert [p["principle_id"] for p in result["linked"]] == ["APR02"]
+    assert result["unknown"] == ["NIS2"]

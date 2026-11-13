@@ -12,9 +12,11 @@ Usage:
 "excluded_drafts": {"count": n, "req_ids": [...]}, "scope": {...}}`` as JSON.
 
 ``principles`` lists the principles linked from the kept requirements through
-their ``apr_ref`` cells. When the input is ``load_requirements.py`` output,
-each one carries its description from the principles sheet, and references not
-found there are listed under ``unknown``.
+their ``apr_ref`` cells. A cell may be free text: every word of letters
+followed by digits (such as ``APR02``) is read as a principle identifier.
+When the input is ``load_requirements.py`` output, each one carries its
+description from the principles sheet, and references not found there are
+listed under ``unknown``.
 
 ``--domain`` and ``--requirement`` together keep a row when its domain or its
 identifier is listed; the MoSCoW, status, plateau and draft rules still apply.
@@ -45,6 +47,9 @@ from settings import load_settings
 
 Row = dict[str, Any]
 _REF_SEPARATORS = re.compile(r"[,;\s]+")
+# A principle identifier in a free-text APR Link cell: letters followed by digits,
+# such as APR02 in "APR02: promotes ease-of-use, APR15: ...".
+_PRINCIPLE_REF = re.compile(r"\b[A-Za-z]+[0-9]+\b")
 
 
 class FilterResult(NamedTuple):
@@ -183,7 +188,7 @@ def filter_requirements(
 
 
 def linked_principles(rows: Iterable[Row], principles: list[Row] | None) -> dict[str, Any]:
-    """Return the principles the ``apr_ref`` cells of ``rows`` link to.
+    """Return the principles the free-text ``apr_ref`` cells of ``rows`` link to.
 
     Args:
         rows: The in-scope requirement rows.
@@ -197,7 +202,7 @@ def linked_principles(rows: Iterable[Row], principles: list[Row] | None) -> dict
     """
     references: dict[str, str] = {}
     for row in rows:
-        for ref in _references(row.get("apr_ref")):
+        for ref in _PRINCIPLE_REF.findall(str(row.get("apr_ref") or "")):
             references.setdefault(normalize(ref), ref)
     sheet = {normalize(p.get("principle_id")): p for p in principles or []}
     linked: list[dict[str, Any]] = []
