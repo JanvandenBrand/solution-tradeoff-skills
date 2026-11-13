@@ -261,3 +261,20 @@ def test_quoted_perspective_confirmation_date_is_rejected(record):
     record["perspective_confirmations"][0]["confirmed_at"] = "2026-11-12"
     expected = f"perspective_confirmations.0.confirmed_at: confirmed_at {_QUOTED}"
     assert expected in run_record_errors(record, None)
+
+
+# Drafted requirements carry their origin (decision 11)
+
+
+def test_drafted_requirements_with_origin_are_valid(record):
+    record["gather"]["drafted_requirements"] = [
+        {"id": "NEW01", "origin": "assistant"},
+        {"id": "NEW02", "origin": "user"},
+        {"id": "NEW03"},
+    ]
+    assert run_record_errors(record, None) == []
+
+
+def test_drafted_requirement_origin_must_be_known(record):
+    record["gather"]["drafted_requirements"] = [{"id": "NEW01", "origin": "model"}]
+    assert any("model" in e for e in run_record_errors(record, None))

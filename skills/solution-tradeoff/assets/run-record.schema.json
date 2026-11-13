@@ -109,6 +109,19 @@
       "properties": {
         "spreadsheet": {"$ref": "#/$defs/text", "description": "File name only, never a path."},
         "included_drafts": {"$ref": "#/$defs/texts"},
+        "drafted_requirements": {
+          "type": "array",
+          "description": "Requirements drafted during this run, with who drafted them (decision 11).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": {"$ref": "#/$defs/text"},
+              "origin": {"enum": ["assistant", "user"]}
+            }
+          }
+        },
         "scope": {
           "type": "object",
           "additionalProperties": false,
