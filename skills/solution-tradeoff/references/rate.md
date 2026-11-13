@@ -1,0 +1,45 @@
+# Step 6: Rate
+
+Rate how well every candidate meets every in-scope requirement, in a pass separate from the perspectives (decision 6). Start after the Prioritize step ([prioritize.md](prioritize.md)).
+
+## Rule
+
+The rater works from exactly these inputs, and nothing else:
+
+1. the shared context block, `run/shared-context.md`: the candidates, the in-scope requirements, the principles and the background;
+2. the rating format, `assets/rating.schema.json`;
+3. the rating scale, `rating.minimum` to `rating.maximum` in `assets/config.yaml`.
+
+The rater never sees the perspectives' responses, preferred options or point allocations. Ratings that know which candidate a perspective prefers anchor on that preference; this step exists to prevent that.
+
+## Sequence
+
+`run/` stands for the run's working folder; the run record is `run/run.yaml`.
+
+1. **Choose how to run the rater.**
+   - If the host can start an independent subagent, start one and give it only the three inputs. Record `independence: {rate: full}` in the run record, next to `prioritize`.
+   - Otherwise, rate in this conversation. Work from the three inputs only: do not refer to, quote or reason from anything said in the Prioritize step. Record `independence: {rate: limited}` in the run record, next to `prioritize`.
+
+2. **Rate every candidate on every in-scope requirement**, as a whole number on the scale. Write `run/ratings.yaml` in the format of the rating schema:
+
+   ```yaml
+   candidates: [A, B]             # the candidate identifiers from the frame
+   ratings:
+     - candidate: A
+       requirement_id: REQ001
+       rating: 7
+       rationale: "Basis: <background title>. <why this rating>"
+     - candidate: B
+       requirement_id: REQ001
+       rating: 4
+       rationale: "Basis: rater's judgment. <why this rating>"
+   ```
+
+   Start every rationale with its basis: `Basis: <title>.`, naming the background source from the shared context the rating rests on, or `Basis: rater's judgment.` when no source covers it. Rate a status quo candidate as it is today, not as it could be improved.
+
+3. **Ask one question.** Show the ratings as a table, candidates as columns and requirements as rows, with each basis. Ask: "Do you dispute any rating?" For each dispute, change the rating to the user's correction and keep the trail in its rationale: the original rating and reason, followed by `Disputed by <the user's name>: <reason>.` A correction by the user is the only way a rating changes outside this pass.
+
+## Output
+
+- `run/ratings.yaml`: every candidate rated on every in-scope requirement, with disputes and corrections in the rationales.
+- `independence.rate` in the run record: `full` or `limited`.

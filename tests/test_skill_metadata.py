@@ -315,3 +315,34 @@ def test_prioritize_asks_nothing_and_summarizes_at_the_end():
     assert "Must challenge" in text
     assert "return to Gather" in text
     assert "Never change the scope" in text
+
+
+# Rate (step 6)
+
+
+def test_rate_reference_has_its_sections():
+    assert _reference_sections("references/rate.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_rate_never_receives_prioritization_output():
+    text = _reference("rate.md")
+    rule = text.split("## Rule", 1)[1].split("\n## ", 1)[0]
+    assert "run/shared-context.md" in rule
+    assert "assets/rating.schema.json" in rule
+    assert "run/responses/" not in text.split("## Sequence", 1)[1]
+    for forbidden in ["responses", "preferred options", "point allocations"]:
+        assert forbidden in rule, forbidden
+
+
+def test_rate_records_limited_independence_without_subagents():
+    text = _reference("rate.md")
+    assert "independent subagent" in text
+    assert "rate: limited" in text
+
+
+def test_rate_names_the_basis_and_asks_one_dispute_question():
+    text = _reference("rate.md")
+    assert "Basis:" in text
+    assert "rating.minimum" in text and "rating.maximum" in text
+    assert '"Do you dispute any rating?"' in text
+    assert "run/ratings.yaml" in text
