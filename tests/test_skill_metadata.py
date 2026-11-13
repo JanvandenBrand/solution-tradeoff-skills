@@ -134,6 +134,8 @@ def test_gather_reference_names_the_script_for_every_count():
         "moscow_filter.py",
         "--decision",
         "--include-draft",
+        "--requirement",
+        "origin: assistant",
         "budget.py",
         "validate_run_record.py",
         "--section gather",

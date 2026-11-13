@@ -30,18 +30,28 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
 
 4. **Propose a scope** derived from the frame, and let the user confirm or edit it:
    - **domains**: the domains the decision touches, by the names in the counts (an empty list keeps every domain);
+   - **requirement identifiers**: when the domains do not fit the decision, name the requirements by identifier instead, or in addition (a requirement is kept when its domain or its identifier is listed);
    - **highest plateau**: by default `frame.plateau`;
    - **MoSCoW levels**: by default Must and Should.
+
+   Never change categories in the spreadsheet or in a copy of it to make a scope fit. A working copy may only gain new draft rows.
+
+   **Drafted requirements (decision 11).** If the spreadsheet does not cover something the decision needs, you may draft a requirement as a new draft row in a working copy, with the decision identifier in its decision-reference column. For each one you draft:
+   - present it on its own, with its MoSCoW level, and state which candidates it may favor;
+   - ask the user to approve it, change it or drop it, and wait for the answer before presenting the next; never ask for approval of several at once;
+   - record it in `gather.drafted_requirements` with `origin: assistant`.
+
+   Reload the working copy (step 3) after adding rows.
 
 5. **Filter the requirements.**
 
    ```bash
    python scripts/moscow_filter.py run/requirements.json --decision <decision> \
-       [--domain <name> ...] [--plateau <n>] [--moscow <level> ...] \
+       [--domain <name> ...] [--requirement <id> ...] [--plateau <n>] [--moscow <level> ...] \
        [--include-draft <id> ...] > run/filtered.json
    ```
 
-   Report the in-scope counts from `scope` (Must, Should, total) and the number of excluded drafts from `excluded_drafts`. If the script reports an unknown domain, show the domains it lists and return to step 4.
+   Report the in-scope counts from `scope` (Must, Should, total) and the number of excluded drafts from `excluded_drafts`. If the script reports an unknown domain or requirement identifier, show what it lists and return to step 4.
 
 6. **Check the scope size.** If `scope.exceeds` is true, the in-scope count is above `scope.max_requirements` in the settings (60 by default) and the script printed a warning. Tell the user, propose a narrower scope (fewer domains, a lower plateau, or Must only), and repeat steps 4 to 6 until the user accepts a scope.
 
@@ -65,6 +75,9 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
    gather:
      spreadsheet: <file name only>
      included_drafts: []          # drafts chosen with --include-draft
+     drafted_requirements:        # requirements drafted in this run, if any
+       - id: <identifier>
+         origin: assistant        # or user
      scope:
        domains: []                # empty keeps every domain
        plateau: 2
