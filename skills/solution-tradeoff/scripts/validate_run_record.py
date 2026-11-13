@@ -11,7 +11,7 @@ checked against it. Dates are parsed by ``dates.parse_date``, exactly as by
 ``verification_gate.py``, so a quoted date fails both.
 
 Beyond the format, a script checks only what the assistant did not write
-itself (decision 3). For the gather section, with ``--requirements``, the
+itself (decision 12). For the gather section, with ``--requirements``, the
 counts, the chosen drafts and the budget must match the script outputs. The
 frame is written by the assistant, so its rules are instructions in
 ``references/frame.md``, not checks here.
@@ -41,7 +41,7 @@ from settings import load_settings
 DEFAULT_SCHEMA = Path(__file__).resolve().parent.parent / "assets" / "run-record.schema.json"
 SECTIONS = ("frame", "gather")
 # Sections with rules beyond the format. The frame is written by the assistant,
-# so its rules are instructions in references/frame.md, not checks (decision 3).
+# so its rules are instructions in references/frame.md, not checks (decision 12).
 CHECKED = ("gather",)
 
 

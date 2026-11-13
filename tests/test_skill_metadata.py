@@ -110,7 +110,7 @@ def test_frame_reference_has_its_sections():
 
 
 def test_frame_reference_checks_its_output_by_instruction_not_script():
-    # Decision 3: the assistant writes the frame, so its checks are instructions.
+    # Decision 12: the assistant writes the frame, so its checks are instructions.
     text = (SKILL_DIR / "references" / "frame.md").read_text(encoding="utf-8")
     assert "validate_run_record.py" not in text
     output = text.split("## Output", 1)[1]

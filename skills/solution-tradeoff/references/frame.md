@@ -90,7 +90,7 @@ frame:
   confirmed_at: 2026-11-12
 ```
 
-Before you show the frame summary, check the section yourself. No script does this: you wrote the section, so the check is yours (decision 3). Fix anything that fails, asking the user where the answer is theirs to give.
+Before you show the frame summary, check the section yourself. No script does this: you wrote the section, so the check is yours (decision 12). Fix anything that fails, asking the user where the answer is theirs to give.
 
 - `decision_id` is filled in.
 - There are at least two candidates, with different identifiers, each with a one-line description.

@@ -42,7 +42,7 @@ Commit tests and code together, one concern per commit, so no commit is red. Eve
 
 ## Judgment in instructions, arithmetic in scripts
 
-Deterministic rules (budget, filters, elimination, totals, validation, gates) live in `skills/solution-tradeoff/scripts/` and read their settings from `assets/config.yaml`; never hardcode a threshold, status, column name or budget value ([decision 3](docs/adr/0003-judgment-in-instructions-arithmetic-in-scripts.md)). Scripts:
+Deterministic rules (budget, filters, elimination, totals, validation, gates) live in `skills/solution-tradeoff/scripts/` and read their settings from `assets/config.yaml`; never hardcode a threshold, status, column name or budget value ([decision 3](docs/adr/0003-judgment-in-instructions-arithmetic-in-scripts.md)). A script is justified only for arithmetic or for checking material the assistant did not write; what the assistant writes and then checks gets an instruction ([decision 12](docs/adr/0012-scripts-only-for-arithmetic-and-outside-material.md)). Scripts:
 
 - are plain Python 3.11 modules with an `argparse` entry point, print JSON or a short summary, write errors to standard error, and exit 1 on failure;
 - collect every error and report them together;

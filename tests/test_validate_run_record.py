@@ -29,7 +29,7 @@ def test_default_schema_is_shipped_asset(skill_dir):
     assert DEFAULT_SCHEMA == skill_dir / "assets" / "run-record.schema.json"
 
 
-# Frame: the rules are instructions in references/frame.md (decision 3);
+# Frame: the rules are instructions in references/frame.md (decision 12);
 # the script only checks the format.
 
 
