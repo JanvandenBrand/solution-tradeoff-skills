@@ -242,3 +242,40 @@ def test_scripts_folder_has_no_new_scripts():
         "validate_run_record.py",
         "verification_gate.py",
     ]
+
+
+# Verify perspectives (step 4)
+
+
+def test_verify_perspectives_reference_has_its_sections():
+    assert _reference_sections("references/verify-perspectives.md") == [
+        "Rule",
+        "Sequence",
+        "Output",
+    ]
+
+
+def test_verify_perspectives_confirms_verified_ones_together():
+    text = _reference("verify-perspectives.md")
+    assert '"Are these still correct?"' in text
+    assert "perspective_confirmations" in text
+
+
+def test_verify_perspectives_shows_unverified_ones_one_at_a_time():
+    text = _reference("verify-perspectives.md")
+    assert "one at a time" in text
+    for field in ["verified: true", "verified_by", "verified_at"]:
+        assert field in text, field
+
+
+def test_verify_perspectives_hands_the_file_to_the_user_library():
+    text = _reference("verify-perspectives.md")
+    assert "project files" in text
+    assert "user's folder" in text
+
+
+def test_verify_perspectives_runs_the_gate_and_stops_when_blocked():
+    text = _reference("verify-perspectives.md")
+    assert "python scripts/verification_gate.py --perspective" in text
+    assert "--run-record run/run.yaml" in text
+    assert "stop" in text.split("verification_gate.py --perspective", 1)[1]
