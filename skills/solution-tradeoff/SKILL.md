@@ -17,11 +17,11 @@ Establish what the candidates are judged against: check the spreadsheet prerequi
 
 ## 3. Propose perspectives
 
-TODO: propose the stakeholder perspectives that fit the decision. See [references/propose-perspectives.md](references/propose-perspectives.md).
+Propose 4 to 7 stakeholder perspectives from the frame as one block, each with a one-line reason, and list the ones left out. Read the user's perspective folder before the shipped defaults; on a matching id the user's copy wins. Draft a missing stakeholder, unverified. Follow [references/propose-perspectives.md](references/propose-perspectives.md); its output is the confirmed list of perspectives for step 4.
 
 ## 4. Verify perspectives
 
-TODO: make sure every selected perspective was fully verified once by a person and is confirmed for this run, then pass the verification gate. See [references/verify-perspectives.md](references/verify-perspectives.md).
+Confirm the already-verified perspectives together with one question, and review each unverified one in full, one at a time, before a person accepts it. Then run the verification gate; if it blocks, stop and say which perspective is blocked. Follow [references/verify-perspectives.md](references/verify-perspectives.md); its outputs are `perspective_confirmations` in the run record and the verified copies for the user's library.
 
 ## 5. Prioritize
 

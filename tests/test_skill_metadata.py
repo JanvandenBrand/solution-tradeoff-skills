@@ -62,6 +62,8 @@ def test_record_step_points_at_the_template():
 WRITTEN_STEPS = {
     1: ("Frame", "references/frame.md"),
     2: ("Gather", "references/gather.md"),
+    3: ("Propose perspectives", "references/propose-perspectives.md"),
+    4: ("Verify perspectives", "references/verify-perspectives.md"),
 }
 HOST_TOOL_NAMES = [
     "AskUserQuestion",
