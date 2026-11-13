@@ -6,9 +6,10 @@ Establish the decision and validate the problem. Nothing else starts until the d
 
 ## Conversation rules
 
-- Ask one question at a time. Wait for the answer before asking the next one.
-- Offer multiple choice where you can: propose likely answers drawn from what the user has said, plus an option to answer in their own words.
-- Do not fill in an answer the user has not given. If something is unknown, record it as unknown and say so in the summary.
+- **Judgment calls, one question at a time:** the decision identifier, the wording of the decision question, the outcome, the causal claim, the evidence and the candidates. Wait for the answer before asking the next one.
+- **Inferable facts, one block:** the plateau, the planning horizon, the governing decisions and the constraints. Propose them together, drawn from what the user has said and shared, and ask the user to confirm or edit the block.
+- Offer multiple choice where you can: propose likely answers, plus an option to answer in their own words.
+- Do not record an answer the user has not given or confirmed. If something is unknown, record it as unknown and say so in the summary.
 - When every field is collected, summarize the frame back to the user and ask for confirmation.
 
 ## What to collect

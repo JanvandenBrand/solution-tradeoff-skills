@@ -4,7 +4,7 @@ Establish what the candidates are judged against. Start only after the user has 
 
 ## Rule
 
-Every count, filter and budget comes from running the scripts, never from calculating in prose. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step: one question at a time, multiple choice where possible.
+Every count, filter and budget comes from running the scripts, never from calculating in prose. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step. Here the judgment calls, asked one at a time, are the scope (step 4) and each drafted requirement. The inferable facts, the principles (step 8) and the background summaries (step 9), are shown as one block for the user to confirm or edit.
 
 If the host cannot run scripts, say so and stop: this step cannot be done reliably by hand.
 
@@ -61,9 +61,9 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
    python scripts/budget.py --count <scope.count> > run/budget.json
    ```
 
-8. **Propose the principles** linked from the in-scope requirements: `principles.linked` in `run/filtered.json`, each with its description. If `principles.unknown` lists references not found in the principles sheet, tell the user. Ask whether to add other principles. The user confirms the list.
+8. **Propose the principles** linked from the in-scope requirements: `principles.linked` in `run/filtered.json`, each with its description. If `principles.unknown` lists references not found in the principles sheet, tell the user. Ask whether to add other principles. Show them in one block with the background summaries from step 9, and ask the user to confirm or edit the block.
 
-9. **Collect background.** Ask for governing documents or other context the perspectives and the rater should know. Summarize each one in a few lines, with its title. Do not copy documents into the run record or the shared context.
+9. **Collect background.** Ask for governing documents or other context the perspectives and the rater should know. Summarize each one in a few lines, with its title, and add the summaries to the block from step 8. Do not copy documents into the run record or the shared context.
 
 10. **Summarize and confirm.** Show the scope, the in-scope counts, the excluded drafts (and the drafts the user chose, if any), the budget, the principles and the background summaries. Ask: "Is this what the candidates should be judged against?" Continue only after the user confirms. If the summary shows that the problem, the outcome or the criteria are wrong, return to the Frame step as a question for the user.
 
