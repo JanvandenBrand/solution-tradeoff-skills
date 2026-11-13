@@ -8,6 +8,15 @@
   "properties": {
     "frame": {"$ref": "#/$defs/frame"},
     "gather": {"$ref": "#/$defs/gather"},
+    "independence": {
+      "type": "object",
+      "description": "Whether the Prioritize and Rate passes ran in independent subagents (full) or in turn in one conversation (limited).",
+      "additionalProperties": false,
+      "properties": {
+        "prioritize": {"enum": ["full", "limited"]},
+        "rate": {"enum": ["full", "limited"]}
+      }
+    },
     "perspective_confirmations": {
       "type": "array",
       "description": "Read by verification_gate.py: one confirmation per selected perspective for this run.",

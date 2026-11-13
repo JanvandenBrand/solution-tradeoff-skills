@@ -187,3 +187,22 @@ def test_drafted_requirements_with_origin_are_valid(record):
 def test_drafted_requirement_origin_must_be_known(record):
     record["gather"]["drafted_requirements"] = [{"id": "NEW01", "origin": "model"}]
     assert any("model" in e for e in run_record_errors(record, None))
+
+
+# Independence of the Prioritize and Rate passes
+
+
+@pytest.mark.parametrize("value", ["full", "limited"])
+def test_independence_values_are_valid(record, value):
+    record["independence"] = {"prioritize": value, "rate": value}
+    assert run_record_errors(record, None) == []
+
+
+def test_independence_value_must_be_known(record):
+    record["independence"] = {"rate": "partial"}
+    assert any("partial" in e for e in run_record_errors(record, None))
+
+
+def test_independence_has_no_other_steps(record):
+    record["independence"] = {"compile": "full"}
+    assert any("compile" in e for e in run_record_errors(record, None))
