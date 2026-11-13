@@ -2,7 +2,8 @@
 
 Usage:
     python moscow_filter.py <rows.json> [--moscow Must --moscow Should]
-        [--domain <name> ...] [--plateau <n>] [--decision <reference>]
+        [--domain <name> ...] [--requirement <id> ...] [--plateau <n>]
+        [--decision <reference>]
         [--include-draft <req_id> ...] [--config <settings file>]
 
 ``rows.json`` is either a list of requirement rows or the output of
@@ -14,6 +15,9 @@ Usage:
 their ``apr_ref`` cells. When the input is ``load_requirements.py`` output,
 each one carries its description from the principles sheet, and references not
 found there are listed under ``unknown``.
+
+``--domain`` and ``--requirement`` together keep a row when its domain or its
+identifier is listed; the MoSCoW, status, plateau and draft rules still apply.
 
 ``scope`` gives the in-scope counts and compares them with
 ``scope.max_requirements`` in the settings. Above that cap, a warning goes to
@@ -90,6 +94,7 @@ def filter_requirements(
     draft_statuses: Iterable[str] = (),
     decision_ref: str | None = None,
     include_drafts: Iterable[str] = (),
+    requirement_ids: Iterable[str] = (),
 ) -> FilterResult:
     """Split requirement rows into Must and Should lists.
 
@@ -97,7 +102,8 @@ def filter_requirements(
         rows: Requirement rows keyed by logical column names.
         moscow: MoSCoW levels to keep (case-insensitive).
         excluded_statuses: Statuses that remove a row (case-insensitive).
-        domains: Domains to keep; empty keeps every domain.
+        domains: Domains to keep. With neither ``domains`` nor
+            ``requirement_ids``, every domain is kept.
         plateau: If set, drop rows whose plateau is higher than this. Rows
             without a numeric plateau are kept.
         draft_statuses: Statuses that mark a draft (case-insensitive).
@@ -106,6 +112,8 @@ def filter_requirements(
             draft is excluded.
         include_drafts: Identifiers of drafts the user chose for this
             decision (case-insensitive); they are kept whether tagged or not.
+        requirement_ids: Requirement identifiers to keep, in addition to the
+            rows of ``domains`` (case-insensitive).
 
     Returns:
         The Must and Should rows, each sorted by ``req_id``; the sorted
@@ -114,7 +122,8 @@ def filter_requirements(
         chosen drafts that were kept.
 
     Raises:
-        ValueError: If a requested domain does not occur in ``rows``, or a
+        ValueError: If a requested domain or requirement identifier does not
+            occur in ``rows``, or a
             chosen identifier is not a draft in ``rows``. The message lists
             the domains present or the identifiers that are not drafts.
     """
@@ -127,6 +136,11 @@ def filter_requirements(
             f"Unknown domain(s): {', '.join(unknown)}. "
             f"Domains present in the requirements: {', '.join(present) or 'none'}."
         )
+    keep_ids = {normalize(i) for i in requirement_ids}
+    present_ids = {normalize(r.get("req_id")) for r in rows}
+    unknown_ids = [i for i in requirement_ids if normalize(i) not in present_ids]
+    if unknown_ids:
+        raise ValueError(f"Unknown requirement identifier(s): {', '.join(unknown_ids)}.")
     excluded = {normalize(s) for s in excluded_statuses}
     drafts = {normalize(s) for s in draft_statuses}
     chosen = {normalize(i) for i in include_drafts}
@@ -142,7 +156,11 @@ def filter_requirements(
         row
         for row in rows
         if normalize(row.get("status")) not in excluded
-        and (not keep_domains or normalize(row.get("domain")) in keep_domains)
+        and (
+            not (keep_domains or keep_ids)
+            or normalize(row.get("domain")) in keep_domains
+            or normalize(row.get("req_id")) in keep_ids
+        )
         and normalize(row.get("moscow")) in keep_moscow
         and not _above_plateau(row, plateau)
     ]
@@ -215,6 +233,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("rows", type=Path, help="JSON file with requirement rows.")
     parser.add_argument("--moscow", action="append", help="MoSCoW level to keep (repeatable).")
     parser.add_argument("--domain", action="append", default=[], help="Domain to keep.")
+    parser.add_argument(
+        "--requirement", action="append", default=[], help="Requirement identifier to keep."
+    )
     parser.add_argument("--plateau", type=int, help="Highest plateau to keep.")
     parser.add_argument(
         "--decision", help="Current decision reference; keeps drafts tagged with it."
@@ -243,6 +264,7 @@ def main(argv: list[str] | None = None) -> int:
             draft_statuses=cfg.get("draft_statuses") or [],
             decision_ref=args.decision,
             include_drafts=args.include_draft,
+            requirement_ids=args.requirement,
         )
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)

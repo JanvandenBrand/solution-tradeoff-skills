@@ -436,3 +436,54 @@ def test_main_lists_principles_linked_from_kept_requirements(tmp_path, capsys):
         "linked": [{"principle_id": "P01", "description": "Reuse before buy"}],
         "unknown": [],
     }
+
+
+# Scope by requirement identifier
+
+
+def _by_id(ids, domains=()):
+    return filter_requirements(
+        _ROWS,
+        moscow=["must", "should"],
+        excluded_statuses=["removed"],
+        domains=domains,
+        requirement_ids=ids,
+    )
+
+
+def test_filter_requirements_keeps_only_the_named_requirements():
+    result = _by_id(["R001", "r004"])
+    assert [r["req_id"] for r in result.must + result.should] == ["R001", "R004"]
+
+
+def test_filter_requirements_combines_named_requirements_with_domains():
+    result = _by_id(["R004"], domains=["Security"])
+    assert [r["req_id"] for r in result.must] == ["R001", "R002"]
+    assert [r["req_id"] for r in result.should] == ["R004", "R005"]
+
+
+def test_filter_requirements_named_requirements_still_pass_the_moscow_filter():
+    result = _by_id(["R006"])
+    assert result.must == [] and result.should == []
+
+
+def test_filter_requirements_raises_value_error_on_unknown_identifiers():
+    with pytest.raises(ValueError) as exc:
+        _by_id(["R001", "R999", "X1"])
+    message = str(exc.value)
+    assert "R999" in message and "X1" in message and "R001" not in message
+
+
+def test_main_scopes_by_requirement(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_ROWS))
+    assert main([str(path), "--requirement", "R003", "--requirement", "R001"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert [r["req_id"] for r in out["must"]] == ["R001", "R003"]
+
+
+def test_main_returns_1_on_unknown_requirement(tmp_path, capsys):
+    path = tmp_path / "rows.json"
+    path.write_text(json.dumps(_ROWS))
+    assert main([str(path), "--requirement", "R999"]) == 1
+    assert "R999" in capsys.readouterr().err
