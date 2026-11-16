@@ -9,7 +9,7 @@ Decisions that shape this repository, in the Cognitect format (title, context, d
 | 3 | [Judgment in instructions, arithmetic in scripts](0003-judgment-in-instructions-arithmetic-in-scripts.md) | Accepted, amended by 12 |
 | 4 | [Perspectives as Markdown with a YAML header, in a library outside the skill](0004-perspectives-as-markdown-in-a-library-outside-the-skill.md) | Accepted |
 | 5 | [Verify once fully; confirm lightly per run](0005-verify-once-fully-confirm-lightly-per-run.md) | Accepted |
-| 6 | [Separate rating pass; ten steps](0006-separate-rating-pass-ten-steps.md) | Accepted, amended by 13 |
+| 6 | [Separate rating pass; ten steps](0006-separate-rating-pass-ten-steps.md) | Accepted, amended by 13 and 14 |
 | 7 | [Draft requirements included, scoped by decision reference](0007-draft-requirements-scoped-by-decision-reference.md) | Accepted |
 | 8 | [Removed requirements excluded](0008-removed-requirements-excluded.md) | Accepted |
 | 9 | [Success target: under 1.5 hours of hands-on time](0009-success-target-under-ninety-minutes-hands-on.md) | Accepted |
@@ -17,5 +17,6 @@ Decisions that shape this repository, in the Cognitect format (title, context, d
 | 11 | [Assistant-drafted requirements are marked and approved one by one](0011-assistant-drafted-requirements-marked-and-approved-one-by-one.md) | Accepted |
 | 12 | [Scripts only for arithmetic and for checking material the assistant did not write](0012-scripts-only-for-arithmetic-and-outside-material.md) | Accepted |
 | 13 | [Perspectives before Gather; scope frozen before Prioritize](0013-perspectives-before-gather-scope-frozen-before-prioritize.md) | Accepted |
+| 14 | [Judgment-based ratings mark candidates at risk; they don't eliminate](0014-judgment-based-ratings-mark-candidates-at-risk.md) | Accepted |
 
 To change a decision, add a new record that supersedes or amends the old one and set the old record's status to "Superseded by N" or "Accepted; amended by N".

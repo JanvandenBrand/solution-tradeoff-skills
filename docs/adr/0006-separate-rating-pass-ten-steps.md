@@ -14,7 +14,7 @@ Reason: one concern per step, and protection against ratings anchoring on prefer
 
 ## Status
 
-Accepted; amended by [decision 13](0013-perspectives-before-gather-scope-frozen-before-prioritize.md)
+Accepted; amended by [decision 13](0013-perspectives-before-gather-scope-frozen-before-prioritize.md) and [decision 14](0014-judgment-based-ratings-mark-candidates-at-risk.md)
 
 ## Consequences
 
