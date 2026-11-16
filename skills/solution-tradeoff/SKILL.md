@@ -41,7 +41,7 @@ Rank the candidates with `rank.py`: per perspective, points times rating over th
 
 ## 9. Challenge
 
-TODO: test the compiled analysis for blind spots, divergence and weak conclusions. See [references/challenge.md](references/challenge.md).
+Argue the opposing side in an independent subagent if the host can start one; otherwise in this conversation, and record limited independence. Make the strongest case against the leading candidate, and test drafted requirements, the hypothesis label, at-risk decisions, Must challenges after the freeze, a close call, decisive ratings on unread sources or judgment, and conflicts with governing decisions or principles. Classify each finding as execution or premise, and let the user settle all of them in one block: an accepted execution finding reruns Compile, and an accepted premise finding returns to Frame. Follow [references/challenge.md](references/challenge.md); its output is `run/challenge.md`.
 
 ## 10. Record
 

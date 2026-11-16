@@ -68,6 +68,7 @@ WRITTEN_STEPS = {
     6: ("Rate", "references/rate.md"),
     7: ("Validate", "references/validate.md"),
     8: ("Compile", "references/compile.md"),
+    9: ("Challenge", "references/challenge.md"),
 }
 HOST_TOOL_NAMES = [
     "AskUserQuestion",
@@ -442,6 +443,7 @@ def test_validate_sends_failures_back_and_never_fixes_numbers():
         ("rate.md", "# Step 6: Rate"),
         ("validate.md", "# Step 7: Validate"),
         ("compile.md", "# Step 8: Compile"),
+        ("challenge.md", "# Step 9: Challenge"),
     ],
 )
 def test_reference_heading_carries_its_step_number(reference, heading):
@@ -525,3 +527,43 @@ def test_compile_lists_each_flag(flag):
 def test_compile_shows_each_perspective_score_next_to_its_preferred_option():
     text = _reference("compile.md")
     assert "preferred option" in text and "basis" in text and "`source`" in text
+
+
+# Challenge (step 9)
+
+
+def test_challenge_reference_has_its_sections():
+    assert _reference_sections("references/challenge.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_challenge_runs_in_its_own_subagent_and_records_independence():
+    text = _reference("challenge.md")
+    assert "independent subagent" in text
+    assert "challenge: full" in text and "challenge: limited" in text
+    for source in ["run/analysis.md", "run/run.yaml", "run/ratings.yaml", "run/responses/"]:
+        assert source in text, source
+
+
+@pytest.mark.parametrize(
+    "point",
+    [
+        "drafted requirements",
+        "hypothesis",
+        "at-risk",
+        "after the freeze",
+        "close call",
+        "unread_source",
+        "judgment",
+        "principles",
+    ],
+)
+def test_challenge_tests_each_point(point):
+    assert point in _reference("challenge.md")
+
+
+def test_challenge_classifies_findings_and_settles_them_in_one_block():
+    text = _reference("challenge.md")
+    assert "strongest case against the leading candidate" in text
+    assert "run/challenge.md" in text
+    for phrase in ["execution", "premise", "one block", "settled: accepted", "Frame step"]:
+        assert phrase in text, phrase
