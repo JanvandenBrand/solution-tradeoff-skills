@@ -4,7 +4,9 @@ Establish what the candidates are judged against. Start only after the frame is 
 
 ## Rule
 
-Every count, filter and budget comes from running the scripts, never from calculating in prose. Never state a count, total or budget before the script that produces it has run, not even as an estimate. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step. Here the judgment calls, asked one at a time, are the scope (step 4) and each drafted requirement. The inferable facts, the principles (step 8) and the background summaries (step 9), are shown as one block for the user to confirm or edit.
+Every count, filter and budget comes from running the scripts, never from calculating in prose. Never state a count, total or budget before the script that produces it has run, not even as an estimate. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step. Here the judgment calls, asked one at a time, are the scope (step 4) and each drafted requirement. The inferable facts, the principles (step 10) and the background summaries (step 11), are shown as one block for the user to confirm or edit.
+
+The perspectives review the scope once, before the budget is set (step 7), and the user settles their challenges once (step 8). When the user confirms the summary (step 12), the scope is frozen (decision 13). No later step adds or changes requirements.
 
 If the host cannot run scripts, say so and stop: this step cannot be done reliably by hand.
 
@@ -55,17 +57,25 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
 
 6. **Check the scope size.** If `scope.exceeds` is true, the in-scope count is above `scope.max_requirements` in the settings (60 by default) and the script printed a warning. Tell the user, propose a narrower scope (fewer domains, a lower plateau, or Must only), and repeat steps 4 to 6 until the user accepts a scope.
 
-7. **Calculate the point budget** from the in-scope total in `scope.count`.
+7. **Review the scope with the perspectives.** Each verified perspective, using the file listed for it in `run/gate.json`, reviews the proposed scope and returns only Must challenges. It receives the frame summary, the in-scope requirements from `run/filtered.json` (identifier, description and MoSCoW level) and its own perspective file, and nothing else. If the host can start independent subagents, give each perspective its own; otherwise review them in turn, each from those inputs only. Each one writes `run/scope-review/<id>.yaml` with a `must_challenges` list in the format of `assets/tradeoff-output.schema.json`: `req_id`, `action` (`challenge` a Must, or `add` a missing one) and `description`. An empty list is a valid answer.
+
+8. **Settle the challenges once.** Show every challenge in one block, grouped by requirement, with the perspectives that raised it. The user settles them once, accepting or rejecting each; mark each entry in its review file with `settled: accepted` or `settled: rejected`.
+   - An accepted `challenge` drops the requirement from the scope. Never change its category in the spreadsheet or a copy: list every requirement that stays in `scope.requirements`, clear `scope.domains`, and run step 5 again with `--requirement` for each. The Record step lists the accepted challenges as changes for the spreadsheet owner.
+   - An accepted `add` is a drafted requirement under decision 11: present it on its own, with the candidates it may favor, and wait for approval before the next one (step 4).
+
+   Run steps 5 and 6 again if the scope changed. Do not review the scope with the perspectives a second time.
+
+9. **Calculate the point budget** from the in-scope total in `scope.count`.
 
    ```bash
    python scripts/budget.py --count <scope.count> > run/budget.json
    ```
 
-8. **Propose the principles** linked from the in-scope requirements: `principles.linked` in `run/filtered.json`, each with its description. If `principles.unknown` lists references not found in the principles sheet, tell the user. Ask whether to add other principles. Show them in one block with the background summaries from step 9, and ask the user to confirm or edit the block.
+10. **Propose the principles** linked from the in-scope requirements: `principles.linked` in `run/filtered.json`, each with its description. If `principles.unknown` lists references not found in the principles sheet, tell the user. Ask whether to add other principles. Show them in one block with the background summaries from step 11, and ask the user to confirm or edit the block.
 
-9. **Collect background.** Ask for governing documents or other context the perspectives and the rater should know. Summarize each one in a few lines, with its title, and add the summaries to the block from step 8. Do not copy documents into the run record or the shared context.
+11. **Collect background.** Ask for governing documents or other context the perspectives and the rater should know. Summarize each one in a few lines, with its title, and add the summaries to the block from step 10. Do not copy documents into the run record or the shared context.
 
-10. **Summarize and confirm.** Show the scope, the in-scope counts, the excluded drafts (and the drafts the user chose, if any), the budget, the principles and the background summaries. Ask: "Is this what the candidates should be judged against?" Continue only after the user confirms. If the summary shows that the problem, the outcome or the criteria are wrong, return to the Frame step as a question for the user.
+12. **Summarize, confirm and freeze.** Show the scope, the in-scope counts, the excluded drafts (and the drafts the user chose, if any), the settled challenges, the budget, the principles and the background summaries. Ask: "Is this what the candidates should be judged against?" Continue only after the user confirms. With that confirmation the scope is frozen: no later step adds or changes requirements, and Must challenges raised in the Prioritize step are recorded for the Challenge step only. If the summary shows that the problem, the outcome or the criteria are wrong, return to the Frame step as a question for the user.
 
 ## Output
 

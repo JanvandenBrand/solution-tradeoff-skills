@@ -154,11 +154,34 @@ def test_gather_reference_names_the_script_for_every_count():
         assert command in text, command
 
 
-def test_gather_sequence_has_ten_steps():
-    text = (SKILL_DIR / "references" / "gather.md").read_text(encoding="utf-8")
-    sequence = text.split("## Sequence", 1)[1].split("\n## ", 1)[0]
+def _gather_sequence() -> str:
+    return _reference("gather.md").split("## Sequence", 1)[1].split("\n## ", 1)[0]
+
+
+def test_gather_sequence_has_twelve_steps():
+    sequence = _gather_sequence()
     numbered = [line.split(".", 1)[0] for line in sequence.splitlines() if line[:1].isdigit()]
-    assert numbered == [str(i) for i in range(1, 11)]
+    assert numbered == [str(i) for i in range(1, 13)]
+
+
+def test_gather_reviews_the_scope_with_the_perspectives_before_the_budget():
+    sequence = _gather_sequence()
+    review = sequence.index("**Review the scope with the perspectives.**")
+    assert review < sequence.index("budget.py")
+    for phrase in ["run/gate.json", "independent subagents", "must_challenges", "one block"]:
+        assert phrase in sequence, phrase
+
+
+def test_gather_settles_challenges_once_and_freezes_the_scope():
+    text = _reference("gather.md")
+    for phrase in [
+        "scope.requirements",
+        "decision 11",
+        "settles them once",
+        "the scope is frozen",
+        "No later step adds or changes requirements",
+    ]:
+        assert phrase in text, phrase
 
 
 SHARED_CONTEXT_SECTIONS = [
