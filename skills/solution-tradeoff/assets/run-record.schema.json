@@ -140,7 +140,7 @@
     },
     "gather": {
       "type": "object",
-      "description": "Step 2: what the candidates are judged against. Counts and the budget come from the scripts.",
+      "description": "Step 4: what the candidates are judged against. Counts and the budget come from the scripts.",
       "additionalProperties": false,
       "required": [
         "spreadsheet", "included_drafts", "scope", "outputs", "counts", "budget",
