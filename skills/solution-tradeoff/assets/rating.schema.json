@@ -20,7 +20,7 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["candidate", "requirement_id", "rating", "rationale"],
+        "required": ["candidate", "requirement_id", "rating", "rationale", "basis"],
         "additionalProperties": false,
         "properties": {
           "candidate": {"type": "string", "minLength": 1},
@@ -29,7 +29,11 @@
             "type": "integer",
             "description": "How well the candidate meets the requirement, on the scale set in config.yaml."
           },
-          "rationale": {"type": "string", "minLength": 1}
+          "rationale": {"type": "string", "minLength": 1},
+          "basis": {
+            "enum": ["source", "judgment", "unread_source"],
+            "description": "What the rating rests on: a source read in this run, the rater's judgment, or a source known only by title or claim. Only a source eliminates a candidate (decision 14)."
+          }
         }
       }
     }

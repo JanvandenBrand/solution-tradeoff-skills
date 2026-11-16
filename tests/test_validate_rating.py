@@ -19,12 +19,12 @@ def _data():
         """
 candidates: [A, B]
 ratings:
-  - {candidate: A, requirement_id: REQ001, rating: 8, rationale: r}
-  - {candidate: A, requirement_id: REQ002, rating: 7, rationale: r}
-  - {candidate: A, requirement_id: REQ005, rating: 9, rationale: r}
-  - {candidate: B, requirement_id: REQ001, rating: 5, rationale: r}
-  - {candidate: B, requirement_id: REQ002, rating: 8, rationale: r}
-  - {candidate: B, requirement_id: REQ005, rating: 4, rationale: r}
+  - {candidate: A, requirement_id: REQ001, rating: 8, rationale: r, basis: source}
+  - {candidate: A, requirement_id: REQ002, rating: 7, rationale: r, basis: source}
+  - {candidate: A, requirement_id: REQ005, rating: 9, rationale: r, basis: source}
+  - {candidate: B, requirement_id: REQ001, rating: 5, rationale: r, basis: source}
+  - {candidate: B, requirement_id: REQ002, rating: 8, rationale: r, basis: source}
+  - {candidate: B, requirement_id: REQ005, rating: 4, rationale: r, basis: source}
 """
     )
 
@@ -52,6 +52,25 @@ def test_rating_errors_rejects_missing_rationale():
     data = _data()
     del data["ratings"][0]["rationale"]
     assert any("rationale" in e for e in _errors(data))
+
+
+def test_rating_errors_rejects_missing_basis():
+    data = _data()
+    del data["ratings"][0]["basis"]
+    assert any("basis" in e for e in _errors(data))
+
+
+@pytest.mark.parametrize("basis", ["source", "judgment", "unread_source"])
+def test_rating_errors_accepts_each_basis(basis):
+    data = _data()
+    data["ratings"][0]["basis"] = basis
+    assert _errors(data) == []
+
+
+def test_rating_errors_rejects_unknown_basis():
+    data = _data()
+    data["ratings"][0]["basis"] = "guess"
+    assert any("guess" in e for e in _errors(data))
 
 
 def test_rating_errors_rejects_preference_fields():

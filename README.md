@@ -78,8 +78,8 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | `moscow_filter.py <rows.json> --decision <reference> [--include-draft <id> ...]` | Keep Must and Should requirements, filtered by status, domain or requirement identifier, and plateau; keep drafts tagged with the current decision or chosen by the user, and report the rest; list the principles linked from in-scope requirements; warn when the scope exceeds `scope.max_requirements` |
 | `budget.py --count <n>` | Point budget each perspective distributes |
 | `check_budget.py <file or directory> --requirements <filtered.json>` | Check that every perspective response spends exactly the point budget |
-| `elimination.py <ratings.yaml> --requirements <filtered.json>` | Candidates that rate below the threshold on any Must requirement |
-| `validate_rating.py <ratings.yaml> --requirements <filtered.json>` | Check that every candidate is rated once on every in-scope requirement, on the configured scale |
+| `elimination.py <ratings.yaml> --requirements <filtered.json>` | Candidates eliminated by a below-threshold Must rating from a source that was read, and candidates at risk from one based on judgment or an unread source |
+| `validate_rating.py <ratings.yaml> --requirements <filtered.json>` | Check that every candidate is rated once on every in-scope requirement, on the configured scale, each with its basis |
 | `validate_response.py <file or directory>` | Check perspective responses against the output schema |
 | `validate_perspective.py <file or directory>` | Check perspective files against the perspective format |
 | `validate_run_record.py <run.yaml> --section gather [--requirements <filtered.json>]` | Check the run record format, and the gather counts, chosen drafts and budget against the script outputs |

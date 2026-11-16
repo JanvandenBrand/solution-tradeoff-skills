@@ -1,7 +1,8 @@
 """Validate a rating file: every candidate rated on every in-scope requirement.
 
 The rater sees only the candidates and the requirements. The schema has no
-place for preferences or points.
+place for preferences or points. Every rating names its basis (``source``,
+``judgment`` or ``unread_source``); ``elimination.py`` reads it.
 
 Usage:
     python validate_rating.py <ratings.yaml> --requirements <filtered.json>

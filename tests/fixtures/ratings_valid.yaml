@@ -1,8 +1,8 @@
 candidates: [A, B]
 ratings:
-  - {candidate: A, requirement_id: REQ001, rating: 8, rationale: "Encryption with customer keys is built in."}
-  - {candidate: A, requirement_id: REQ002, rating: 7, rationale: "Uses the central identity provider."}
-  - {candidate: A, requirement_id: REQ005, rating: 9, rationale: "Fully described in code."}
-  - {candidate: B, requirement_id: REQ001, rating: 5, rationale: "Only provider-managed keys."}
-  - {candidate: B, requirement_id: REQ002, rating: 8, rationale: "Supports multi-factor sign-in."}
-  - {candidate: B, requirement_id: REQ005, rating: 4, rationale: "Partly manual setup."}
+  - {candidate: A, requirement_id: REQ001, rating: 8, rationale: "Encryption with customer keys is built in.", basis: source}
+  - {candidate: A, requirement_id: REQ002, rating: 7, rationale: "Uses the central identity provider.", basis: source}
+  - {candidate: A, requirement_id: REQ005, rating: 9, rationale: "Fully described in code.", basis: source}
+  - {candidate: B, requirement_id: REQ001, rating: 5, rationale: "Only provider-managed keys.", basis: source}
+  - {candidate: B, requirement_id: REQ002, rating: 8, rationale: "Supports multi-factor sign-in.", basis: source}
+  - {candidate: B, requirement_id: REQ005, rating: 4, rationale: "Partly manual setup.", basis: source}

@@ -1,16 +1,25 @@
 """Apply the Must elimination threshold to the Must ratings.
 
-A candidate that rates below the threshold on any Must requirement is
-eliminated. Ratings come from the separate rating pass and are validated
-first; the threshold uses the same scale.
+A Must rating below the threshold eliminates a candidate only when its basis
+is ``source``: a source that was read in this run. Below-threshold Must ratings
+with basis ``judgment`` or ``unread_source`` mark the candidate at risk, and
+the user decides (decision 14). A candidate with any source-based failure is
+eliminated and not listed as at risk.
+
+Ratings come from the separate rating pass and are validated first; the
+threshold uses the same scale.
 
 Usage:
     python elimination.py <ratings.yaml> --requirements <filtered.json>
         [--threshold <n>] [--config <settings file>]
 
 ``filtered.json`` is the output of ``moscow_filter.py``; its Must requirements
-are the ones that can eliminate a candidate. Prints
-``{"threshold": n, "eliminated": {candidate: [req_ids]}, "remaining": [...]}``.
+are the ones that can eliminate a candidate. Prints::
+
+    {"threshold": n,
+     "eliminated": {candidate: [{"requirement_id": id, "basis": basis}]},
+     "at_risk": {candidate: [{"requirement_id": id, "basis": basis}]},
+     "remaining": [candidates not eliminated, at-risk ones included]}
 """
 
 import argparse
@@ -19,24 +28,44 @@ import sys
 from collections.abc import Iterable, Mapping
 from pathlib import Path
 
+import yaml
+
 from settings import load_settings
 from validate_rating import load_ratings, read_scope
 
 Scores = Mapping[str, Mapping[str, float]]
+Bases = Mapping[str, Mapping[str, str]]
+Failures = dict[str, list[dict[str, str]]]
+
+ELIMINATING_BASIS = "source"
 
 
-def eliminate(scores: Scores, must_ids: Iterable[str], threshold: float) -> dict[str, list[str]]:
-    """Return, per candidate, the Must requirements it scores below ``threshold`` on.
+def read_bases(path: Path) -> dict[str, dict[str, str]]:
+    """Return the basis per requirement per candidate from a validated rating file."""
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    bases: dict[str, dict[str, str]] = {c: {} for c in data["candidates"]}
+    for r in data["ratings"]:
+        bases[r["candidate"]][r["requirement_id"]] = r["basis"]
+    return bases
 
-    An empty list means the candidate survives.
+
+def eliminate(
+    scores: Scores, bases: Bases, must_ids: Iterable[str], threshold: float
+) -> tuple[Failures, Failures]:
+    """Return the eliminated and the at-risk candidates, with their failing Musts.
 
     Args:
         scores: Score per requirement identifier, per candidate.
+        bases: Basis per requirement identifier, per candidate.
         must_ids: Identifiers of the Must requirements, in reporting order.
         threshold: Lowest passing score.
 
     Returns:
-        Mapping of candidate to failing Must identifiers.
+        ``(eliminated, at_risk)``: each maps a candidate to its failing Must
+        requirements, as ``{"requirement_id", "basis"}``. A candidate is
+        eliminated when any failing rating has basis ``source``; otherwise a
+        candidate with failing ratings is at risk. Candidates without failures
+        appear in neither.
 
     Raises:
         ValueError: If any candidate lacks a numeric score for a Must
@@ -44,9 +73,10 @@ def eliminate(scores: Scores, must_ids: Iterable[str], threshold: float) -> dict
     """
     musts = list(must_ids)
     errors: list[str] = []
-    result: dict[str, list[str]] = {}
+    eliminated: Failures = {}
+    at_risk: Failures = {}
     for candidate, per_req in scores.items():
-        failing: list[str] = []
+        failing: list[dict[str, str]] = []
         for req_id in musts:
             if req_id not in per_req:
                 errors.append(f"candidate '{candidate}' has no score for Must '{req_id}'")
@@ -58,11 +88,15 @@ def eliminate(scores: Scores, must_ids: Iterable[str], threshold: float) -> dict
                 )
                 continue
             if score < threshold:
-                failing.append(req_id)
-        result[candidate] = failing
+                basis = str(bases.get(candidate, {}).get(req_id, "judgment"))
+                failing.append({"requirement_id": req_id, "basis": basis})
+        if any(f["basis"] == ELIMINATING_BASIS for f in failing):
+            eliminated[candidate] = failing
+        elif failing:
+            at_risk[candidate] = failing
     if errors:
         raise ValueError("\n".join(errors))
-    return result
+    return eliminated, at_risk
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -85,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
         scores = load_ratings(
             args.ratings, must_ids, should_ids, scale["minimum"], scale["maximum"]
         )
-        result = eliminate(scores, must_ids, threshold)
+        eliminated, at_risk = eliminate(scores, read_bases(args.ratings), must_ids, threshold)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         for line in str(exc).splitlines():
             print(f"error: {line}", file=sys.stderr)
@@ -94,8 +128,9 @@ def main(argv: list[str] | None = None) -> int:
         threshold = int(threshold)
     output = {
         "threshold": threshold,
-        "eliminated": {c: reqs for c, reqs in result.items() if reqs},
-        "remaining": [c for c, reqs in result.items() if not reqs],
+        "eliminated": eliminated,
+        "at_risk": at_risk,
+        "remaining": [c for c in scores if c not in eliminated],
     }
     print(json.dumps(output))
     return 0
