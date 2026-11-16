@@ -352,6 +352,12 @@ def test_prioritize_records_must_challenges_for_the_challenge_step_only():
 # Rate (step 6)
 
 
+def test_gather_records_scope_review_independence():
+    text = _reference("gather.md")
+    assert "scope_review: full" in text
+    assert "scope_review: limited" in text
+
+
 def test_rate_reference_has_its_sections():
     assert _reference_sections("references/rate.md") == ["Rule", "Sequence", "Output"]
 

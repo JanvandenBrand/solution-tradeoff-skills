@@ -10,9 +10,10 @@
     "gather": {"$ref": "#/$defs/gather"},
     "independence": {
       "type": "object",
-      "description": "Whether the Prioritize and Rate passes ran in independent subagents (full) or in turn in one conversation (limited).",
+      "description": "Whether the scope review and the Prioritize and Rate passes ran in independent subagents (full) or in turn in one conversation (limited).",
       "additionalProperties": false,
       "properties": {
+        "scope_review": {"enum": ["full", "limited"]},
         "prioritize": {"enum": ["full", "limited"]},
         "rate": {"enum": ["full", "limited"]}
       }

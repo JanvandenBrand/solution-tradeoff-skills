@@ -189,12 +189,12 @@ def test_drafted_requirement_origin_must_be_known(record):
     assert any("model" in e for e in run_record_errors(record, None))
 
 
-# Independence of the Prioritize and Rate passes
+# Independence of the scope review and the Prioritize and Rate passes
 
 
 @pytest.mark.parametrize("value", ["full", "limited"])
 def test_independence_values_are_valid(record, value):
-    record["independence"] = {"prioritize": value, "rate": value}
+    record["independence"] = {"scope_review": value, "prioritize": value, "rate": value}
     assert run_record_errors(record, None) == []
 
 
