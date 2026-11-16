@@ -25,8 +25,8 @@
         "required": ["id", "confirmed_by", "confirmed_at"],
         "properties": {
           "id": {"type": "string", "minLength": 1},
-          "confirmed_by": {"type": "string", "minLength": 1},
-          "confirmed_at": {"$ref": "#/$defs/date"}
+          "confirmed_by": {"$ref": "#/$defs/confirmed_by"},
+          "confirmed_at": {"$ref": "#/$defs/confirmed_at"}
         }
       }
     }
@@ -35,6 +35,14 @@
     "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
     "text": {"type": "string", "minLength": 1},
     "texts": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "confirmed_by": {
+      "description": "The person who confirmed; null when not yet confirmed in this run, for example after state was rebuilt (decision 15).",
+      "anyOf": [{"$ref": "#/$defs/text"}, {"type": "null"}]
+    },
+    "confirmed_at": {
+      "description": "The date of the confirmation; null when not yet confirmed.",
+      "anyOf": [{"$ref": "#/$defs/date"}, {"type": "null"}]
+    },
     "frame": {
       "type": "object",
       "description": "Step 1: the decision, the validated problem and the candidates, as confirmed by the user.",
@@ -103,8 +111,8 @@
             "notes": {"type": "string"}
           }
         },
-        "confirmed_by": {"$ref": "#/$defs/text"},
-        "confirmed_at": {"$ref": "#/$defs/date"}
+        "confirmed_by": {"$ref": "#/$defs/confirmed_by"},
+        "confirmed_at": {"$ref": "#/$defs/confirmed_at"}
       }
     },
     "gather": {
@@ -178,8 +186,8 @@
             }
           }
         },
-        "confirmed_by": {"$ref": "#/$defs/text"},
-        "confirmed_at": {"$ref": "#/$defs/date"}
+        "confirmed_by": {"$ref": "#/$defs/confirmed_by"},
+        "confirmed_at": {"$ref": "#/$defs/confirmed_at"}
       }
     }
   }

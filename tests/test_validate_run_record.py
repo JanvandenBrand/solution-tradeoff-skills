@@ -219,3 +219,55 @@ def test_gather_scope_may_list_requirement_identifiers(record):
 def test_gather_scope_requirements_are_identifiers(record):
     record["gather"]["scope"]["requirements"] = [""]
     assert any("scope.requirements" in e for e in run_record_errors(record, None))
+
+
+# Null confirmations: a rebuilt record must be confirmed again (decision 15)
+
+
+def _null_confirmations(record):
+    for section in ("frame", "gather"):
+        record[section]["confirmed_by"] = None
+        record[section]["confirmed_at"] = None
+    for entry in record["perspective_confirmations"]:
+        entry["confirmed_by"] = None
+        entry["confirmed_at"] = None
+    return record
+
+
+def test_null_confirmations_are_valid_format(record, filtered):
+    record = _null_confirmations(record)
+    assert run_record_errors(record, None) == []
+    assert _errors(record, "gather", filtered) == []
+
+
+def test_confirmation_keys_stay_required(record):
+    del record["frame"]["confirmed_by"]
+    assert any("confirmed_by" in e for e in run_record_errors(record, None))
+
+
+def test_gate_blocks_a_null_perspective_confirmation(tmp_path, record, fixtures):
+    library = tmp_path / "library"
+    library.mkdir()
+    text = (fixtures / "perspective_verified.md").read_text()
+    (library / "security.md").write_text(text.replace("id: perspective_verified", "id: security"))
+    path = tmp_path / "run.yaml"
+    path.write_text(yaml.safe_dump(_null_confirmations(record)))
+    _, errors = gate(["security"], [library], path)
+    assert any("confirmed_by must name a person" in e for e in errors)
+    assert any("confirmed_at" in e for e in errors)
+
+
+def test_main_without_section_checks_the_format_only(tmp_path, record, capsys):
+    record["gather"]["budget"] = 999
+    path = tmp_path / "run.yaml"
+    path.write_text(yaml.safe_dump(_null_confirmations(record)))
+    assert main([str(path)]) == 0
+    assert "format" in capsys.readouterr().out
+
+
+def test_main_without_section_reports_format_errors(tmp_path, record, capsys):
+    record["frame"]["problem"]["label"] = "guess"
+    path = tmp_path / "run.yaml"
+    path.write_text(yaml.safe_dump(record))
+    assert main([str(path)]) == 1
+    assert "guess" in capsys.readouterr().err

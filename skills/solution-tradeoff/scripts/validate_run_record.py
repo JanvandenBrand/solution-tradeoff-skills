@@ -19,9 +19,14 @@ frame is written by the assistant, so its rules are instructions in
 ``references/frame.md``, not checks here.
 
 Usage:
-    python validate_run_record.py <run.yaml> --section gather
+    python validate_run_record.py <run.yaml> [--section gather]
         [--requirements <filtered.json>] [--schema <schema file>]
         [--config <settings file>]
+
+Without ``--section``, only the format and the dates are checked, as when a
+run is resumed (decision 15). A null ``confirmed_by`` or ``confirmed_at``
+means the section is not confirmed yet: it is valid format here, and
+``verification_gate.py`` blocks on it.
 
 Exit code 0 when valid, 1 otherwise; every error is listed on standard error.
 """
@@ -72,6 +77,8 @@ def _date_errors(data: Any) -> list[str]:
             fields.append((f"perspective_confirmations.{i}.confirmed_at", entry["confirmed_at"]))
     errors: list[str] = []
     for where, value in fields:
+        if value is None:  # not yet confirmed (decision 15); the gate blocks on it
+            continue
         try:
             parse_date(value, "confirmed_at")
         except ValueError as exc:
@@ -154,7 +161,9 @@ def main(argv: list[str] | None = None) -> int:
     """Command-line entry point. Returns the process exit code."""
     parser = argparse.ArgumentParser(description="Validate a run record section.")
     parser.add_argument("run_record", type=Path, help="Run record (YAML).")
-    parser.add_argument("--section", choices=CHECKED, required=True, help="Section to check.")
+    parser.add_argument(
+        "--section", choices=CHECKED, help="Section to check; without it, the format only."
+    )
     parser.add_argument("--requirements", type=Path, help="Output of moscow_filter.py.")
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA, help="JSON Schema file.")
     parser.add_argument("--config", type=Path, help="Settings file (default: assets/config.yaml).")
@@ -178,7 +187,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {err}", file=sys.stderr)
     if errors:
         return 1
-    print(f"Run record valid: {args.section} section.")
+    if args.section is None:
+        print("Run record valid: format.")
+    else:
+        print(f"Run record valid: {args.section} section.")
     return 0
 
 
