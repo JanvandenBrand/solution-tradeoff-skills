@@ -43,12 +43,12 @@ A perspective never sees another perspective's response, preferred option or poi
 
    The points must add up to exactly the budget; the Validate step checks this, so do not add them up in prose. Always fill in `preferred_rationale`, although the schema allows leaving it out. Points go only to requirements in the shared context.
 
-3. **Summarize once, at the end.** For each perspective, show its top concerns and its preferred option, one or two lines each. Then list every Must challenge, with the perspective that raised it. Do not show the point allocations in the summary.
+3. **Summarize once, at the end.** For each perspective, show its top concerns and its preferred option, one or two lines each. Then list every Must challenge, with the perspective that raised it, and say that the Challenge step will weigh them. Do not show the point allocations in the summary.
 
-4. **Handle Must challenges.** Ask the user whether they accept each Must challenge. Never change the scope in this step. If the user accepts one, return to Gather ([gather.md](gather.md)) to change the scope there; afterwards, run this step again for every perspective, because the budget and the shared context may have changed. If the user accepts none, continue to step 6.
+4. **Record Must challenges for the Challenge step only.** The scope is frozen (decision 13). Never change the scope in this step, and do not ask the user to accept or reject a Must challenge here. The challenges stay in the response files, where the Challenge step reads them. Continue to step 6.
 
 ## Output
 
 - `run/responses/<id>.yaml`: one response per selected perspective.
 - `independence.prioritize` in the run record: `full` or `limited`.
-- The summary shown to the user, and the user's answer on each Must challenge.
+- The summary shown to the user. The Must challenges stay in the responses, for the Challenge step.

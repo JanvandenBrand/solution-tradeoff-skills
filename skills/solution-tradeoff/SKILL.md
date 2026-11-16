@@ -25,7 +25,7 @@ Establish what the candidates are judged against: check the spreadsheet prerequi
 
 ## 5. Prioritize
 
-Each verified perspective spends exactly the point budget over the in-scope requirements, working only from the shared context, its own perspective file, the budget and the response schema. Use independent subagents if the host can start them; otherwise run the perspectives in turn and record limited independence. Ask nothing during the step; summarize at the end, and return to Gather if the user accepts a Must challenge. Follow [references/prioritize.md](references/prioritize.md); its output is one response file per perspective in `run/responses/`.
+Each verified perspective spends exactly the point budget over the in-scope requirements, working only from the shared context, its own perspective file, the budget and the response schema. Use independent subagents if the host can start them; otherwise run the perspectives in turn and record limited independence. Ask nothing during the step and summarize at the end. The scope is frozen: Must challenges raised here are recorded for the Challenge step only. Follow [references/prioritize.md](references/prioritize.md); its output is one response file per perspective in `run/responses/`.
 
 ## 6. Rate
 

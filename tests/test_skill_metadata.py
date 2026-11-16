@@ -339,8 +339,14 @@ def test_prioritize_asks_nothing_and_summarizes_at_the_end():
     text = _reference("prioritize.md")
     assert "Ask the user nothing" in text
     assert "Must challenge" in text
-    assert "return to Gather" in text
     assert "Never change the scope" in text
+
+
+def test_prioritize_records_must_challenges_for_the_challenge_step_only():
+    # Decision 13: the scope is frozen; Prioritize never returns to Gather.
+    text = _reference("prioritize.md")
+    assert "return to Gather" not in text
+    assert "for the Challenge step only" in text
 
 
 # Rate (step 6)
