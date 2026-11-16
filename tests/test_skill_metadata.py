@@ -374,7 +374,9 @@ def test_rate_records_limited_independence_without_subagents():
 
 def test_rate_names_the_basis_and_asks_one_dispute_question():
     text = _reference("rate.md")
-    assert "Basis:" in text
+    for basis in ["basis: source", "basis: judgment", "basis: unread_source"]:
+        assert basis in text, basis
+    assert "Basis:" not in text
     assert "rating.minimum" in text and "rating.maximum" in text
     assert '"Do you dispute any rating?"' in text
     assert "run/ratings.yaml" in text

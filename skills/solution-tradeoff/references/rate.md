@@ -28,16 +28,28 @@ The rater never sees the perspectives' responses, preferred options or point all
      - candidate: A
        requirement_id: REQ001
        rating: 7
-       rationale: "Basis: <background title>. <why this rating>"
+       basis: source
+       rationale: "<background title>: <why this rating>"
      - candidate: B
        requirement_id: REQ001
        rating: 4
-       rationale: "Basis: rater's judgment. <why this rating>"
+       basis: judgment
+       rationale: "<why this rating>"
+     - candidate: B
+       requirement_id: REQ002
+       rating: 5
+       basis: unread_source
+       rationale: "<title of the source>, not read in this run: <what it is said to show>"
    ```
 
-   Start every rationale with its basis: `Basis: <title>.`, naming the background source from the shared context the rating rests on, or `Basis: rater's judgment.` when no source covers it. Rate a status quo candidate as it is today, not as it could be improved.
+   Set `basis` on every rating:
+   - `basis: source`: the rating rests on a background document whose content was read in this run and is summarized in the shared context. Name its title in the rationale.
+   - `basis: unread_source`: the rating rests on a source known only by its title or by a claim about it, not read in this run. Name the source in the rationale.
+   - `basis: judgment`: no source covers it; the rating is the rater's judgment.
 
-3. **Ask one question.** Show the ratings as a table, candidates as columns and requirements as rows, with each basis. Ask: "Do you dispute any rating?" For each dispute, change the rating to the user's correction and keep the trail in its rationale: the original rating and reason, followed by `Disputed by <the user's name>: <reason>.` A correction by the user is the only way a rating changes outside this pass.
+   Only a rating with `basis: source` can eliminate a candidate; a Must rating below the threshold on any other basis marks the candidate at risk, and the user decides (decision 14). Never choose a basis to make a candidate pass or fail. Rate a status quo candidate as it is today, not as it could be improved.
+
+3. **Ask one question.** Show the ratings as a table, candidates as columns and requirements as rows, with each basis. Ask: "Do you dispute any rating?" For each dispute, change the rating to the user's correction and keep the trail in its rationale: the original rating, basis and reason, followed by `Disputed by <the user's name>: <reason>.` A corrected rating gets `basis: judgment`, unless the user points to a source that is then read in this run; then it gets `basis: source` and the rationale names that source. A correction by the user is the only way a rating changes outside this pass.
 
 ## Output
 

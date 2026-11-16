@@ -29,7 +29,7 @@ Each verified perspective spends exactly the point budget over the in-scope requ
 
 ## 6. Rate
 
-Rate every candidate on every in-scope requirement in a separate pass that sees only the shared context, never the perspectives' responses, preferred options or points. Every rationale names its basis; end with one question about disputed ratings. Follow [references/rate.md](references/rate.md); its output is `run/ratings.yaml`.
+Rate every candidate on every in-scope requirement in a separate pass that sees only the shared context, never the perspectives' responses, preferred options or points. Every rating sets its basis (a source read in this run, the rater's judgment, or an unread source); end with one question about disputed ratings. Follow [references/rate.md](references/rate.md); its output is `run/ratings.yaml`.
 
 ## 7. Validate
 
