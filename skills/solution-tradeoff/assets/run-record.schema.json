@@ -137,6 +137,7 @@
           "required": ["domains", "plateau", "moscow"],
           "properties": {
             "domains": {"$ref": "#/$defs/texts", "description": "Empty means every domain."},
+            "requirements": {"$ref": "#/$defs/texts", "description": "Requirement identifiers kept in addition to the domains (moscow_filter.py --requirement); a scope narrowed by the scope review lists every kept identifier here."},
             "plateau": {"type": ["integer", "null"], "minimum": 0},
             "moscow": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}}
           }

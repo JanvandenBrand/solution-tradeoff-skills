@@ -80,6 +80,7 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
          origin: assistant        # or user
      scope:
        domains: []                # empty keeps every domain
+       requirements: []           # identifiers passed with --requirement
        plateau: 2
        moscow: [Must, Should]
      outputs:

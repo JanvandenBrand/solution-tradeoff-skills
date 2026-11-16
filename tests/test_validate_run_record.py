@@ -206,3 +206,16 @@ def test_independence_value_must_be_known(record):
 def test_independence_has_no_other_steps(record):
     record["independence"] = {"compile": "full"}
     assert any("compile" in e for e in run_record_errors(record, None))
+
+
+# A scope set by identifier (decision 13)
+
+
+def test_gather_scope_may_list_requirement_identifiers(record):
+    record["gather"]["scope"]["requirements"] = ["REQ001", "REQ002"]
+    assert run_record_errors(record, None) == []
+
+
+def test_gather_scope_requirements_are_identifiers(record):
+    record["gather"]["scope"]["requirements"] = [""]
+    assert any("scope.requirements" in e for e in run_record_errors(record, None))
