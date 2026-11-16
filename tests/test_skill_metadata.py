@@ -382,6 +382,13 @@ def test_rate_names_the_basis_and_asks_one_dispute_question():
     assert "run/ratings.yaml" in text
 
 
+def test_rate_defines_the_bases_without_their_consequences():
+    # The consequences of a basis are stated in validate.md only.
+    text = _reference("rate.md")
+    assert "eliminat" not in text
+    assert "Never choose a basis" not in text
+
+
 # Validate (step 7)
 
 VALIDATE_COMMANDS = [
