@@ -15,6 +15,7 @@ def test_load_settings_reads_default_config():
     cfg = load_settings()
     assert cfg["budget"] == {"multiplier": 2.5, "round_to": 5, "minimum": 15}
     assert cfg["elimination"]["must_score_threshold"] == 6
+    assert cfg["compile"]["close_call"] == 0.5
 
 
 def test_load_settings_reads_given_path(tmp_path):

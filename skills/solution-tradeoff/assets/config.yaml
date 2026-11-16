@@ -55,3 +55,9 @@ rating:
 elimination:
   # A candidate that scores below this on any Must requirement is eliminated.
   must_score_threshold: 6
+
+compile:
+  # A gap between the first and second candidate's overall score below this
+  # is a close call: rank.py reports it, and the Compile step presents a
+  # shortlist instead of a winner.
+  close_call: 0.5

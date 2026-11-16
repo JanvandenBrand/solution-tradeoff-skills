@@ -79,6 +79,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | `budget.py --count <n>` | Point budget each perspective distributes |
 | `check_budget.py <file or directory> --requirements <filtered.json>` | Check that every perspective response spends exactly the point budget |
 | `elimination.py <ratings.yaml> --requirements <filtered.json>` | Candidates eliminated by a below-threshold Must rating from a source that was read, and candidates at risk from one based on judgment or an unread source |
+| `rank.py <responses> --ratings <ratings.yaml> --elimination <elimination.json> --run-record <run.yaml> --requirements <filtered.json>` | Rank the candidates kept after elimination: per perspective, points × rating over the budget, and the mean across perspectives; the share from drafted requirements, the gap between the first two candidates, whether it is a close call (`compile.close_call`), and the requirements that decide the lead |
 | `validate_rating.py <ratings.yaml> --requirements <filtered.json>` | Check that every candidate is rated once on every in-scope requirement, on the configured scale, each with its basis |
 | `validate_response.py <file or directory>` | Check perspective responses against the output schema |
 | `validate_perspective.py <file or directory>` | Check perspective files against the perspective format |

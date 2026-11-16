@@ -263,6 +263,7 @@ def test_scripts_folder_has_no_new_scripts():
         "elimination.py",
         "load_requirements.py",
         "moscow_filter.py",
+        "rank.py",
         "settings.py",
         "validate_perspective.py",
         "validate_rating.py",
