@@ -389,6 +389,10 @@ def test_rate_defines_the_bases_without_their_consequences():
     assert "Never choose a basis" not in text
 
 
+def test_rate_names_the_source_of_a_source_based_rating():
+    assert "source: <background title>" in _reference("rate.md")
+
+
 # Validate (step 7)
 
 VALIDATE_COMMANDS = [
@@ -445,7 +449,15 @@ def test_propose_starts_after_the_frame_and_gather_after_the_gate():
 def test_validate_presents_at_risk_candidates_in_one_block():
     # Decision 14: a judgment-based failure marks a candidate at risk; the user decides.
     text = _reference("validate.md")
-    for phrase in ["at_risk", "one block", "validate.at_risk", "keep", "eliminate", "basis"]:
+    for phrase in [
+        "at_risk",
+        "one block",
+        "validate.at_risk",
+        "keep",
+        "eliminate",
+        "basis",
+        "its `source`",
+    ]:
         assert phrase in text, phrase
 
 

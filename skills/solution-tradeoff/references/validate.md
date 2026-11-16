@@ -41,9 +41,9 @@ Commands run from the skill folder; `run/` stands for the run's working folder. 
 
 Do not edit the points or the ratings yourself, and do not ask the user to. A rating the user corrected in step 6 stays as corrected.
 
-**Report the result** from `run/elimination.json`: the threshold, each eliminated candidate with the Must requirements that eliminated it (identifier and description, from `run/filtered.json`), and the remaining candidates.
+**Report the result** from `run/elimination.json`: the threshold, each eliminated candidate with the Must requirements that eliminated it (identifier and description, from `run/filtered.json`) and, for each, the rating's `source` from `run/ratings.yaml`, and the remaining candidates.
 
-**Let the user decide on the at-risk candidates.** If `at_risk` lists any candidate, show them in one block: per candidate, each failing Must requirement with its identifier, description, rating and basis, and the rationale. Ask the user, for each candidate, whether to keep it or eliminate it. Record each answer in the run record:
+**Let the user decide on the at-risk candidates.** If `at_risk` lists any candidate, show them in one block: per candidate, each failing Must requirement with its identifier, description, rating and basis, its `source` when the rating has one, and the rationale. Ask the user, for each candidate, whether to keep it or eliminate it. Record each answer in the run record:
 
 ```yaml
 validate:

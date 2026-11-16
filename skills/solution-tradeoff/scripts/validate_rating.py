@@ -2,7 +2,8 @@
 
 The rater sees only the candidates and the requirements. The schema has no
 place for preferences or points. Every rating names its basis (``source``,
-``judgment`` or ``unread_source``); ``elimination.py`` reads it.
+``judgment`` or ``unread_source``), and a source-based rating may name its
+background item in ``source``; ``elimination.py`` reads the basis.
 
 Usage:
     python validate_rating.py <ratings.yaml> --requirements <filtered.json>

@@ -67,6 +67,18 @@ def test_rating_errors_accepts_each_basis(basis):
     assert _errors(data) == []
 
 
+def test_rating_errors_accepts_a_source_title():
+    data = _data()
+    data["ratings"][0]["source"] = "Vendor security whitepaper"
+    assert _errors(data) == []
+
+
+def test_rating_errors_rejects_an_empty_source():
+    data = _data()
+    data["ratings"][0]["source"] = ""
+    assert any("source" in e for e in _errors(data))
+
+
 def test_rating_errors_rejects_unknown_basis():
     data = _data()
     data["ratings"][0]["basis"] = "guess"

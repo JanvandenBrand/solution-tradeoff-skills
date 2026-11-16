@@ -33,6 +33,11 @@
           "basis": {
             "enum": ["source", "judgment", "unread_source"],
             "description": "What the rating rests on: a source read in this run, the rater's judgment, or a source known only by title or claim. Only a source eliminates a candidate (decision 14)."
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Title of the background item the rating rests on; set when basis is source."
           }
         }
       }
