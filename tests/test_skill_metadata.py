@@ -67,6 +67,7 @@ WRITTEN_STEPS = {
     5: ("Prioritize", "references/prioritize.md"),
     6: ("Rate", "references/rate.md"),
     7: ("Validate", "references/validate.md"),
+    8: ("Compile", "references/compile.md"),
 }
 HOST_TOOL_NAMES = [
     "AskUserQuestion",
@@ -440,6 +441,7 @@ def test_validate_sends_failures_back_and_never_fixes_numbers():
         ("prioritize.md", "# Step 5: Prioritize"),
         ("rate.md", "# Step 6: Rate"),
         ("validate.md", "# Step 7: Validate"),
+        ("compile.md", "# Step 8: Compile"),
     ],
 )
 def test_reference_heading_carries_its_step_number(reference, heading):
@@ -484,3 +486,42 @@ def test_skill_has_a_resuming_section_before_feedback():
         "one block",
     ]:
         assert phrase in section, phrase
+
+
+# Compile (step 8)
+
+
+def test_compile_reference_has_its_sections():
+    assert _reference_sections("references/compile.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_compile_runs_rank_and_asks_nothing():
+    text = _reference("compile.md")
+    assert "python scripts/rank.py run/responses --ratings run/ratings.yaml" in text
+    assert "run/ranking.json" in text and "run/analysis.md" in text
+    assert "Ask the user nothing" in text
+
+
+def test_compile_reports_a_close_call_as_a_shortlist():
+    text = _reference("compile.md")
+    assert "close_call" in text and "compile.close_call" in text
+    assert "shortlist" in text and "not a winner" in text
+
+
+@pytest.mark.parametrize(
+    "flag",
+    [
+        "frame.problem.label",
+        "drafted share",
+        "`limited`",
+        "unread_source",
+        "must_challenges",
+    ],
+)
+def test_compile_lists_each_flag(flag):
+    assert flag in _reference("compile.md")
+
+
+def test_compile_shows_each_perspective_score_next_to_its_preferred_option():
+    text = _reference("compile.md")
+    assert "preferred option" in text and "basis" in text and "`source`" in text

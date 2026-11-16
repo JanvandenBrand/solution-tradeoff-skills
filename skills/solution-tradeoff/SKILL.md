@@ -37,7 +37,7 @@ Run the response, budget and rating checks, then elimination on the Must ratings
 
 ## 8. Compile
 
-TODO: combine priorities and ratings into one trade-off analysis, flagging conclusions that rest mainly on draft requirements. See [references/compile.md](references/compile.md).
+Rank the candidates with `rank.py`: per perspective, points times rating over the budget, and the mean across perspectives. Write the analysis with headings that state the point: the result (a recommendation, or a shortlist when the gap is a close call), the ranking with each perspective's preferred option, the eliminated and at-risk candidates, and the flags (hypothesis, drafted requirements, limited independence, decisive ratings on unread sources, Must challenges after the freeze). Ask nothing during the step. Follow [references/compile.md](references/compile.md); its output is `run/analysis.md`.
 
 ## 9. Challenge
 
