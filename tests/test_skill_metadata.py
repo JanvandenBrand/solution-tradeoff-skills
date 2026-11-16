@@ -433,3 +433,10 @@ def test_propose_starts_after_the_frame_and_gather_after_the_gate():
     gather_intro = _reference("gather.md").split("\n## ", 1)[0]
     assert "verification gate" in gather_intro
     assert "Do not start Gather until the gate passes" in _reference("verify-perspectives.md")
+
+
+def test_validate_presents_at_risk_candidates_in_one_block():
+    # Decision 14: a judgment-based failure marks a candidate at risk; the user decides.
+    text = _reference("validate.md")
+    for phrase in ["at_risk", "one block", "validate.at_risk", "keep", "eliminate", "basis"]:
+        assert phrase in text, phrase

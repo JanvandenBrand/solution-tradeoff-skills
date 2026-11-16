@@ -33,7 +33,7 @@ Rate every candidate on every in-scope requirement in a separate pass that sees 
 
 ## 7. Validate
 
-Run the response, budget and rating checks, then elimination on the Must ratings. A failed check sends the file back to the step that produced it; never fix numbers by hand. Report the eliminated candidates and the Must requirements that eliminated them. Follow [references/validate.md](references/validate.md); its output is `run/elimination.json`.
+Run the response, budget and rating checks, then elimination on the Must ratings. A failed check sends the file back to the step that produced it; never fix numbers by hand. Report the eliminated candidates and the Must requirements that eliminated them, and let the user decide, in one block, on the candidates marked at risk by judgment-based ratings. Follow [references/validate.md](references/validate.md); its output is `run/elimination.json`.
 
 ## 8. Compile
 

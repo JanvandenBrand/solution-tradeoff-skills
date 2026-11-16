@@ -28,7 +28,7 @@ Commands run from the skill folder; `run/` stands for the run's working folder. 
    python scripts/validate_rating.py run/ratings.yaml --requirements run/filtered.json
    ```
 
-4. **Elimination.** A candidate rated below the threshold on any Must requirement is eliminated.
+4. **Elimination.** A candidate rated below the threshold on a Must requirement is eliminated when that rating has `basis: source`; when it rests on judgment or an unread source, the candidate is at risk instead (decision 14).
 
    ```bash
    python scripts/elimination.py run/ratings.yaml --requirements run/filtered.json > run/elimination.json
@@ -41,9 +41,25 @@ Commands run from the skill folder; `run/` stands for the run's working folder. 
 
 Do not edit the points or the ratings yourself, and do not ask the user to. A rating the user corrected in step 6 stays as corrected.
 
-**Report the result** from `run/elimination.json`: the threshold, each eliminated candidate with the Must requirements that eliminated it (identifier and description, from `run/filtered.json`), and the remaining candidates. If every candidate is eliminated, say so and return to the Frame step as a question for the user: the candidates, the Must requirements or the threshold may be wrong.
+**Report the result** from `run/elimination.json`: the threshold, each eliminated candidate with the Must requirements that eliminated it (identifier and description, from `run/filtered.json`), and the remaining candidates.
+
+**Let the user decide on the at-risk candidates.** If `at_risk` lists any candidate, show them in one block: per candidate, each failing Must requirement with its identifier, description, rating and basis, and the rationale. Ask the user, for each candidate, whether to keep it or eliminate it. Record each answer in the run record:
+
+```yaml
+validate:
+  at_risk:
+    - candidate: B
+      decision: keep               # or eliminate
+      confirmed_by: <the user's name>
+      confirmed_at: 2026-11-16     # a date without quotes
+```
+
+A kept candidate continues to the Compile step marked at risk; an eliminated one is reported as eliminated by the user, not by the script.
+
+If every candidate is eliminated, by the script or by the user, say so and return to the Frame step as a question for the user: the candidates, the Must requirements or the threshold may be wrong.
 
 ## Output
 
 - Every check passing, on the current files.
-- `run/elimination.json`: the threshold, the eliminated candidates with their Must requirements, and the remaining candidates. The Compile step reads it.
+- `run/elimination.json`: the threshold, the eliminated and the at-risk candidates with their Must requirements and bases, and the remaining candidates. The Compile step reads it.
+- `validate.at_risk` in the run record: the user's decision on each at-risk candidate.
