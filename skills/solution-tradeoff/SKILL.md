@@ -45,7 +45,7 @@ Argue the opposing side in an independent subagent if the host can start one; ot
 
 ## 10. Record
 
-TODO: if the host has a decision-record skill, hand it the compiled and challenged analysis; otherwise produce a decision record from `assets/decision-record-template.md`. See [references/record.md](references/record.md).
+If the host has a decision-record skill, hand it the analysis, the challenge and the run record; otherwise fill in `assets/decision-record-template.md`. The status is Proposed, never Accepted. The record carries the hypothesis label and open actions, the drafted requirements for the source spreadsheet, the at-risk decisions and the deviations. Ask once for the user's hands-on minutes, then deliver the decision record, the analysis, the challenge and the run record. Follow [references/record.md](references/record.md).
 
 ## Resuming a run
 

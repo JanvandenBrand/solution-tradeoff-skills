@@ -6,7 +6,7 @@ This skill replaces the command-line tool `solution-tradeoff-tool`.
 
 **Goal:** a comparable analysis, from problem definition to a published architecture decision record, takes under 1.5 hours of hands-on time, against 3 to 4 hours with the old tool ([decision 9](docs/adr/0009-success-target-under-ninety-minutes-hands-on.md)).
 
-> **Status:** early. Steps 1 to 7 of the skill instructions are written; steps 8 to 10 are a skeleton. The scripts and the shipped perspectives are ready.
+> **Status:** early. All ten steps of the skill instructions are written, and the scripts and the shipped perspectives are ready. No real run has been made with the complete skill yet.
 
 ## Installing
 
@@ -47,6 +47,8 @@ To use settings other than the defaults, copy `config.yaml`, change it, and pass
 skills/solution-tradeoff/
 ├── SKILL.md                  # the steps the assistant follows
 ├── references/
+│   ├── challenge.md          # step 9: argue the opposing side
+│   ├── compile.md            # step 8: rank the candidates and write the analysis
 │   ├── frame.md              # step 1: frame the decision and validate the problem
 │   ├── gather.md             # step 4: what the candidates are judged against
 │   ├── perspective-format.md # format of a perspective file
@@ -54,6 +56,7 @@ skills/solution-tradeoff/
 │   ├── prioritize.md         # step 5: each perspective spends the point budget
 │   ├── propose-perspectives.md # step 2: choose the perspectives
 │   ├── rate.md               # step 6: separate rating pass
+│   ├── record.md             # step 10: the decision record, status Proposed
 │   ├── validate.md           # step 7: checks and elimination
 │   ├── verify-perspectives.md  # step 3: verify, confirm and pass the gate
 │   └── skill-feedback.md     # how to report a problem with the skill

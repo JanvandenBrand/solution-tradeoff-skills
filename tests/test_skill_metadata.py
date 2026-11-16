@@ -3,7 +3,7 @@
 import pytest
 import yaml
 
-from conftest import SKILL_DIR
+from conftest import REPO_ROOT, SKILL_DIR
 
 MAX_DESCRIPTION = 200
 
@@ -69,6 +69,7 @@ WRITTEN_STEPS = {
     7: ("Validate", "references/validate.md"),
     8: ("Compile", "references/compile.md"),
     9: ("Challenge", "references/challenge.md"),
+    10: ("Record", "references/record.md"),
 }
 HOST_TOOL_NAMES = [
     "AskUserQuestion",
@@ -444,6 +445,7 @@ def test_validate_sends_failures_back_and_never_fixes_numbers():
         ("validate.md", "# Step 7: Validate"),
         ("compile.md", "# Step 8: Compile"),
         ("challenge.md", "# Step 9: Challenge"),
+        ("record.md", "# Step 10: Record"),
     ],
 )
 def test_reference_heading_carries_its_step_number(reference, heading):
@@ -567,3 +569,43 @@ def test_challenge_classifies_findings_and_settles_them_in_one_block():
     assert "run/challenge.md" in text
     for phrase in ["execution", "premise", "one block", "settled: accepted", "Frame step"]:
         assert phrase in text, phrase
+
+
+# Record (step 10)
+
+
+def test_record_reference_has_its_sections():
+    assert _reference_sections("references/record.md") == ["Rule", "Sequence", "Output"]
+
+
+def test_record_hands_over_or_fills_the_template_and_stays_proposed():
+    text = _reference("record.md")
+    assert "decision-record skill" in text
+    assert "assets/decision-record-template.md" in text
+    assert "Proposed" in text and "never sets the status to Accepted" in text
+
+
+@pytest.mark.parametrize(
+    "item",
+    ["hypothesis", "open actions", "source spreadsheet", "validate.at_risk", "deviations"],
+)
+def test_record_carries_each_item(item):
+    assert item in _reference("record.md")
+
+
+def test_record_asks_once_for_hands_on_minutes_and_delivers_the_run():
+    text = _reference("record.md")
+    assert "measurement.hands_on_minutes" in text
+    assert "Ask once" in text
+    for delivered in ["run/analysis.md", "run/challenge.md", "run/run.yaml", "decision 15"]:
+        assert delivered in text, delivered
+
+
+def test_skill_has_no_todo_left():
+    assert "TODO" not in (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+
+
+def test_readme_says_every_step_is_written():
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "skeleton" not in readme
+    assert "All ten steps" in readme
