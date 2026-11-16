@@ -6,8 +6,9 @@ The run record (YAML) holds what one run established, step by step:
 - ``perspective_confirmations``: read by ``verification_gate.py`` (step 3);
 - ``gather``: the scope, counts, budget, principles and background (step 4);
 - ``independence``: ``full`` or ``limited`` for the scope review in Gather
-  and the Prioritize and Rate passes (steps 4, 5 and 6);
-- ``validate``: the user's decision on each at-risk candidate (step 7).
+  and the Prioritize, Rate and Challenge passes (steps 4, 5, 6 and 9);
+- ``validate``: the user's decision on each at-risk candidate (step 7);
+- ``measurement``: the user's hands-on minutes for the run (step 10).
 
 The format is ``assets/run-record.schema.json``; every section present is
 checked against it. Dates are parsed by ``dates.parse_date``, exactly as by

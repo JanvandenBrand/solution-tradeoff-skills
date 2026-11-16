@@ -10,12 +10,22 @@
     "gather": {"$ref": "#/$defs/gather"},
     "independence": {
       "type": "object",
-      "description": "Whether the scope review and the Prioritize and Rate passes ran in independent subagents (full) or in turn in one conversation (limited).",
+      "description": "Whether the scope review and the Prioritize, Rate and Challenge passes ran in independent subagents (full) or in turn in one conversation (limited).",
       "additionalProperties": false,
       "properties": {
         "scope_review": {"enum": ["full", "limited"]},
         "prioritize": {"enum": ["full", "limited"]},
-        "rate": {"enum": ["full", "limited"]}
+        "rate": {"enum": ["full", "limited"]},
+        "challenge": {"enum": ["full", "limited"]}
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "description": "Step 10: the user's hands-on time for this run, as the user states it (decision 9).",
+      "additionalProperties": false,
+      "required": ["hands_on_minutes"],
+      "properties": {
+        "hands_on_minutes": {"type": "integer", "minimum": 0}
       }
     },
     "validate": {

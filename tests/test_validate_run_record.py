@@ -189,12 +189,17 @@ def test_drafted_requirement_origin_must_be_known(record):
     assert any("model" in e for e in run_record_errors(record, None))
 
 
-# Independence of the scope review and the Prioritize and Rate passes
+# Independence of the scope review and the Prioritize, Rate and Challenge passes
 
 
 @pytest.mark.parametrize("value", ["full", "limited"])
 def test_independence_values_are_valid(record, value):
-    record["independence"] = {"scope_review": value, "prioritize": value, "rate": value}
+    record["independence"] = {
+        "scope_review": value,
+        "prioritize": value,
+        "rate": value,
+        "challenge": value,
+    }
     assert run_record_errors(record, None) == []
 
 
@@ -204,8 +209,8 @@ def test_independence_value_must_be_known(record):
 
 
 def test_independence_has_no_other_steps(record):
-    record["independence"] = {"compile": "full"}
-    assert any("compile" in e for e in run_record_errors(record, None))
+    record["independence"] = {"record": "full"}
+    assert any("record" in e for e in run_record_errors(record, None))
 
 
 # A scope set by identifier (decision 13)
@@ -304,3 +309,18 @@ def test_validate_at_risk_date_is_parsed_like_the_others(record):
     record["validate"] = _at_risk(confirmed_at="2026-11-16")
     expected = f"validate.at_risk.0.confirmed_at: confirmed_at {_QUOTED.replace('11-12', '11-16')}"
     assert expected in run_record_errors(record, None)
+
+
+# Hands-on time, measured at the Record step (decision 9)
+
+
+@pytest.mark.parametrize("minutes", [0, 85])
+def test_hands_on_minutes_are_valid(record, minutes):
+    record["measurement"] = {"hands_on_minutes": minutes}
+    assert run_record_errors(record, None) == []
+
+
+@pytest.mark.parametrize("minutes", [-1, 1.5, "85"])
+def test_hands_on_minutes_must_be_a_whole_number_of_at_least_zero(record, minutes):
+    record["measurement"] = {"hands_on_minutes": minutes}
+    assert any("hands_on_minutes" in e for e in run_record_errors(record, None))
