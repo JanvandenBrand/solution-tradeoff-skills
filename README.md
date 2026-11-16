@@ -48,14 +48,14 @@ skills/solution-tradeoff/
 ├── SKILL.md                  # the steps the assistant follows
 ├── references/
 │   ├── frame.md              # step 1: frame the decision and validate the problem
-│   ├── gather.md             # step 2: what the candidates are judged against
+│   ├── gather.md             # step 4: what the candidates are judged against
 │   ├── perspective-format.md # format of a perspective file
 │   ├── perspectives/         # shipped default perspectives (unverified)
 │   ├── prioritize.md         # step 5: each perspective spends the point budget
-│   ├── propose-perspectives.md # step 3: choose the perspectives
+│   ├── propose-perspectives.md # step 2: choose the perspectives
 │   ├── rate.md               # step 6: separate rating pass
 │   ├── validate.md           # step 7: checks and elimination
-│   ├── verify-perspectives.md  # step 4: verify, confirm and pass the gate
+│   ├── verify-perspectives.md  # step 3: verify, confirm and pass the gate
 │   └── skill-feedback.md     # how to report a problem with the skill
 ├── scripts/                  # deterministic steps, run by the host
 └── assets/

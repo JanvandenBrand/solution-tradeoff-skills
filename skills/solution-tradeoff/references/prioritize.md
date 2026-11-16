@@ -1,6 +1,6 @@
 # Step 5: Prioritize
 
-Each verified perspective decides what matters, by spending the point budget over the in-scope requirements (decision 6). Start only after the verification gate has passed ([verify-perspectives.md](verify-perspectives.md)).
+Each verified perspective decides what matters, by spending the point budget over the in-scope requirements (decision 6). Start only after the Gather summary is confirmed and the scope is frozen ([gather.md](gather.md)).
 
 ## Rule
 

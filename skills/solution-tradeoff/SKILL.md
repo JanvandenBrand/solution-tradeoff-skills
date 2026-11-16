@@ -11,17 +11,17 @@ Nothing is scored until a person has verified every selected perspective.
 
 Establish the decision and validate the problem, one question at a time, then ask the user to confirm the frame summary. Nothing else starts before that confirmation. Follow [references/frame.md](references/frame.md); its output is the `frame` section of the run record. Any later step that finds the problem, the outcome or the criteria wrong returns here as a question for the user.
 
-## 2. Gather
+## 2. Propose perspectives
+
+Propose 4 to 7 stakeholder perspectives from the frame as one block, each with a one-line reason, and list the ones left out. Read the user's perspective folder before the shipped defaults; on a matching id the user's copy wins. Draft a missing stakeholder, unverified. Follow [references/propose-perspectives.md](references/propose-perspectives.md); its output is the confirmed list of perspectives for step 3.
+
+## 3. Verify perspectives
+
+Confirm the already-verified perspectives together with one question, and review each unverified one in full, one at a time, before a person accepts it. Then run the verification gate; if it blocks, stop and say which perspective is blocked. Gather starts only after the gate passes. Follow [references/verify-perspectives.md](references/verify-perspectives.md); its outputs are `perspective_confirmations` in the run record and the verified copies for the user's library.
+
+## 4. Gather
 
 Establish what the candidates are judged against: check the spreadsheet prerequisites, load and filter the requirements, agree the scope, calculate the point budget, and confirm the principles and background. Every count, filter and budget comes from the scripts, never from prose. Follow [references/gather.md](references/gather.md); its outputs are the `gather` section of the run record and the shared context block, the only input to the Prioritize and Rate steps.
-
-## 3. Propose perspectives
-
-Propose 4 to 7 stakeholder perspectives from the frame as one block, each with a one-line reason, and list the ones left out. Read the user's perspective folder before the shipped defaults; on a matching id the user's copy wins. Draft a missing stakeholder, unverified. Follow [references/propose-perspectives.md](references/propose-perspectives.md); its output is the confirmed list of perspectives for step 4.
-
-## 4. Verify perspectives
-
-Confirm the already-verified perspectives together with one question, and review each unverified one in full, one at a time, before a person accepts it. Then run the verification gate; if it blocks, stop and say which perspective is blocked. Follow [references/verify-perspectives.md](references/verify-perspectives.md); its outputs are `perspective_confirmations` in the run record and the verified copies for the user's library.
 
 ## 5. Prioritize
 

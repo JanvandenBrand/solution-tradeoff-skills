@@ -24,9 +24,9 @@ def test_skill_name_matches_folder_name():
 
 STEPS = [
     "Frame",
-    "Gather",
     "Propose perspectives",
     "Verify perspectives",
+    "Gather",
     "Prioritize",
     "Rate",
     "Validate",
@@ -61,9 +61,9 @@ def test_record_step_points_at_the_template():
 
 WRITTEN_STEPS = {
     1: ("Frame", "references/frame.md"),
-    2: ("Gather", "references/gather.md"),
-    3: ("Propose perspectives", "references/propose-perspectives.md"),
-    4: ("Verify perspectives", "references/verify-perspectives.md"),
+    2: ("Propose perspectives", "references/propose-perspectives.md"),
+    3: ("Verify perspectives", "references/verify-perspectives.md"),
+    4: ("Gather", "references/gather.md"),
     5: ("Prioritize", "references/prioritize.md"),
     6: ("Rate", "references/rate.md"),
     7: ("Validate", "references/validate.md"),
@@ -376,3 +376,29 @@ def test_validate_sends_failures_back_and_never_fixes_numbers():
     assert "Never fix numbers by hand" in text
     assert "step 5" in text and "step 6" in text
     assert "eliminated" in text
+
+
+# Decision 13: perspectives before Gather
+
+
+@pytest.mark.parametrize(
+    "reference, heading",
+    [
+        ("frame.md", "# Step 1: Frame"),
+        ("propose-perspectives.md", "# Step 2: Propose perspectives"),
+        ("verify-perspectives.md", "# Step 3: Verify perspectives"),
+        ("gather.md", "# Step 4: Gather"),
+        ("prioritize.md", "# Step 5: Prioritize"),
+        ("rate.md", "# Step 6: Rate"),
+        ("validate.md", "# Step 7: Validate"),
+    ],
+)
+def test_reference_heading_carries_its_step_number(reference, heading):
+    assert _reference(reference).splitlines()[0] == heading
+
+
+def test_propose_starts_after_the_frame_and_gather_after_the_gate():
+    assert "confirmed the frame" in _reference("propose-perspectives.md").split("\n## ", 1)[0]
+    gather_intro = _reference("gather.md").split("\n## ", 1)[0]
+    assert "verification gate" in gather_intro
+    assert "Do not start Gather until the gate passes" in _reference("verify-perspectives.md")

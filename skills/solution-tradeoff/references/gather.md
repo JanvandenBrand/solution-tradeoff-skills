@@ -1,6 +1,6 @@
-# Step 2: Gather
+# Step 4: Gather
 
-Establish what the candidates are judged against. Start only after the user has confirmed the frame ([frame.md](frame.md)).
+Establish what the candidates are judged against. Start only after the frame is confirmed ([frame.md](frame.md)) and the verification gate has passed ([verify-perspectives.md](verify-perspectives.md)).
 
 ## Rule
 

@@ -42,7 +42,7 @@ Record the result of each check.
 
 ## Exit
 
-Show the frame summary: decision identifier and question, problem statement with outcome, causal claim, evidence and label, candidates (marking the status quo), planning horizon and plateau, governing decisions, constraints, and the validation result. Ask: "Is this frame correct?" Continue to the Gather step only after the user confirms. If the user corrects anything, update it and ask again.
+Show the frame summary: decision identifier and question, problem statement with outcome, causal claim, evidence and label, candidates (marking the status quo), planning horizon and plateau, governing decisions, constraints, and the validation result. Ask: "Is this frame correct?" Continue to the Propose perspectives step only after the user confirms. If the user corrects anything, update it and ask again.
 
 ## Return rule
 
