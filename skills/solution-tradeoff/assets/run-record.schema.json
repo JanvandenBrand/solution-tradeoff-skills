@@ -17,6 +17,28 @@
         "rate": {"enum": ["full", "limited"]}
       }
     },
+    "validate": {
+      "type": "object",
+      "description": "Step 7: the user's decision on each candidate marked at risk by elimination.py (decision 14).",
+      "additionalProperties": false,
+      "required": ["at_risk"],
+      "properties": {
+        "at_risk": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["candidate", "decision", "confirmed_by", "confirmed_at"],
+            "properties": {
+              "candidate": {"$ref": "#/$defs/text"},
+              "decision": {"enum": ["keep", "eliminate"]},
+              "confirmed_by": {"$ref": "#/$defs/confirmed_by"},
+              "confirmed_at": {"$ref": "#/$defs/confirmed_at"}
+            }
+          }
+        }
+      }
+    },
     "perspective_confirmations": {
       "type": "array",
       "description": "Read by verification_gate.py: one confirmation per selected perspective for this run.",

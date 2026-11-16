@@ -271,3 +271,36 @@ def test_main_without_section_reports_format_errors(tmp_path, record, capsys):
     path.write_text(yaml.safe_dump(record))
     assert main([str(path)]) == 1
     assert "guess" in capsys.readouterr().err
+
+
+# The user's decision on each at-risk candidate (decision 14)
+
+
+def _at_risk(decision="keep", confirmed_at=date(2026, 11, 16)):
+    return {
+        "at_risk": [
+            {
+                "candidate": "B",
+                "decision": decision,
+                "confirmed_by": "Test User",
+                "confirmed_at": confirmed_at,
+            }
+        ]
+    }
+
+
+@pytest.mark.parametrize("decision", ["keep", "eliminate"])
+def test_validate_at_risk_decisions_are_valid(record, decision):
+    record["validate"] = _at_risk(decision)
+    assert run_record_errors(record, None) == []
+
+
+def test_validate_at_risk_decision_must_be_known(record):
+    record["validate"] = _at_risk("maybe")
+    assert any("maybe" in e for e in run_record_errors(record, None))
+
+
+def test_validate_at_risk_date_is_parsed_like_the_others(record):
+    record["validate"] = _at_risk(confirmed_at="2026-11-16")
+    expected = f"validate.at_risk.0.confirmed_at: confirmed_at {_QUOTED.replace('11-12', '11-16')}"
+    assert expected in run_record_errors(record, None)

@@ -6,7 +6,8 @@ The run record (YAML) holds what one run established, step by step:
 - ``gather``: the scope, counts, budget, principles and background (step 2);
 - ``perspective_confirmations``: read by ``verification_gate.py`` (step 4);
 - ``independence``: ``full`` or ``limited`` for the Prioritize and Rate passes
-  (steps 5 and 6).
+  (steps 5 and 6);
+- ``validate``: the user's decision on each at-risk candidate (step 7).
 
 The format is ``assets/run-record.schema.json``; every section present is
 checked against it. Dates are parsed by ``dates.parse_date``, exactly as by
@@ -71,10 +72,15 @@ def _date_errors(data: Any) -> list[str]:
     for section in SECTIONS:
         if isinstance(data.get(section), dict) and "confirmed_at" in data[section]:
             fields.append((f"{section}.confirmed_at", data[section]["confirmed_at"]))
-    confirmations = data.get("perspective_confirmations")
-    for i, entry in enumerate(confirmations if isinstance(confirmations, list) else []):
-        if isinstance(entry, dict) and "confirmed_at" in entry:
-            fields.append((f"perspective_confirmations.{i}.confirmed_at", entry["confirmed_at"]))
+    validate = data.get("validate")
+    lists = {
+        "perspective_confirmations": data.get("perspective_confirmations"),
+        "validate.at_risk": validate.get("at_risk") if isinstance(validate, dict) else None,
+    }
+    for where, entries in lists.items():
+        for i, entry in enumerate(entries if isinstance(entries, list) else []):
+            if isinstance(entry, dict) and "confirmed_at" in entry:
+                fields.append((f"{where}.{i}.confirmed_at", entry["confirmed_at"]))
     errors: list[str] = []
     for where, value in fields:
         if value is None:  # not yet confirmed (decision 15); the gate blocks on it
