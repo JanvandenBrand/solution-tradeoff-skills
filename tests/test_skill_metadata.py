@@ -440,3 +440,21 @@ def test_validate_presents_at_risk_candidates_in_one_block():
     text = _reference("validate.md")
     for phrase in ["at_risk", "one block", "validate.at_risk", "keep", "eliminate", "basis"]:
         assert phrase in text, phrase
+
+
+# Decision 15: a run resumes only from its own record
+
+
+def test_skill_has_a_resuming_section_before_feedback():
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    headings = [line[3:] for line in text.splitlines() if line.startswith("## ")]
+    assert headings[-2:] == ["Resuming a run", "Feedback"]
+    section = text.split("## Resuming a run", 1)[1].split("\n## ", 1)[0]
+    for phrase in [
+        "python scripts/validate_run_record.py run/run.yaml",
+        "first unfinished step",
+        "never write a confirmation taken from a transcript or from memory",
+        "null",
+        "one block",
+    ]:
+        assert phrase in section, phrase

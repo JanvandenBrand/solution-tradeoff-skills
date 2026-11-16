@@ -47,6 +47,18 @@ TODO: test the compiled analysis for blind spots, divergence and weak conclusion
 
 TODO: if the host has a decision-record skill, hand it the compiled and challenged analysis; otherwise produce a decision record from `assets/decision-record-template.md`. See [references/record.md](references/record.md).
 
+## Resuming a run
+
+A run resumes only from its own record (decision 15): the run record `run/run.yaml`, the shared context `run/shared-context.md` and the working copy of the spreadsheet. Ask the user for them, then check the record:
+
+```bash
+python scripts/validate_run_record.py run/run.yaml
+```
+
+Add `--section gather --requirements run/filtered.json` when the record has a gather section. Fix nothing by hand: if a check fails, show the errors and ask the user how to proceed. Then resume at the first unfinished step: the first step whose run record section or output file is missing, or whose confirmation is null.
+
+You never write a confirmation taken from a transcript or from memory, or from a summary of either; only the user's answer in this conversation is a confirmation. If you rebuild any part of the state from anything other than those three files, set every `confirmed_by` and `confirmed_at` in the run record to null, show the sections in one block, and ask the user to confirm each one again before you continue.
+
 ## Feedback
 
 If the user reports that this skill gave incorrect or outdated guidance, or is missing information, read [references/skill-feedback.md](references/skill-feedback.md).
