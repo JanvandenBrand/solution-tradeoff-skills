@@ -18,7 +18,7 @@ Reason: the perspectives challenge the scope once, before the budget is set, so 
 
 ## Status
 
-Accepted
+Accepted; amended by [decision 17](0017-independent-subagents-are-a-precondition.md)
 
 ## Consequences
 
