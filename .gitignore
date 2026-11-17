@@ -28,3 +28,7 @@ background_knowledge.md
 
 # Local task notes
 tasks/
+
+# The user's verified perspectives, packaged with the skill but never committed (decision 18)
+/skills/solution-tradeoff/library/*
+!/skills/solution-tradeoff/library/README.md

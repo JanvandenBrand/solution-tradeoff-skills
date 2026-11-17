@@ -20,4 +20,4 @@ test:
 package:
 	rm -rf dist && mkdir -p dist
 	cd skills && zip -rq ../dist/solution-tradeoff.zip solution-tradeoff \
-		-x '*/__pycache__/*' '*.pyc'
+		-x '*/__pycache__/*' '*.pyc' 'solution-tradeoff/library/README.md'
