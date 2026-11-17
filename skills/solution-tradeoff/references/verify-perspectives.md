@@ -30,11 +30,12 @@ Nothing is scored with a perspective until a person has verified it and confirme
 
    Never change the files in `references/perspectives/`: the shipped defaults stay unverified.
 
-3. **Run the verification gate** before Gather, with every selected id. List `run/perspectives` first, then the user's folder:
+3. **Run the verification gate** before Gather, with every selected id. List `run/perspectives` (the copies verified in this run) first, then `run/attached` (the attached files), then the library folder the user named, if any. The gate then searches `perspectives.library` from the settings, the packaged `library/` and the shipped defaults by itself (decision 18):
 
    ```bash
    python scripts/verification_gate.py --perspective <id> [--perspective <id> ...] \
-       --library run/perspectives --library <user's folder> --run-record run/run.yaml > run/gate.json
+       --library run/perspectives --library run/attached [--library <folder the user named>] \
+       --config assets/config.yaml --run-record run/run.yaml > run/gate.json
    ```
 
    If it exits with 1, stop. Name each blocked perspective and the reason the gate gives on standard error (not found, not valid, not verified, or not confirmed for this run). Resolve it with the user, by reviewing it (step 2), confirming it (step 1) or dropping it, and run the gate again. Do not start Gather until the gate passes.

@@ -271,10 +271,31 @@ def test_propose_perspectives_reference_has_its_sections():
     ]
 
 
-def test_propose_perspectives_reads_the_user_library_before_the_defaults():
+def test_propose_perspectives_searches_the_sources_in_order():
+    # Decision 18: attached or project files, a named or configured folder,
+    # the packaged library, then the shipped defaults.
+    step = _reference("propose-perspectives.md").split("1. **", 1)[1].split("\n2. **", 1)[0]
+    order = [
+        "attached to the chat",
+        "perspectives.library",
+        "`library/`",
+        "references/perspectives/",
+    ]
+    positions = [step.index(source) for source in order]
+    assert positions == sorted(positions)
+    assert "the higher source wins" in step
+
+
+def test_propose_perspectives_never_takes_a_library_path_from_memory():
+    step = _reference("propose-perspectives.md").split("1. **", 1)[1].split("\n2. **", 1)[0]
+    assert "never from memory or from earlier chats" in step
+    assert "decision 15" in step
+
+
+def test_propose_perspectives_names_the_source_of_each_perspective():
     text = _reference("propose-perspectives.md")
-    assert text.index("user's perspective folder") < text.index("references/perspectives/")
-    assert "the user's copy wins" in text
+    for label in ["attached", "library folder", "packaged library", "default"]:
+        assert label in text, label
 
 
 def test_propose_perspectives_proposes_one_block_and_lists_what_is_left_out():
@@ -347,6 +368,8 @@ def test_verify_perspectives_runs_the_gate_and_stops_when_blocked():
     assert "python scripts/verification_gate.py --perspective" in text
     assert "--run-record run/run.yaml" in text
     assert "stop" in text.split("verification_gate.py --perspective", 1)[1]
+    assert "--library run/perspectives --library run/attached" in text
+    assert "--config" in text
 
 
 # Prioritize (step 5)
