@@ -19,5 +19,6 @@ Decisions that shape this repository, in the Cognitect format (title, context, d
 | 13 | [Perspectives before Gather; scope frozen before Prioritize](0013-perspectives-before-gather-scope-frozen-before-prioritize.md) | Accepted |
 | 14 | [Judgment-based ratings mark candidates at risk; they don't eliminate](0014-judgment-based-ratings-mark-candidates-at-risk.md) | Accepted |
 | 15 | [A run resumes only from its own record](0015-a-run-resumes-only-from-its-own-record.md) | Accepted |
+| 16 | [The skill may read public sources itself](0016-the-skill-may-read-public-sources-itself.md) | Accepted |
 
 To change a decision, add a new record that supersedes or amends the old one and set the old record's status to "Superseded by N" or "Accepted; amended by N".
