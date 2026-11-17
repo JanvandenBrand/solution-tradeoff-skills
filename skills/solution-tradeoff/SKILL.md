@@ -19,6 +19,10 @@ It needs Python with `pyyaml` and `jsonschema`, as every script does. If the hos
 
 Then ask once, for the whole run: "May I deploy independent subagents for the scope review, Prioritize, Rate and Challenge in this run?" These passes must not see each other's work, and only independent subagents keep them apart (decision 17). If the user declines, or the host cannot start independent subagents, say so and stop. Do not ask again later in the run.
 
+## Delivering files
+
+Send each of these files to the user as soon as a step writes or updates it, not only at the end: the run record `run/run.yaml`, the shared context `run/shared-context.md`, the analysis `run/analysis.md`, the challenge `run/challenge.md` and the decision record. If the host can write files in the user's folder, save the file there; otherwise give it to the user as a file. The user then holds every file a run resumes from (decision 15), even if the conversation ends early.
+
 ## 1. Frame
 
 Establish the decision and validate the problem: propose one frame, built from the opening message, the attachments and the intake, with each item marked as taken from the input, inferred or missing; the user corrects it in one answer, follow-up questions cover only what is still missing or contradictory, and then the user confirms the frame summary. Nothing else starts before that confirmation. The Frame step covers verifying intent: its intake, the proposed frame and the confirmed summary establish what the user wants decided, so the skill does not call a separate intent-verification skill. Follow [references/frame.md](references/frame.md); its output is the `frame` section of the run record. Any later step that finds the problem, the outcome or the criteria wrong returns here as a question for the user.

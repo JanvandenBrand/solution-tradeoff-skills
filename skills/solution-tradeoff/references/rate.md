@@ -54,3 +54,5 @@ The rater never sees the perspectives' responses, preferred options or point all
 
 - `run/ratings.yaml`: every candidate rated on every in-scope requirement, with disputes and corrections in the rationales.
 - `independence.rate: full` in the run record.
+
+Send the run record to the user as soon as it is written (see "Delivering files" in `SKILL.md`).

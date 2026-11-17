@@ -128,3 +128,5 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
 2. `independence.scope_review: full` in the run record.
 
 3. The **shared context block**, `run/shared-context.md`, filled in from `assets/shared-context-template.md`: the frame summary, the in-scope requirements, the principles and the background. This block is the only input the Prioritize and Rate steps receive. It never contains perspective preferences or points.
+
+Send the run record and `run/shared-context.md` to the user, each as soon as it is written (see "Delivering files" in `SKILL.md`).

@@ -41,3 +41,5 @@ Commands run from the skill folder; `run/` stands for the run's working folder, 
 
 - `run/ranking.json`: the output of `rank.py`.
 - `run/analysis.md`: the result, the ranking, the eliminated and at-risk candidates, and the flags. The Challenge and Record steps read it.
+
+Send `run/analysis.md` to the user as soon as it is written, and again after each rerun (see "Delivering files" in `SKILL.md`).

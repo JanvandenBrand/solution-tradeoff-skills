@@ -44,3 +44,5 @@ Nothing is scored with a perspective until a person has verified it and confirme
 - `perspective_confirmations` in the run record: one entry per selected perspective, with `confirmed_by` and `confirmed_at`.
 - `run/perspectives/`: the copies verified in this run, each also handed to the user's library.
 - The gate output, kept as `run/gate.json`, listing the file used for each perspective. The scope review in Gather and the Prioritize step use exactly those files.
+
+Send the run record to the user as soon as it is written (see "Delivering files" in `SKILL.md`).

@@ -50,3 +50,5 @@ A perspective never sees another perspective's response, preferred option or poi
 - `run/responses/<id>.yaml`: one response per selected perspective.
 - `independence.prioritize: full` in the run record.
 - The summary shown to the user. The Must challenges stay in the responses, for the Challenge step.
+
+Send the run record to the user as soon as it is written (see "Delivering files" in `SKILL.md`).

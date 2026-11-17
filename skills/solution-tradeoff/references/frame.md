@@ -129,3 +129,5 @@ Before you show the frame summary, check the section yourself. No script does th
 - The outcome is named, and `validation.outcome_named` is true.
 - If `validation.solution_free` is false, the reason is in `validation.notes` and the user chose to keep the statement.
 - After the user confirms, `confirmed_by` names them and `confirmed_at` is the date, written as YYYY-MM-DD without quotes.
+
+Send the run record to the user as soon as it is written, and again after every correction (see "Delivering files" in `SKILL.md`).

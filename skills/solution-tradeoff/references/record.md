@@ -33,12 +33,12 @@ The decision record is a proposal for people to decide on: set its status to Pro
 
    If the user does not know, leave the section out and say that the run is not measured.
 
-4. **Deliver the run.** Hand over four files: the decision record, `run/analysis.md`, `run/challenge.md` and `run/run.yaml`. A later run can be resumed from these files (decision 15).
-   - If the host can write files in the user's folder, save them there.
-   - Otherwise, give them to the user as files to keep.
+4. **Check that the user has the latest version of every file.** Send the decision record and the updated run record now. Then confirm that the user has the latest `run/analysis.md`, `run/challenge.md` and `run/run.yaml`, which earlier steps sent as soon as they were written; send any that changed since. A later run can be resumed from these files (decision 15).
 
 ## Output
 
 - The decision record, with status Proposed: from the host's decision-record skill, or `run/decision-record.md`.
 - `measurement.hands_on_minutes` in the run record.
-- The four files, delivered to the user.
+- The decision record, the analysis, the challenge and the run record, all with the user in their latest version.
+
+Send the decision record and the run record to the user, each as soon as it is written (see "Delivering files" in `SKILL.md`).

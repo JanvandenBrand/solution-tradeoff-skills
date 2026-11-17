@@ -55,3 +55,5 @@ The reviewer argues against the result, not for it, and never changes a score, a
 
 - `run/challenge.md`: the case against the leading candidate, and every finding with its point, class and settlement.
 - `independence.challenge: full` in the run record.
+
+Send `run/challenge.md` and the run record to the user, each as soon as it is written, and again after the findings are settled (see "Delivering files" in `SKILL.md`).

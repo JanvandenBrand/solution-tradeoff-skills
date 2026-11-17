@@ -756,3 +756,40 @@ def test_gather_drafts_only_to_test_the_outcome_or_a_constraint():
     assert "only when it is needed to test the frame's outcome or one of its constraints" in text
     assert "tests:" in text
     assert "wait for the answer before presenting the next" in text
+
+
+# Output files go to the user as soon as they are written
+
+
+def test_skill_sends_each_output_file_as_soon_as_it_is_written():
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    section = text.split("## Delivering files", 1)[1].split("\n## ", 1)[0]
+    assert text.index("## Delivering files") < text.index("## 1. Frame")
+    for name in [
+        "run/run.yaml",
+        "run/shared-context.md",
+        "run/analysis.md",
+        "run/challenge.md",
+        "decision record",
+    ]:
+        assert name in section, name
+    assert "as soon as" in section
+
+
+@pytest.mark.parametrize(
+    "reference",
+    [
+        "frame.md",
+        "verify-perspectives.md",
+        "gather.md",
+        "prioritize.md",
+        "rate.md",
+        "validate.md",
+        "compile.md",
+        "challenge.md",
+        "record.md",
+    ],
+)
+def test_each_step_that_writes_an_output_file_sends_it(reference):
+    output = _reference(reference).split("## Output", 1)[1]
+    assert "Send" in output and "as soon as it is written" in output

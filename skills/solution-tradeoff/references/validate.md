@@ -63,3 +63,5 @@ If every candidate is eliminated, by the script or by the user, say so and retur
 - Every check passing, on the current files.
 - `run/elimination.json`: the threshold, the eliminated and the at-risk candidates with their Must requirements and bases, and the remaining candidates. The Compile step reads it.
 - `validate.at_risk` in the run record: the user's decision on each at-risk candidate.
+
+Send the run record to the user as soon as it is written, with the at-risk decisions (see "Delivering files" in `SKILL.md`).
