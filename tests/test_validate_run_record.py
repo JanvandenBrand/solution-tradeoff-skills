@@ -42,6 +42,19 @@ def test_frame_format_is_still_checked(record):
     assert any("rumored" in e for e in run_record_errors(record, None))
 
 
+@pytest.mark.parametrize("field", ["decision_authority", "domain"])
+def test_frame_requires_the_intake_fields(record, field):
+    del record["frame"][field]
+    assert any(field in e for e in run_record_errors(record, None))
+
+
+def test_frame_records_intake_gaps(record):
+    record["frame"]["gaps"] = ["No governing decisions named."]
+    assert run_record_errors(record, None) == []
+    record["frame"]["gaps"] = [""]
+    assert run_record_errors(record, None) != []
+
+
 def test_frame_rules_are_not_checked_by_the_script(record):
     record["frame"]["status_quo_asked"] = False
     record["frame"]["validation"]["outcome_named"] = False

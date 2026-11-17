@@ -14,7 +14,7 @@ If the host cannot run scripts, say so and stop: this step cannot be done reliab
 
 Commands run from the skill folder; `<decision>` is `frame.decision_id` from the run record, and `run/` stands for the run's working folder.
 
-1. **Obtain the requirements spreadsheet.** Ask the user for the file. Record only its file name, never its location.
+1. **Obtain the requirements spreadsheet.** Use the requirements register the user gave in the Frame intake; ask for the file only if it is not available. Record only its file name, never its location.
 
 2. **Check the prerequisites.**
 

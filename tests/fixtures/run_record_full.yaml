@@ -2,6 +2,8 @@
 frame:
   decision_id: AD-000
   decision_question: Which platform hosts the sample data service?
+  decision_authority: Sample architecture board
+  domain: Sample reporting
   problem:
     statement: Monthly reports arrive late because the current data service cannot keep up.
     outcome: Reports are available on the first working day of each month.

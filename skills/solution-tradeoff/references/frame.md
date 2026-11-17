@@ -13,6 +13,23 @@ Establish the decision and validate the problem. Nothing else starts until the d
 - When every field is collected, summarize the frame back to the user and ask for confirmation.
 - Never state a count, total or budget before the script that produces it has run. The Frame step runs none, so it states none: no requirement counts, no budget, no estimate of either.
 
+## Intake
+
+Start the Frame step with this checklist, shown as one block. Mark what the user has already given or attached, and ask for the rest in the same block.
+
+- **Required**, before anything else goes on:
+  - the decision question;
+  - at least two candidates, each with a description;
+  - the requirements register (the spreadsheet), which the Gather step loads;
+  - the decision authority: the person or body that decides;
+  - the domain the decision belongs to.
+- **Expected**, recorded as a gap when missing:
+  - the governing decisions this one must respect;
+  - the constraints;
+  - the background sources, each with its contents attached or given as a public link.
+
+If a required item is missing, ask for it and do not go on until the user gives it. If an expected item is missing, say so, record it in `frame.gaps` (for example, "No background sources given."), and go on. The answers from the intake are the starting point for the questions below; ask again only where an answer is unclear.
+
 ## What to collect
 
 1. **Decision identifier**, for example `AD-012`. Required: the Gather step uses it to choose which draft requirements belong to this decision. If the decision has no identifier yet, ask the user to assign one.
@@ -42,7 +59,7 @@ Record the result of each check.
 
 ## Exit
 
-Show the frame summary: decision identifier and question, problem statement with outcome, causal claim, evidence and label, candidates (marking the status quo), planning horizon and plateau, governing decisions, constraints, and the validation result. Ask: "Is this frame correct?" Continue to the Propose perspectives step only after the user confirms. If the user corrects anything, update it and ask again.
+Show the frame summary: decision identifier and question, decision authority and domain, problem statement with outcome, causal claim, evidence and label, candidates (marking the status quo), planning horizon and plateau, governing decisions, constraints, the gaps from the intake, and the validation result. Ask: "Is this frame correct?" Continue to the Propose perspectives step only after the user confirms. If the user corrects anything, update it and ask again.
 
 ## Return rule
 
@@ -56,6 +73,8 @@ The `frame` section of the run record (`run/run.yaml`, where `run/` stands for t
 frame:
   decision_id: AD-012
   decision_question: <one sentence>
+  decision_authority: <who decides>
+  domain: <the domain>
   problem:
     statement: <the problem, without a solution>
     outcome: <the outcome affected>
@@ -80,6 +99,8 @@ frame:
   governing_decisions: [AD-004]
   constraints:
     - <constraint>
+  gaps:                           # expected intake items that are missing, if any
+    - <for example, no background sources given>
   validation:
     method: built-in-checks       # or host-skill
     solution_free: true
@@ -93,6 +114,8 @@ frame:
 Before you show the frame summary, check the section yourself. No script does this: you wrote the section, so the check is yours (decision 12). Fix anything that fails, asking the user where the answer is theirs to give.
 
 - `decision_id` is filled in.
+- `decision_authority` and `domain` are filled in, from the intake.
+- Every expected intake item that is missing is listed in `gaps`.
 - There are at least two candidates, with different identifiers, each with a one-line description.
 - `status_quo_asked` is true: you asked whether the status quo should be a candidate.
 - The problem is labeled `hypothesis` when `evidence` is empty, and `evidenced` otherwise; `validation.evidence_present` matches.

@@ -81,13 +81,17 @@
       "description": "Step 1: the decision, the validated problem and the candidates, as confirmed by the user.",
       "additionalProperties": false,
       "required": [
-        "decision_id", "decision_question", "problem", "candidates", "status_quo_asked",
+        "decision_id", "decision_question", "decision_authority", "domain", "problem",
+        "candidates", "status_quo_asked",
         "planning_horizon", "plateau", "governing_decisions", "constraints", "validation",
         "confirmed_by", "confirmed_at"
       ],
       "properties": {
         "decision_id": {"$ref": "#/$defs/text", "description": "For example AD-012. The Gather step scopes drafts by it."},
         "decision_question": {"$ref": "#/$defs/text"},
+        "decision_authority": {"$ref": "#/$defs/text", "description": "Who decides: the person or body that accepts the decision record."},
+        "domain": {"$ref": "#/$defs/text", "description": "The domain the decision belongs to."},
+        "gaps": {"$ref": "#/$defs/texts", "description": "Expected intake items that are missing, such as governing decisions or background sources."},
         "problem": {
           "type": "object",
           "additionalProperties": false,

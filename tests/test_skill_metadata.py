@@ -126,6 +126,7 @@ def test_frame_reference_has_its_sections():
     assert _reference_sections("references/frame.md") == [
         "Purpose",
         "Conversation rules",
+        "Intake",
         "What to collect",
         "Problem validation",
         "Exit",
@@ -626,3 +627,35 @@ def test_readme_says_every_step_is_written():
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     assert "skeleton" not in readme
     assert "All ten steps" in readme
+
+
+# Frame intake
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        "decision question",
+        "at least two candidates",
+        "requirements register",
+        "decision authority",
+        "domain",
+        "governing decisions",
+        "constraints",
+        "background sources",
+        "public link",
+    ],
+)
+def test_frame_intake_lists_each_item(item):
+    intake = _reference("frame.md").split("## Intake", 1)[1].split("\n## ", 1)[0]
+    assert item in intake
+
+
+def test_frame_intake_asks_for_required_items_and_records_expected_gaps():
+    text = _reference("frame.md")
+    intake = text.split("## Intake", 1)[1].split("\n## ", 1)[0]
+    assert "one block" in intake
+    assert "Required" in intake and "Expected" in intake
+    assert "frame.gaps" in intake
+    for field in ["decision_authority:", "domain:", "gaps:"]:
+        assert field in text, field
