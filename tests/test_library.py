@@ -46,3 +46,16 @@ def test_a_perspective_file_in_library_is_ignored():
 def test_package_leaves_out_the_library_readme():
     package = MAKEFILE.read_text(encoding="utf-8").split("package:", 1)[1]
     assert "solution-tradeoff/library/README.md" in package
+
+
+def test_readme_explains_the_sources_and_the_packaged_library():
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    section = readme.split("## Before your first analysis", 1)[1].split("\n## ", 1)[0]
+    for phrase in [
+        "attached",
+        "perspectives.library",
+        "skills/solution-tradeoff/library/",
+        "make package",
+        "never committed",
+    ]:
+        assert phrase in section, phrase

@@ -37,7 +37,12 @@ The skill reads your requirements from a spreadsheet and your verified perspecti
    python skills/solution-tradeoff/scripts/check_prerequisites.py requirements.xlsx --decision AD-012
    ```
 
-4. **Perspective library.** The shipped perspectives are unverified defaults. Keep your own verified copies outside the skill: as claude.ai project files, or in a folder of your Claude Code workspace. Your copy wins over a shipped default with the same `id`. Each file follows `references/perspective-format.md`.
+4. **Perspectives.** The shipped perspectives are unverified defaults. The skill looks for your own verified perspectives in three sources, in this order, and then in the defaults; on a matching `id`, the higher source wins (decision 18):
+   1. perspective files attached to the chat, or in the claude.ai project's files;
+   2. a folder the host can read: one you name in the conversation, or `perspectives.library` in `skills/solution-tradeoff/assets/config.yaml`;
+   3. `skills/solution-tradeoff/library/`, packaged with the skill.
+
+   To ship your verified perspectives inside the skill you upload, copy each file into `skills/solution-tradeoff/library/` as `<id>.md` before running `make package`; the package includes every `.md` file there except its README. Git ignores everything in that folder except the README, so your perspectives are never committed. Each file follows `references/perspective-format.md`, and the verification gate judges it by its header and your confirmation in the run, not by the source it came from.
 
 To use settings other than the defaults, copy `config.yaml`, change it, and pass `--config <file>` to the scripts.
 
@@ -60,6 +65,7 @@ skills/solution-tradeoff/
 │   ├── validate.md           # step 7: checks and elimination
 │   ├── verify-perspectives.md  # step 3: verify, confirm and pass the gate
 │   └── skill-feedback.md     # how to report a problem with the skill
+├── library/                  # your verified perspectives for make package (git-ignored)
 ├── scripts/                  # deterministic steps, run by the host
 └── assets/
     ├── config.yaml           # thresholds, budget and spreadsheet column names
