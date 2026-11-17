@@ -7,6 +7,16 @@ description: Compare candidate solutions in a multi-stakeholder trade-off analys
 
 Nothing is scored until a person has verified every selected perspective.
 
+## Before you start
+
+Check that the host can run the scripts, from the skill folder:
+
+```bash
+python scripts/validate_rating.py --help
+```
+
+It needs Python with `pyyaml` and `jsonschema`, as every script does. If the host cannot run commands, or the command fails, say so and stop. Do not run any step by hand: the counts, budget, elimination and ranking must come from the scripts (decision 3).
+
 ## 1. Frame
 
 Establish the decision and validate the problem, one question at a time, then ask the user to confirm the frame summary. Nothing else starts before that confirmation. Follow [references/frame.md](references/frame.md); its output is the `frame` section of the run record. Any later step that finds the problem, the outcome or the criteria wrong returns here as a question for the user.

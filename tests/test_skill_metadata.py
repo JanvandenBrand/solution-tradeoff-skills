@@ -43,6 +43,16 @@ def test_skill_steps_are_the_ten_in_order():
     assert numbered == [f"{i}. {step}" for i, step in enumerate(STEPS, start=1)]
 
 
+def test_skill_checks_that_scripts_run_before_the_frame():
+    # Decision 3: the arithmetic lives in scripts, so a host that cannot run them stops.
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    assert text.index("## Before you start") < text.index("## 1. Frame")
+    section = text.split("## Before you start", 1)[1].split("\n## ", 1)[0]
+    assert "python scripts/validate_rating.py --help" in section
+    assert "stop" in section
+    assert "Do not run any step by hand" in section
+
+
 def test_decision_record_template_has_the_cognitect_sections():
     text = (SKILL_DIR / "assets" / "decision-record-template.md").read_text(encoding="utf-8")
     lines = text.splitlines()
