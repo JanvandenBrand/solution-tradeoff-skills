@@ -12,7 +12,7 @@ Reason: users must be able to extend and reuse perspectives, and installed skill
 
 ## Status
 
-Accepted
+Accepted; amended by [decision 18](0018-perspectives-come-from-three-sources.md)
 
 ## Consequences
 

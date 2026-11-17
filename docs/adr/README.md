@@ -7,7 +7,7 @@ Decisions that shape this repository, in the Cognitect format (title, context, d
 | 1 | [New repository, command-line tool frozen](0001-new-repository-command-line-tool-frozen.md) | Accepted |
 | 2 | [Host-neutral skill text, Claude only for now](0002-host-neutral-skill-text-claude-only.md) | Accepted |
 | 3 | [Judgment in instructions, arithmetic in scripts](0003-judgment-in-instructions-arithmetic-in-scripts.md) | Accepted, amended by 12 |
-| 4 | [Perspectives as Markdown with a YAML header, in a library outside the skill](0004-perspectives-as-markdown-in-a-library-outside-the-skill.md) | Accepted |
+| 4 | [Perspectives as Markdown with a YAML header, in a library outside the skill](0004-perspectives-as-markdown-in-a-library-outside-the-skill.md) | Accepted, amended by 18 |
 | 5 | [Verify once fully; confirm lightly per run](0005-verify-once-fully-confirm-lightly-per-run.md) | Accepted |
 | 6 | [Separate rating pass; ten steps](0006-separate-rating-pass-ten-steps.md) | Accepted, amended by 13, 14 and 17 |
 | 7 | [Draft requirements included, scoped by decision reference](0007-draft-requirements-scoped-by-decision-reference.md) | Accepted |
@@ -21,5 +21,6 @@ Decisions that shape this repository, in the Cognitect format (title, context, d
 | 15 | [A run resumes only from its own record](0015-a-run-resumes-only-from-its-own-record.md) | Accepted |
 | 16 | [The skill may read public sources itself](0016-the-skill-may-read-public-sources-itself.md) | Accepted |
 | 17 | [Independent subagents are a precondition](0017-independent-subagents-are-a-precondition.md) | Accepted |
+| 18 | [Perspectives come from three sources](0018-perspectives-come-from-three-sources.md) | Accepted |
 
 To change a decision, add a new record that supersedes or amends the old one and set the old record's status to "Superseded by N" or "Accepted; amended by N".
