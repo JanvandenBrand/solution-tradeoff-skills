@@ -53,6 +53,13 @@ def test_skill_checks_that_scripts_run_before_the_frame():
     assert "Do not run any step by hand" in section
 
 
+def test_frame_step_covers_verifying_intent():
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    frame = text.split("## 1. Frame", 1)[1].split("\n## ", 1)[0]
+    assert "verifying intent" in frame
+    assert "does not call a separate intent-verification skill" in frame
+
+
 def test_decision_record_template_has_the_cognitect_sections():
     text = (SKILL_DIR / "assets" / "decision-record-template.md").read_text(encoding="utf-8")
     lines = text.splitlines()

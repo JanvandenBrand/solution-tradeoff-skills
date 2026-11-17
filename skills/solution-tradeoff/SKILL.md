@@ -19,7 +19,7 @@ It needs Python with `pyyaml` and `jsonschema`, as every script does. If the hos
 
 ## 1. Frame
 
-Establish the decision and validate the problem, one question at a time, then ask the user to confirm the frame summary. Nothing else starts before that confirmation. Follow [references/frame.md](references/frame.md); its output is the `frame` section of the run record. Any later step that finds the problem, the outcome or the criteria wrong returns here as a question for the user.
+Establish the decision and validate the problem, one question at a time, then ask the user to confirm the frame summary. Nothing else starts before that confirmation. The Frame step covers verifying intent: its intake, its one-question-at-a-time conversation and the confirmed summary establish what the user wants decided, so the skill does not call a separate intent-verification skill. Follow [references/frame.md](references/frame.md); its output is the `frame` section of the run record. Any later step that finds the problem, the outcome or the criteria wrong returns here as a question for the user.
 
 ## 2. Propose perspectives
 
