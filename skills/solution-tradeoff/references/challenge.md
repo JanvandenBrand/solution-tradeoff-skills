@@ -17,9 +17,7 @@ The reviewer argues against the result, not for it, and never changes a score, a
 
 `run/` stands for the run's working folder.
 
-1. **Choose how to run the reviewer.**
-   - If the host can start an independent subagent, start one and give it only the four inputs. Record `independence: {challenge: full}` in the run record, next to the other passes.
-   - Otherwise, review in this conversation. Work from the four inputs only, and argue against the result even where you wrote it. Record `independence: {challenge: limited}` in the run record.
+1. **Start one independent subagent for the reviewer** (decision 17), and give it only the four inputs. Record `independence: {challenge: full}` in the run record, next to the other passes.
 
 2. **Make the strongest case against the leading candidate.** If the result is a shortlist, argue against each candidate on it. Then test each of these points, and write a finding for each one that weakens the result:
    - **Drafted requirements:** does the result rest mainly on drafted requirements, those with `origin: assistant` in `gather.drafted_requirements`? Use the drafted share in the analysis (decision 11).
@@ -56,4 +54,4 @@ The reviewer argues against the result, not for it, and never changes a score, a
 ## Output
 
 - `run/challenge.md`: the case against the leading candidate, and every finding with its point, class and settlement.
-- `independence.challenge` in the run record: `full` or `limited`.
+- `independence.challenge: full` in the run record.

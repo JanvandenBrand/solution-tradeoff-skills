@@ -53,6 +53,24 @@ def test_skill_checks_that_scripts_run_before_the_frame():
     assert "Do not run any step by hand" in section
 
 
+def test_skill_asks_once_for_subagent_consent_and_stops_without_it():
+    # Decision 17: independent subagents are a precondition.
+    text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    section = text.split("## Before you start", 1)[1].split("\n## ", 1)[0]
+    assert "independent subagents" in section
+    for step in ["scope review", "Prioritize", "Rate", "Challenge"]:
+        assert step in section, step
+    assert "declines" in section and "cannot start independent subagents" in section
+    assert "stop" in section
+
+
+@pytest.mark.parametrize("phrase", ["limited", "in turn", "in this conversation"])
+def test_no_step_falls_back_to_running_passes_in_one_conversation(phrase):
+    files = [SKILL_DIR / "SKILL.md", *sorted((SKILL_DIR / "references").glob("*.md"))]
+    for path in files:
+        assert phrase not in path.read_text(encoding="utf-8"), f"{path.name}: {phrase}"
+
+
 def test_frame_step_covers_verifying_intent():
     text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
     frame = text.split("## 1. Frame", 1)[1].split("\n## ", 1)[0]
@@ -350,10 +368,10 @@ def test_prioritize_names_the_four_inputs_and_nothing_else():
     assert "never sees another perspective's response" in text
 
 
-def test_prioritize_records_limited_independence_without_subagents():
+def test_prioritize_runs_in_independent_subagents():
     text = _reference("prioritize.md")
-    assert "independent subagents" in text
-    assert "prioritize: limited" in text
+    assert "independent subagent" in text
+    assert "prioritize: full" in text
     assert "run/responses/" in text
 
 
@@ -377,7 +395,6 @@ def test_prioritize_records_must_challenges_for_the_challenge_step_only():
 def test_gather_records_scope_review_independence():
     text = _reference("gather.md")
     assert "scope_review: full" in text
-    assert "scope_review: limited" in text
 
 
 def test_rate_reference_has_its_sections():
@@ -394,10 +411,10 @@ def test_rate_never_receives_prioritization_output():
         assert forbidden in rule, forbidden
 
 
-def test_rate_records_limited_independence_without_subagents():
+def test_rate_runs_in_an_independent_subagent():
     text = _reference("rate.md")
     assert "independent subagent" in text
-    assert "rate: limited" in text
+    assert "rate: full" in text
 
 
 def test_rate_names_the_basis_and_asks_one_dispute_question():
@@ -535,7 +552,6 @@ def test_compile_reports_a_close_call_as_a_shortlist():
     [
         "frame.problem.label",
         "drafted share",
-        "`limited`",
         "unread_source",
         "must_challenges",
     ],
@@ -559,7 +575,7 @@ def test_challenge_reference_has_its_sections():
 def test_challenge_runs_in_its_own_subagent_and_records_independence():
     text = _reference("challenge.md")
     assert "independent subagent" in text
-    assert "challenge: full" in text and "challenge: limited" in text
+    assert "challenge: full" in text
     for source in ["run/analysis.md", "run/run.yaml", "run/ratings.yaml", "run/responses/"]:
         assert source in text, source
 

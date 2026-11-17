@@ -21,7 +21,6 @@ The decision record is a proposal for people to decide on: set its status to Pro
    - **Drafted requirements:** every requirement in `gather.drafted_requirements`, with its identifier and text, for the user to add to the source spreadsheet (decision 11). Also list the requirements an accepted scope-review challenge dropped from the scope (`settled: accepted` in `run/scope-review/`), so the spreadsheet owner can review them; the spreadsheet itself was not changed (decision 13).
    - **At-risk decisions:** each entry in `validate.at_risk`, with the candidate, the decision and who made it.
    - **The deviations:** what departed from the full method in this run:
-     - every `independence` value that is `limited`;
      - every rating the user disputed in the Rate step;
      - every challenge finding the user rejected (`settled: rejected` in `run/challenge.md`).
 

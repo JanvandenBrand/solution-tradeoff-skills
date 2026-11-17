@@ -17,9 +17,7 @@ A perspective never sees another perspective's response, preferred option or poi
 
 `run/` stands for the run's working folder; the run record is `run/run.yaml`.
 
-1. **Choose how to run the perspectives.**
-   - If the host can start independent subagents, start one per perspective and give each only the four inputs. Record `independence: {prioritize: full}` in the run record.
-   - Otherwise, run the perspectives in turn in this conversation. For each one, work from the four inputs only, as if nothing else had been said; write its response to `run/responses/<id>.yaml` before starting the next, and do not look back at earlier responses. Record `independence: {prioritize: limited}` in the run record, so the Compile and Challenge steps know the perspectives were not fully independent.
+1. **Start one independent subagent per perspective** (decision 17), and give each only the four inputs. Record `independence: {prioritize: full}` in the run record.
 
 2. **Write one response per perspective**, as `run/responses/<id>.yaml`, in the format of the response schema:
 
@@ -50,5 +48,5 @@ A perspective never sees another perspective's response, preferred option or poi
 ## Output
 
 - `run/responses/<id>.yaml`: one response per selected perspective.
-- `independence.prioritize` in the run record: `full` or `limited`.
+- `independence.prioritize: full` in the run record.
 - The summary shown to the user. The Must challenges stay in the responses, for the Challenge step.

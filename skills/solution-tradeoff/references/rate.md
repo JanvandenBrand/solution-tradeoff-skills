@@ -16,9 +16,7 @@ The rater never sees the perspectives' responses, preferred options or point all
 
 `run/` stands for the run's working folder; the run record is `run/run.yaml`.
 
-1. **Choose how to run the rater.**
-   - If the host can start an independent subagent, start one and give it only the three inputs. Record `independence: {rate: full}` in the run record, next to `prioritize`.
-   - Otherwise, rate in this conversation. Work from the three inputs only: do not refer to, quote or reason from anything said in the Prioritize step. Record `independence: {rate: limited}` in the run record, next to `prioritize`.
+1. **Start one independent subagent for the rater** (decision 17), and give it only the three inputs. Record `independence: {rate: full}` in the run record, next to `prioritize`.
 
 2. **Rate every candidate on every in-scope requirement**, as a whole number on the scale. Write `run/ratings.yaml` in the format of the rating schema:
 
@@ -55,4 +53,4 @@ The rater never sees the perspectives' responses, preferred options or point all
 ## Output
 
 - `run/ratings.yaml`: every candidate rated on every in-scope requirement, with disputes and corrections in the rationales.
-- `independence.rate` in the run record: `full` or `limited`.
+- `independence.rate: full` in the run record.

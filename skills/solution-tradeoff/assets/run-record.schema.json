@@ -10,13 +10,13 @@
     "gather": {"$ref": "#/$defs/gather"},
     "independence": {
       "type": "object",
-      "description": "Whether the scope review and the Prioritize, Rate and Challenge passes ran in independent subagents (full) or in turn in one conversation (limited).",
+      "description": "The scope review and the Prioritize, Rate and Challenge passes ran in independent subagents. Only full is allowed: without independent subagents the skill stops (decision 17).",
       "additionalProperties": false,
       "properties": {
-        "scope_review": {"enum": ["full", "limited"]},
-        "prioritize": {"enum": ["full", "limited"]},
-        "rate": {"enum": ["full", "limited"]},
-        "challenge": {"enum": ["full", "limited"]}
+        "scope_review": {"enum": ["full"]},
+        "prioritize": {"enum": ["full"]},
+        "rate": {"enum": ["full"]},
+        "challenge": {"enum": ["full"]}
       }
     },
     "measurement": {

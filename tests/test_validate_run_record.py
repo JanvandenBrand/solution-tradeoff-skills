@@ -205,15 +205,20 @@ def test_drafted_requirement_origin_must_be_known(record):
 # Independence of the scope review and the Prioritize, Rate and Challenge passes
 
 
-@pytest.mark.parametrize("value", ["full", "limited"])
-def test_independence_values_are_valid(record, value):
+def test_independence_values_are_valid(record):
     record["independence"] = {
-        "scope_review": value,
-        "prioritize": value,
-        "rate": value,
-        "challenge": value,
+        "scope_review": "full",
+        "prioritize": "full",
+        "rate": "full",
+        "challenge": "full",
     }
     assert run_record_errors(record, None) == []
+
+
+def test_independence_is_never_limited(record):
+    # Decision 17: there is no fallback without independent subagents.
+    record["independence"] = {"rate": "limited"}
+    assert any("limited" in e for e in run_record_errors(record, None))
 
 
 def test_independence_value_must_be_known(record):

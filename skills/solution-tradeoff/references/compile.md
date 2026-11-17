@@ -32,7 +32,6 @@ Commands run from the skill folder; `run/` stands for the run's working folder, 
    4. **The flags.** List each flag that applies, with the numbers behind it, or say that none applies:
       - **Hypothesis:** `frame.problem.label` is `hypothesis`. The result answers a problem that has no evidence yet.
       - **Drafted requirements:** the drafted share of a ranked candidate, highest first. Name the drafted requirements in `gather.drafted_requirements` (decision 11).
-      - **Limited independence:** every `independence` value that is `limited` (`scope_review`, `prioritize`, `rate`), and what it means: the passes were run in one conversation, not in independent subagents.
       - **Decisive ratings on unread sources:** every `decisive` entry in `run/ranking.json` where either candidate's rating has basis `unread_source`, with that source.
       - **Must challenges after the freeze:** every `must_challenges` entry in `run/responses/`, with the perspective that raised it. They did not change the scope (decision 13); the Challenge step weighs them.
 

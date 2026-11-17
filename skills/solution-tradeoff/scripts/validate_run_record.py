@@ -5,8 +5,8 @@ The run record (YAML) holds what one run established, step by step:
 - ``frame``: the decision, the validated problem and the candidates (step 1);
 - ``perspective_confirmations``: read by ``verification_gate.py`` (step 3);
 - ``gather``: the scope, counts, budget, principles and background (step 4);
-- ``independence``: ``full`` or ``limited`` for the scope review in Gather
-  and the Prioritize, Rate and Challenge passes (steps 4, 5, 6 and 9);
+- ``independence``: ``full`` for the scope review in Gather and the
+  Prioritize, Rate and Challenge passes (steps 4, 5, 6 and 9; decision 17);
 - ``validate``: the user's decision on each at-risk candidate (step 7);
 - ``measurement``: the user's hands-on minutes for the run (step 10).
 
