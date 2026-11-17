@@ -15,7 +15,9 @@ The decision record is a proposal for people to decide on: set its status to Pro
    - Otherwise, fill in `assets/decision-record-template.md`: title, context, decision, status and consequences. Save it as `run/decision-record.md`.
 
 2. **Make sure the record carries these items**, in the consequences unless the template has a better place:
-   - **The hypothesis label:** if `frame.problem.label` is `hypothesis`, say so in the context. List the open actions in the consequences: what to observe or measure to confirm the problem, drawn from `frame.problem.outcome` and `frame.problem.causal_claim`, and who should do it, if the user names someone. Until that is done, the decision rests on an unconfirmed problem.
+   - **The decision authority and the domain:** name `frame.decision_authority` as the one who decides, and `frame.domain`, in the context.
+   - **The hypothesis label:** if `frame.problem.label` is `hypothesis`, say so in the context: until the problem is confirmed, the decision rests on an unconfirmed problem.
+   - **Open actions,** in the consequences. Take them from the frame first: each gap in `frame.gaps` and each open point in `frame.validation.notes` becomes an open action. Only if the frame has none, propose open actions yourself, such as the evidence that would confirm a hypothesis, and label each one "(proposed)", so the reader can tell them from what the user recorded.
    - **Drafted requirements:** every requirement in `gather.drafted_requirements`, with its identifier and text, for the user to add to the source spreadsheet (decision 11). Also list the requirements an accepted scope-review challenge dropped from the scope (`settled: accepted` in `run/scope-review/`), so the spreadsheet owner can review them; the spreadsheet itself was not changed (decision 13).
    - **At-risk decisions:** each entry in `validate.at_risk`, with the candidate, the decision and who made it.
    - **The deviations:** what departed from the full method in this run:

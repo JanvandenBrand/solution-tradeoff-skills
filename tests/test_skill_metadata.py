@@ -677,3 +677,11 @@ def test_gather_reads_public_sources_and_never_private_ones():
         "decision 16",
     ]:
         assert phrase in step, phrase
+
+
+def test_record_takes_authority_domain_and_open_actions_from_the_frame():
+    text = _reference("record.md")
+    assert "frame.decision_authority" in text and "frame.domain" in text
+    assert "frame.gaps" in text and "frame.validation.notes" in text
+    assert "(proposed)" in text
+    assert "causal_claim" not in text
