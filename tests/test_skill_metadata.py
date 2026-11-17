@@ -749,3 +749,10 @@ def test_frame_warns_when_the_question_builds_in_a_candidate_feature():
 def test_gather_states_its_own_conversation_rules():
     text = _reference("gather.md")
     assert "Follow the conversation rules of the Frame step" not in text
+
+
+def test_gather_drafts_only_to_test_the_outcome_or_a_constraint():
+    text = _reference("gather.md")
+    assert "only when it is needed to test the frame's outcome or one of its constraints" in text
+    assert "tests:" in text
+    assert "wait for the answer before presenting the next" in text

@@ -172,7 +172,8 @@
             "required": ["id"],
             "properties": {
               "id": {"$ref": "#/$defs/text"},
-              "origin": {"enum": ["assistant", "user"]}
+              "origin": {"enum": ["assistant", "user"]},
+              "tests": {"$ref": "#/$defs/text", "description": "What the requirement tests: the frame's outcome, or the constraint it tests, by its text."}
             }
           }
         },

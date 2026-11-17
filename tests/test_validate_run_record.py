@@ -358,3 +358,12 @@ def test_background_records_what_was_read_and_its_depth(record, depth):
 def test_background_depth_must_be_known(record):
     record["gather"]["background"][0]["depth"] = "skimmed"
     assert any("skimmed" in e for e in run_record_errors(record, None))
+
+
+def test_drafted_requirement_names_what_it_tests(record):
+    record["gather"]["drafted_requirements"] = [
+        {"id": "NEW01", "origin": "assistant", "tests": "outcome"}
+    ]
+    assert run_record_errors(record, None) == []
+    record["gather"]["drafted_requirements"][0]["tests"] = ""
+    assert any("tests" in e for e in run_record_errors(record, None))

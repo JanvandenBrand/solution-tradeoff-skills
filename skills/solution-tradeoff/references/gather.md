@@ -38,10 +38,10 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
 
    Never change categories in the spreadsheet or in a copy of it to make a scope fit. A working copy may only gain new draft rows.
 
-   **Drafted requirements (decision 11).** If the spreadsheet does not cover something the decision needs, you may draft a requirement as a new draft row in a working copy, with the decision identifier in its decision-reference column. For each one you draft:
-   - present it on its own, with its MoSCoW level, and state which candidates it may favor;
+   **Drafted requirements (decision 11).** Draft a requirement only when it is needed to test the frame's outcome or one of its constraints, and the spreadsheet has none that does. Add it as a new draft row in a working copy, with the decision identifier in its decision-reference column. For each one you draft:
+   - present it on its own, with its MoSCoW level, say which it tests (`frame.problem.outcome` or one of `frame.constraints`), and state which candidates it may favor;
    - ask the user to approve it, change it or drop it, and wait for the answer before presenting the next; never ask for approval of several at once;
-   - record it in `gather.drafted_requirements` with `origin: assistant`.
+   - record it in `gather.drafted_requirements` with `origin: assistant` and, in `tests`, the outcome or the constraint it tests.
 
    Reload the working copy (step 3) after adding rows.
 
@@ -93,6 +93,7 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
      drafted_requirements:        # requirements drafted in this run, if any
        - id: <identifier>
          origin: assistant        # or user
+         tests: outcome           # or the text of the constraint it tests
      scope:
        domains: []                # empty keeps every domain
        requirements: []           # identifiers passed with --requirement
