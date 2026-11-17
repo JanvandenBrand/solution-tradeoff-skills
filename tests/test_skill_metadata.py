@@ -659,3 +659,21 @@ def test_frame_intake_asks_for_required_items_and_records_expected_gaps():
     assert "frame.gaps" in intake
     for field in ["decision_authority:", "domain:", "gaps:"]:
         assert field in text, field
+
+
+# Decision 16: public sources read by the skill
+
+
+def test_gather_reads_public_sources_and_never_private_ones():
+    step = _gather_sequence().split("11. **", 1)[1].split("\n12. **", 1)[0]
+    for phrase in [
+        "can fetch web content",
+        "public",
+        "Never fetch private or unpublished material",
+        "attach",
+        "Never send user material to an external service",
+        "depth: full",
+        "title_only",
+        "decision 16",
+    ]:
+        assert phrase in step, phrase

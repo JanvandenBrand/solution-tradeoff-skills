@@ -337,3 +337,19 @@ def test_hands_on_minutes_are_valid(record, minutes):
 def test_hands_on_minutes_must_be_a_whole_number_of_at_least_zero(record, minutes):
     record["measurement"] = {"hands_on_minutes": minutes}
     assert any("hands_on_minutes" in e for e in run_record_errors(record, None))
+
+
+# Background read by the skill (decision 16)
+
+
+@pytest.mark.parametrize("depth", ["full", "partial", "title_only"])
+def test_background_records_what_was_read_and_its_depth(record, depth):
+    record["gather"]["background"][0].update(
+        {"link": "https://example.org/guideline", "read": "The whole guideline.", "depth": depth}
+    )
+    assert run_record_errors(record, None) == []
+
+
+def test_background_depth_must_be_known(record):
+    record["gather"]["background"][0]["depth"] = "skimmed"
+    assert any("skimmed" in e for e in run_record_errors(record, None))

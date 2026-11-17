@@ -73,7 +73,12 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
 
 10. **Propose the principles** linked from the in-scope requirements: `principles.linked` in `run/filtered.json`, each with its description. If `principles.unknown` lists references not found in the principles sheet, tell the user. Ask whether to add other principles. Show them in one block with the background summaries from step 11, and ask the user to confirm or edit the block.
 
-11. **Collect background.** Ask for governing documents or other context the perspectives and the rater should know. Summarize each one in a few lines, with its title, and add the summaries to the block from step 10. Do not copy documents into the run record or the shared context.
+11. **Collect background.** Start from the background sources listed in the Frame intake, and ask whether there are other governing documents or context the perspectives and the rater should know. Then, for each source (decision 16):
+    - **Public**, such as a public repository or published documentation: if the host can fetch web content, read it yourself, as far as the decision needs. If it cannot, ask the user to attach it.
+    - **Private or unpublished**: Never fetch private or unpublished material, even when you have its address; ask the user to attach it.
+    - Never send user material to an external service: fetch only public addresses, and put nothing from the run into a request.
+
+    Summarize each source in a few lines, with its title, and record what you read and how far: `depth: full` (read in full), `depth: partial` (only the parts named in `read`) or `depth: title_only` (not read; known only by its title or a claim about it). A rating that rests on a `title_only` source has basis `unread_source`. Add the summaries to the block from step 10, with the depth of each. Do not copy documents into the run record or the shared context.
 
 12. **Summarize, confirm and freeze.** Show the scope, the in-scope counts, the excluded drafts (and the drafts the user chose, if any), the settled challenges, the budget, the principles and the background summaries. Ask: "Is this what the candidates should be judged against?" Continue only after the user confirms. With that confirmation the scope is frozen: no later step adds or changes requirements, and Must challenges raised in the Prioritize step are recorded for the Challenge step only. If the summary shows that the problem, the outcome or the criteria are wrong, return to the Frame step as a question for the user.
 
@@ -106,6 +111,9 @@ Commands run from the skill folder; `<decision>` is `frame.decision_id` from the
      background:
        - title: <document title>
          summary: <a few lines>
+         link: <public address>   # leave out for attached material
+         read: <what was read>
+         depth: full              # full, partial or title_only
      confirmed_by: <the user's name>
      confirmed_at: 2026-11-12
    ```

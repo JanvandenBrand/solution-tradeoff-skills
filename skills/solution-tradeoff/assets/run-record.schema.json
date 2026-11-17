@@ -219,7 +219,10 @@
             "required": ["title", "summary"],
             "properties": {
               "title": {"$ref": "#/$defs/text"},
-              "summary": {"$ref": "#/$defs/text"}
+              "summary": {"$ref": "#/$defs/text"},
+              "link": {"$ref": "#/$defs/text", "description": "The public address, when the source is public."},
+              "read": {"$ref": "#/$defs/text", "description": "What was read, for example the README and the architecture folder."},
+              "depth": {"enum": ["full", "partial", "title_only"], "description": "How far the source was read (decision 16); title_only means it was not read."}
             }
           }
         },
