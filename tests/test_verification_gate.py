@@ -2,9 +2,11 @@
 
 import json
 
+import pytest
 import yaml
 
-from verification_gate import SHIPPED_PERSPECTIVES, gate, main, resolve
+import verification_gate
+from verification_gate import PACKAGED_LIBRARY, SHIPPED_PERSPECTIVES, gate, main, resolve
 
 _VERIFIED = """---
 id: {id}
@@ -57,8 +59,105 @@ def _run_record(tmp_path, *ids, **overrides):
     return path
 
 
+@pytest.fixture(autouse=True)
+def empty_packaged_library(tmp_path, monkeypatch):
+    """Keep the user's own git-ignored library/ files out of the tests."""
+    folder = tmp_path / "packaged"
+    folder.mkdir()
+    monkeypatch.setattr(verification_gate, "PACKAGED_LIBRARY", folder)
+    return folder
+
+
 def test_shipped_perspectives_folder(skill_dir):
     assert SHIPPED_PERSPECTIVES == skill_dir / "references" / "perspectives"
+
+
+def test_packaged_library_folder(skill_dir):
+    assert PACKAGED_LIBRARY == skill_dir / "library"
+
+
+# Sources and precedence (decision 18)
+
+
+def test_resolve_prefers_a_given_folder_over_the_packaged_library(tmp_path, empty_packaged_library):
+    _library(tmp_path, "security", name="packaged")
+    given = _library(tmp_path, "security", name="given")
+    assert resolve("security", [given]) == given / "security.md"
+
+
+def test_resolve_prefers_the_packaged_library_over_the_shipped_default(
+    tmp_path, empty_packaged_library
+):
+    _library(tmp_path, "security", name="packaged")
+    assert resolve("security", []) == empty_packaged_library / "security.md"
+
+
+def test_gate_passes_a_verified_perspective_from_the_packaged_library(
+    tmp_path, empty_packaged_library
+):
+    _library(tmp_path, "security", name="packaged")
+    used, errors = gate(["security"], [], _run_record(tmp_path, "security"))
+    assert errors == []
+    assert used == {"security": empty_packaged_library / "security.md"}
+
+
+def test_gate_passes_a_verified_perspective_from_the_shipped_folder(tmp_path):
+    shipped = _library(tmp_path, "security", name="shipped")
+    _, errors = gate(["security"], [], _run_record(tmp_path, "security"), shipped=shipped)
+    assert errors == []
+
+
+def test_gate_uses_the_higher_source_even_when_it_is_unverified(tmp_path):
+    _library(tmp_path, "security", name="packaged")
+    higher = _library(tmp_path, "security", verified=False, name="attached")
+    used, errors = gate(["security"], [higher], _run_record(tmp_path, "security"))
+    assert used == {"security": higher / "security.md"}
+    assert any("not verified" in e for e in errors)
+
+
+def _config(tmp_path, library):
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.dump({"perspectives": {"library": str(library)}}))
+    return path
+
+
+def test_main_searches_the_configured_library(tmp_path, capsys):
+    configured = _library(tmp_path, "security", name="configured")
+    args = ["--perspective", "security", "--config", str(_config(tmp_path, configured))]
+    args += ["--run-record", str(_run_record(tmp_path, "security"))]
+    assert main(args) == 0
+    used = json.loads(capsys.readouterr().out)["perspectives"]
+    assert used == {"security": str(configured / "security.md")}
+
+
+def test_main_prefers_a_given_folder_over_the_configured_library(tmp_path, capsys):
+    configured = _library(tmp_path, "security", name="configured")
+    given = _library(tmp_path, "security", name="given")
+    args = ["--perspective", "security", "--library", str(given)]
+    args += ["--config", str(_config(tmp_path, configured))]
+    args += ["--run-record", str(_run_record(tmp_path, "security"))]
+    assert main(args) == 0
+    used = json.loads(capsys.readouterr().out)["perspectives"]
+    assert used == {"security": str(given / "security.md")}
+
+
+def test_main_prefers_the_configured_library_over_the_packaged_one(
+    tmp_path, capsys, empty_packaged_library
+):
+    _library(tmp_path, "security", name="packaged")
+    configured = _library(tmp_path, "security", name="configured")
+    args = ["--perspective", "security", "--config", str(_config(tmp_path, configured))]
+    args += ["--run-record", str(_run_record(tmp_path, "security"))]
+    assert main(args) == 0
+    used = json.loads(capsys.readouterr().out)["perspectives"]
+    assert used == {"security": str(configured / "security.md")}
+
+
+def test_main_returns_1_when_the_config_is_missing(tmp_path, capsys):
+    args = ["--perspective", "security", "--config", str(tmp_path / "none.yaml")]
+    args += ["--run-record", str(_run_record(tmp_path, "security"))]
+    assert main(args) == 1
+    assert "none.yaml" in capsys.readouterr().err
 
 
 # Resolution

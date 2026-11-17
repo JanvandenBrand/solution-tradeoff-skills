@@ -61,3 +61,9 @@ compile:
   # is a close call: rank.py reports it, and the Compile step presents a
   # shortlist instead of a winner.
   close_call: 0.5
+
+perspectives:
+  # A folder of verified perspective files the host can read, searched after
+  # files attached to the chat and before the packaged library/ (decision 18).
+  # Leave it null when there is none; never fill it in from memory.
+  library: null

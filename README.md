@@ -87,7 +87,7 @@ Every script prints JSON or a short summary, writes errors to standard error, ex
 | `validate_response.py <file or directory>` | Check perspective responses against the output schema |
 | `validate_perspective.py <file or directory>` | Check perspective files against the perspective format |
 | `validate_run_record.py <run.yaml> [--section gather] [--requirements <filtered.json>]` | Check the run record format (alone, when resuming a run), and with `--section gather` the gather counts, chosen drafts and budget against the script outputs |
-| `verification_gate.py --perspective <id> --library <folder> --run-record <run.yaml>` | Block prioritization unless every selected perspective is verified and confirmed for this run |
+| `verification_gate.py --perspective <id> --library <folder> --run-record <run.yaml>` | Block prioritization unless every selected perspective is verified and confirmed for this run; looks up each perspective in the given folders, then `perspectives.library`, then the packaged `library/`, then the shipped defaults |
 
 ### Dependencies
 
