@@ -4,7 +4,7 @@ Establish what the candidates are judged against. Start only after the frame is 
 
 ## Rule
 
-Every count, filter and budget comes from running the scripts, never from calculating in prose. Never state a count, total or budget before the script that produces it has run, not even as an estimate. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Follow the conversation rules of the Frame step. Here the judgment calls, asked one at a time, are the scope (step 4) and each drafted requirement. The inferable facts, the principles (step 10) and the background summaries (step 11), are shown as one block for the user to confirm or edit.
+Every count, filter and budget comes from running the scripts, never from calculating in prose. Never state a count, total or budget before the script that produces it has run, not even as an estimate. Keep each script's output as a file in the run's working folder, next to the run record, and quote numbers from those files. Ask the judgment calls one at a time: the scope (step 4) and each drafted requirement. Show the inferable facts, the principles (step 10) and the background summaries (step 11), as one block for the user to confirm or edit. Do not record anything the user has not given or confirmed.
 
 The perspectives review the scope once, before the budget is set (step 7), and the user settles their challenges once (step 8). When the user confirms the summary (step 12), the scope is frozen (decision 13). No later step adds or changes requirements.
 

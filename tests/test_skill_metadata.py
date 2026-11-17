@@ -701,3 +701,51 @@ def test_record_takes_authority_domain_and_open_actions_from_the_frame():
     assert "frame.gaps" in text and "frame.validation.notes" in text
     assert "(proposed)" in text
     assert "causal_claim" not in text
+
+
+# Frame: one proposed frame, corrected in one answer
+
+
+def _frame_rules() -> str:
+    return _reference("frame.md").split("## Conversation rules", 1)[1].split("\n## ", 1)[0]
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        "identifier",
+        "authority",
+        "domain",
+        "question wording",
+        "outcome",
+        "causal claim",
+        "evidence label",
+        "status quo",
+        "candidates",
+        "horizon",
+        "governing decisions",
+        "constraints",
+        "gaps",
+    ],
+)
+def test_frame_proposes_every_item_at_once(item):
+    assert item in _frame_rules()
+
+
+def test_frame_marks_each_item_and_takes_corrections_in_one_answer():
+    rules = _frame_rules()
+    for phrase in ["one proposed frame", "`from input`", "`inferred`", "`missing`", "one answer"]:
+        assert phrase in rules, phrase
+    assert "missing or contradictory" in rules
+    assert "one question at a time" not in _reference("frame.md")
+    skill = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
+    assert "one question at a time" not in skill.split("## 1. Frame", 1)[1].split("\n## ", 1)[0]
+
+
+def test_frame_warns_when_the_question_builds_in_a_candidate_feature():
+    assert "builds a candidate's feature into the question" in _reference("frame.md")
+
+
+def test_gather_states_its_own_conversation_rules():
+    text = _reference("gather.md")
+    assert "Follow the conversation rules of the Frame step" not in text
